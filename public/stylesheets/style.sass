@@ -1,0 +1,116 @@
+$orange: #ef5350
+$pink: #ff0080
+$lght-purple: #9c27b0
+$dark-purple: #673ab7
+$blue: #03a9f4
+$yellow: #ffeb3b
+
+body
+  padding: 0px
+  font: 14px Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
+  text-rendering: geometricPrecision
+  background-color: #000000
+  color: #ffffff
+  display: block
+
+a
+  color: #00B7FF
+
+.content
+  position: relative
+  z-index: 0
+  padding: 150px 50px
+  color: #ff0080
+
+#particles-js
+  position: absolute
+  z-index: -1
+  height: 100%
+  width: 100%
+//-webkit-filter: blur(1px)
+//-moz-filter: blur(1px)
+//-o-filter: blur(1px)
+//-ms-filter: blur(1px)
+//filter: blur(1px)
+.greeting
+  font-size: 2em
+  //color: #2EAA8F
+  color: #fff
+  text-align: center
+
+.intro
+  font-size: 1.5em
+//text-align: center
+
+.skills,
+.tech,
+.github
+  font-size: 1.25em
+  margin: 10px 0
+
+.skills
+  color: $orange
+
+.tech
+  color: $lght-purple
+
+.github
+  color: $yellow
+
+.footer
+  margin: 20px auto
+
+.freelancer-status
+  position: relative
+  padding-top: 10px
+
+.gps_ring-unavailable
+  position: absolute
+  top: 16px
+  left: 71px
+  width: 18px
+  height: 18px
+  -webkit-animation: pulsate 2s ease-out
+  -webkit-animation-iteration-count: infinite
+  opacity: .0
+  border: 3px solid #e7797a
+  -webkit-border-radius: 30px
+
+.gps_ring-available
+  position: absolute
+  top: 16px
+  left: 127px
+  width: 18px
+  height: 18px
+  -webkit-animation: pulsate 2s ease-out
+  -webkit-animation-iteration-count: infinite
+  opacity: .0
+  border: 3px solid rgba(0, 200, 83, 0.75)
+  -webkit-border-radius: 30px
+
+@-webkit-keyframes pulsate
+  0%
+    -webkit-transform: scale(0.1, 0.1)
+    opacity: .0
+  50%
+    opacity: 1.0
+  100%
+    -webkit-transform: scale(1.2, 1.2)
+    opacity: .0
+
+.freelancer-status p span.available
+  z-index: 99
+  display: inline-block
+  width: 30px
+  height: 30px
+  margin-right: 5px
+  vertical-align: -11px
+  background: url("../images/available.png") no-repeat center
+
+.freelancer-status p span.unavailable
+  display: inline-block
+  width: 30px
+  height: 30px
+  margin-right: 5px
+  vertical-align: -11px
+  background: url("../images/unavailable.png") no-repeat center
