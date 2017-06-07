@@ -59,25 +59,24 @@ a {
   height: 18px;
   -webkit-animation: pulsate 2s ease-out;
   -webkit-animation-iteration-count: infinite;
-  opacity: .0;
+  opacity: 0;
   border: 3px solid #e7797a;
   -webkit-border-radius: 30px; }
 
 .gps_ring-available {
-  opacity: .0;
+  opacity: 0;
   border: 1px solid rgba(0, 200, 83, 0.75);
   -webkit-border-radius: 10px; }
 
 @-webkit-keyframes pulsate {
   0% {
     -webkit-transform: scale(0.1, 0.1);
-    opacity: .0; }
+    opacity: 0; }
   50% {
-    opacity: 1.0; }
+    opacity: 1; }
   100% {
     -webkit-transform: scale(1.2, 1.2);
-    opacity: .0; } }
-
+    opacity: 0; } }
 .freelancer-status p span.available {
   z-index: 99;
   display: inline-block;
@@ -85,7 +84,7 @@ a {
   height: 30px;
   margin-right: 5px;
   vertical-align: -11px;
-  -webkit-animation: pulsate 3s ease-out;
+  -webkit-animation: pulsate 2s ease-out;
   -webkit-animation-iteration-count: infinite;
   background: url("../images/available.png") no-repeat center; }
 
