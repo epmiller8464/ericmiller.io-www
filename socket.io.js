@@ -5,8 +5,18 @@ function server (app) {
   var path = require('path'),
     exec = require('child_process').exec
 
-  var io = require('socket.io').listen(app)
-
+  // var io = require('socket.io').listen(app)
+  var opts = {
+    transports: [
+      'polling',
+      'websocket',
+      'xhr-polling',
+      'jsonp-polling'
+    ],
+    log: false,
+    origins: '*:*'
+  }// 'disconnect' EVENT will work only with 'websocket
+  let io = require('socket.io')(app, opts)
   io.sockets.on('connection', function (socket) {
     socket.on('message', function (data) {
       var fileName = uuid.v4()

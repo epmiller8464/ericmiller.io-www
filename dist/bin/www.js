@@ -21,6 +21,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+require('../socket.io')(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -29,7 +30,6 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-require('../socket.io')(server);
 
 /**
  * Normalize a port into a number, string, or false.
