@@ -64,16 +64,9 @@ a {
   -webkit-border-radius: 30px; }
 
 .gps_ring-available {
-  position: absolute;
-  top: 16px;
-  left: 127px;
-  width: 18px;
-  height: 18px;
-  -webkit-animation: pulsate 2s ease-out;
-  -webkit-animation-iteration-count: infinite;
   opacity: .0;
-  border: 3px solid rgba(0, 200, 83, 0.75);
-  -webkit-border-radius: 30px; }
+  border: 1px solid rgba(0, 200, 83, 0.75);
+  -webkit-border-radius: 10px; }
 
 @-webkit-keyframes pulsate {
   0% {
@@ -92,6 +85,8 @@ a {
   height: 30px;
   margin-right: 5px;
   vertical-align: -11px;
+  -webkit-animation: pulsate 3s ease-out;
+  -webkit-animation-iteration-count: infinite;
   background: url("../images/available.png") no-repeat center; }
 
 .freelancer-status p span.unavailable {
