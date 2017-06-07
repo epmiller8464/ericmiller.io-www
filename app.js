@@ -7,7 +7,6 @@ var bodyParser = require('body-parser')
 var sassMiddleware = require('node-sass-middleware')
 let hbs = require('express-handlebars')
 var index = require('./routes/index')
-var users = require('./routes/users')
 
 var app = express()
 
@@ -15,7 +14,7 @@ var app = express()
 var exphbs = hbs.create({
   extname: 'hbs', defaultLayout: 'layout', helpers: {
     section: function (name, options) {
-      if(!this._sections) {
+      if (!this._sections) {
         this._sections = {}
       }
       this._sections[name] = options.fn(this)
@@ -39,23 +38,23 @@ var exphbs = hbs.create({
 
       switch (operator) {
         case '==':
-          return (v1 == v2) ? options.fn(this) : options.inverse(this);
+          return (v1 == v2) ? options.fn(this) : options.inverse(this)
         case '===':
-          return (v1 === v2) ? options.fn(this) : options.inverse(this);
+          return (v1 === v2) ? options.fn(this) : options.inverse(this)
         case '<':
-          return (v1 < v2) ? options.fn(this) : options.inverse(this);
+          return (v1 < v2) ? options.fn(this) : options.inverse(this)
         case '<=':
-          return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+          return (v1 <= v2) ? options.fn(this) : options.inverse(this)
         case '>':
-          return (v1 > v2) ? options.fn(this) : options.inverse(this);
+          return (v1 > v2) ? options.fn(this) : options.inverse(this)
         case '>=':
-          return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+          return (v1 >= v2) ? options.fn(this) : options.inverse(this)
         case '&&':
-          return (v1 && v2) ? options.fn(this) : options.inverse(this);
+          return (v1 && v2) ? options.fn(this) : options.inverse(this)
         case '||':
-          return (v1 || v2) ? options.fn(this) : options.inverse(this);
+          return (v1 || v2) ? options.fn(this) : options.inverse(this)
         default:
-          return options.inverse(this);
+          return options.inverse(this)
       }
     },
     printYesOrNo: function (isTrue) {
@@ -64,9 +63,9 @@ var exphbs = hbs.create({
   }
 })
 // view engine setup
-app.engine('hbs', exphbs.engine);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+app.engine('hbs', exphbs.engine)
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'hbs')
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -81,6 +80,8 @@ app.use(sassMiddleware({
   sourceMap: true
 }))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'node_modules')))
+app.use(express.static(path.join(__dirname, 'uploads')))
 
 app.use('/', index)
 
@@ -101,5 +102,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500)
   res.render('error')
 })
+
 
 module.exports = app

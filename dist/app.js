@@ -9,7 +9,6 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var hbs = require('express-handlebars');
 var index = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -81,6 +80,8 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', index);
 
