@@ -68,6 +68,7 @@ function server(app) {
       source: videoFile
     }).addInput(audioFile).on('error', function (err) {
       socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message);
+      console.log(err);
     }).on('progress', function (progress) {
       socket.emit('ffmpeg-output', Math.round(progress.percent));
     }).on('end', function () {
