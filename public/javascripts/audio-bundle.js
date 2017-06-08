@@ -275,8 +275,10 @@ var recordAudio, recordVideo
 
 startRecording.onclick = function () {
   startRecording.disabled = true
+
   if (sample)
     sample.disconnect()
+
   navigator.getUserMedia({
     audio: true,
     // video: true
@@ -313,31 +315,31 @@ stopRecording.onclick = function () {
   startRecording.disabled = false
   stopRecording.disabled = true
   // stop audio recorder
-  recordAudio.stopRecording(function () {
-    // stop video recorder
-    recordVideo.stopRecording(function () {
-      // get audio data-URL
-      recordAudio.getDataURL(function (audioDataURL) {
-        // get video data-URL
-        recordVideo.getDataURL(function (videoDataURL) {
-          var files = {
-            audio: {
-              type: recordAudio.getBlob().type || 'audio/wav',
-              dataURL: audioDataURL
-            },
-            video: {
-              type: recordVideo.getBlob().type || 'video/webm',
-              dataURL: videoDataURL
-            }
-          }
-          socketio.emit('message', files)
-          if (mediaStream) mediaStream.stop()
-        })
-      })
-      cameraPreview.src = ''
-      cameraPreview.poster = 'ajax-loader.gif'
-    })
-  })
+  // recordAudio.stopRecording(function () {
+  //   // stop video recorder
+  //   recordVideo.stopRecording(function () {
+  //     // get audio data-URL
+  //     recordAudio.getDataURL(function (audioDataURL) {
+  //       // get video data-URL
+  //       recordVideo.getDataURL(function (videoDataURL) {
+  //         var files = {
+  //           audio: {
+  //             type: recordAudio.getBlob().type || 'audio/wav',
+  //             dataURL: audioDataURL
+  //           },
+  //           video: {
+  //             type: recordVideo.getBlob().type || 'video/webm',
+  //             dataURL: videoDataURL
+  //           }
+  //         }
+  //         socketio.emit('message', files)
+  //         if (mediaStream) mediaStream.stop()
+  //       })
+  //     })
+  //     cameraPreview.src = ''
+  //     cameraPreview.poster = 'ajax-loader.gif'
+  //   })
+  // })
   // if firefox or if you want to record only audio
   // stop audio recorder
   recordAudio.stopRecording(function () {

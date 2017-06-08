@@ -20,7 +20,7 @@ function server(app) {
       var fileName = uuid.v4();
 
       socket.emit('ffmpeg-output', 0);
-      console.log(data);
+      // console.log(data)
       writeToDisk(data.audio.dataURL, fileName + '.wav');
       socket.emit('merged', fileName + '.wav');
 
@@ -53,7 +53,7 @@ function server(app) {
     }
 
     dataURL = dataURL.split(',').pop();
-    fileBuffer = new Buffer(dataURL, 'base64');
+    // fileBuffer = new Buffer(dataURL, 'base64')
     // fs.writeFileSync(filePath, fileBuffer)
     var ws = fs.createWriteStream(filePath, 'base64').write(new Buffer(dataURL, 'base64'));
     // ws.end()
