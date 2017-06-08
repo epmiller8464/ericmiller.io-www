@@ -269,7 +269,7 @@ startRecording.onclick = function () {
       type: 'audio',
       recorderType: StereoAudioRecorder,
       onAudioProcessStarted: function onAudioProcessStarted() {
-        recordVideo.startRecording();
+        // recordVideo.startRecording()
         cameraPreview.src = window.URL.createObjectURL(stream);
         cameraPreview.play();
         cameraPreview.muted = true;
@@ -277,14 +277,14 @@ startRecording.onclick = function () {
         //                        cameraPreview.context
       }
     });
-    var videoOnlyStream = new MediaStream();
-    stream.getVideoTracks().forEach(function (track) {
-      videoOnlyStream.addTrack(track);
-    });
-    recordVideo = RecordRTC(videoOnlyStream, {
-      type: 'video',
-      recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
-    });
+    // var videoOnlyStream = new MediaStream()
+    // stream.getVideoTracks().forEach(function (track) {
+    //   videoOnlyStream.addTrack(track)
+    // })
+    // recordVideo = RecordRTC(videoOnlyStream, {
+    //   type: 'video',
+    //   recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
+    // })
     recordAudio.startRecording();
 
     stopRecording.disabled = false;

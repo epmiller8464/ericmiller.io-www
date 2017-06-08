@@ -8,8 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var hbs = require('express-handlebars');
-var index = require('./routes/index');
-
+var fs = require('fs');
 var app = express();
 
 // view engine setup
@@ -84,7 +83,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', index);
+app.use('/', require('./routes/index'));
+app.use('/voice-mail', require('./routes/voice-mail'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

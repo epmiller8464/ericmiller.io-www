@@ -8,13 +8,9 @@ const url = require('url')
 router.get('/', function (req, res, next) {
   res.render('index', {title: 'Express'})
 })
-
-router.get('/voice-mail', function (req, res, next) {
-  res.render('voice-mail', {title: 'Express'})
-})
 router.use('/uploads', (req, response, next) => {
   var uri = url.parse(req.url).pathname,
-    filename = path.join(process.cwd()+'/uploads', uri)
+    filename = path.join(process.cwd() + '/uploads', uri)
   // var filename = `./../uploads${req.url}`
   fs.readFile(filename, 'binary', function (err, file) {
     if (err) {
@@ -32,4 +28,5 @@ router.use('/uploads', (req, response, next) => {
   })
 
 })
+
 module.exports = router

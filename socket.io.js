@@ -24,18 +24,18 @@ function server (app) {
       var fileName = uuid.v4()
 
       socket.emit('ffmpeg-output', 0)
-
+      console.log(data)
       writeToDisk(data.audio.dataURL, fileName + '.wav')
+      socket.emit('merged', fileName + '.wav')
 
       // if it is chrome
-      if (data.video) {
-        writeToDisk(data.video.dataURL, fileName + '.webm')
-        merge(socket, fileName)
-      }
-      // if it is firefox or if user is recording only audio
-      else {
-        // socket.emit('merged', fileName + '.wav')
-      }
+      // if (data.video) {
+      //   writeToDisk(data.video.dataURL, fileName + '.webm')
+      //   merge(socket, fileName)
+      // }
+      // // if it is firefox or if user is recording only audio
+      // else {
+      // }
     })
   })
 
@@ -58,44 +58,47 @@ function server (app) {
 
     dataURL = dataURL.split(',').pop()
     fileBuffer = new Buffer(dataURL, 'base64')
-    fs.writeFileSync(filePath, fileBuffer)
-    // let ws = fs.createWriteStream(filePath, 'base64')
-    // ws.write(fileBuffer)
+    // fs.writeFileSync(filePath, fileBuffer)
+    let ws = fs.createWriteStream(filePath, 'base64').write(new Buffer(dataURL, 'base64'))
     // ws.end()
     console.log('filePath', filePath)
   }
 
-  function merge (socket, fileName) {
-
-    var audioFile = path.join(__dirname, 'uploads', fileName + '.wav'),
-      videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
-      mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
-
-    new FFmpeg({
-      source: fs.createReadStream(videoFile)
-    })
-    .addInput(audioFile)
-    .on('error', function (err) {
-      socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message)
-      console.log(err)
-    })
-    .on('progress', function (progress) {
-      socket.emit('ffmpeg-output', Math.round(progress.percent))
-    })
-    .on('end', function () {
-      if (!set.has(fileName)) {
-        socket.emit('merged', fileName + '-merged.webm')
-        console.log('Merging finished !')
-        set.add(fileName)
-      }
-
-      // removing audio/video files
-      // fs.unlink(audioFile)
-      // fs.unlink(videoFile)
-    })
-    .saveToFile(mergedFile)
-    // .writeToStream(fs.createWriteStream(mergedFile))
-  }
+  // function merge (socket, fileName) {
+  //
+  //   var audioFile = path.join(__dirname, 'uploads', fileName + '.wav'),
+  //     videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
+  //     mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
+  //
+  //   new FFmpeg({
+  //     source: videoFile
+  //   })
+  //   .addInput(audioFile)
+  //   .addInput(audioFile)
+  //   .on('error', function (err) {
+  //     socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message)
+  //     console.log(err)
+  //   })
+  //   .on('progress', function (progress) {
+  //     socket.emit('ffmpeg-output', Math.round(progress.percent))
+  //   })
+  //   .on('exit', function () {
+  //     console.log('some exit')
+  //   })
+  //   .on('end', function () {
+  //     // if (!set.has(fileName)) {
+  //     //   socket.emit('merged', fileName + '-merged.webm')
+  //     //   console.log('Merging finished !')
+  //     //   set.add(fileName)
+  //     // }
+  //
+  //     // removing audio/video files
+  //     fs.unlink(audioFile)
+  //     fs.unlink(videoFile)
+  //   })
+  //   .saveToFile(mergedFile)
+  //   // .writeToStream(fs.createWriteStream(mergedFile))
+  // }
 }
 
 module.exports = server
