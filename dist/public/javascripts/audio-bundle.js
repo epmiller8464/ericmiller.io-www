@@ -341,16 +341,15 @@ stopRecording.onclick = function () {
 };
 
 $('#rerecord').click(function () {
-  $('#start-recording').trigger('click');
+  // $('#start-recording').trigger('click')
+  startRecording.click();
 });
 socketio.on('merged', function (fileName) {
   var href = location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href;
   href = href + 'uploads/' + fileName;
   console.log('got file ' + href);
   sample = new VisualizerSample(href, function () {
-
     sample.togglePlayback();
-
     //test
     //     cameraPreview.src = href
     //     cameraPreview.play()

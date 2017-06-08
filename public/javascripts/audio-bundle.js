@@ -147,14 +147,14 @@ function VisualizerSample (url, cb) {
 
 // Toggle playback
 VisualizerSample.prototype.togglePlayback = function () {
-  
-    this.play()
-  
+
+  this.play()
+
 }
 
 VisualizerSample.prototype.play = function () {
-   $('#rerecord').prop('disabled', true)
-     this.stop()
+  $('#rerecord').prop('disabled', true)
+  this.stop()
 
   this.startTime = context.currentTime
   console.log('started at', this.startOffset)
@@ -174,14 +174,14 @@ VisualizerSample.prototype.play = function () {
 
 VisualizerSample.prototype.stop = function () {
 //   if (this.isPlaying) {
-try{
-this.source[this.source.stop ? 'stop' : 'noteOff'](0)
+  try {
+    this.source[this.source.stop ? 'stop' : 'noteOff'](0)
     this.startOffset += context.currentTime - this.startTime
     console.log('paused at', this.startOffset)
-}catch(e){
-  
-}
-    
+  } catch (e) {
+
+  }
+
 //   }
   this.startOffset = 0
   this.isPlaying = false
@@ -195,9 +195,9 @@ VisualizerSample.prototype.disconnect = function () {
 }
 
 VisualizerSample.prototype.onended = function () {
-    this.stop()
-   $('#rerecord').prop('disabled', false)
-  
+  this.stop()
+  $('#rerecord').prop('disabled', false)
+
 }
 
 $('#playback-click').click(function () {
@@ -358,16 +358,15 @@ stopRecording.onclick = function () {
 }
 
 $('#rerecord').click(function () {
-  $('#start-recording').trigger('click')
+  // $('#start-recording').trigger('click')
+  startRecording.click()
 })
 socketio.on('merged', function (fileName) {
   var href = (location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href)
   href = href + 'uploads/' + fileName
   console.log('got file ' + href)
   sample = new VisualizerSample(href, function () {
-  
     sample.togglePlayback()
-
 //test
 //     cameraPreview.src = href
 //     cameraPreview.play()
