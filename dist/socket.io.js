@@ -1,6 +1,6 @@
 'use strict';
 
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var fs = require('fs');
 function server(app) {
   var path = require('path'),
@@ -26,14 +26,16 @@ function server(app) {
         writeToDisk(data.video.dataURL, fileName + '.webm');
         merge(socket, fileName);
       }
-
       // if it is firefox or if user is recording only audio
-      else socket.emit('merged', fileName + '.wav');
+      else {
+          // socket.emit('merged', fileName + '.wav')
+        }
     });
   });
 
   // isn't it redundant?
   // app.listen(8888);
+  var set = new Set();
 
   function writeToDisk(dataURL, fileName) {
     var fileExtension = fileName.split('.').pop(),
@@ -69,8 +71,11 @@ function server(app) {
     }).on('progress', function (progress) {
       socket.emit('ffmpeg-output', Math.round(progress.percent));
     }).on('end', function () {
-      socket.emit('merged', fileName + '-merged.webm');
-      console.log('Merging finished !');
+      if (!set.has(fileName)) {
+        socket.emit('merged', fileName + '-merged.webm');
+        console.log('Merging finished !');
+        set.add(fileName);
+      }
 
       // removing audio/video files
       fs.unlink(audioFile);

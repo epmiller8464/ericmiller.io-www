@@ -10,34 +10,48 @@
                 <label>Enter your Email</label>
                 <input class="form-control" type="email" name="email" placeholder="e.g. tom@gmail.com"
                        style="background: transparent;" inputmode=""/>
-
             </span>
         </span>
-            <span class="input-group-lg hide step-2">
+            <span class="input-group-lg step-2">
             <span class="input-lg">
-                <label>Start Recording</label>
-                <div>
                     <audio id="camera-preview" controls
                            style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
-                </div>
-                <div style="display:none;">
+                <span style="display:none;">
                     <label id="percentage">Ffmpeg Progress 0%</label>
-        <progress id="progress-bar" value="0" max="100"></progress>
-        <br/>
-    </div>
-                <div>
+                    <progress id="progress-bar" value="0" max="100"></progress>
+                    <br/>
+                    </span>
+                <span>
         <button id="start-recording" disabled>Start Recording</button>
         <button id="stop-recording" disabled>Stop Recording</button>
-    </div>
-                <canvas id="audio-canvas" width="640" height="640"></canvas>
+            </span>
             </span>
         </span>
-            <button type="button" class="btn btn-link next hide pull-right">Next</button>
+            <button type="button" class="btn btn-link next pull-right">Next</button>
+        </div>
+        <div class="col-md-6">
+            <div class="post">
+                <h2>Visualizer</h2>
+                <p>
+                <p>Using the AnalyserNode and some Canvas 2D visualizations to show both time- and frequency-
+                    domain.</p>
+                </p>
+                <p>
+                <p>
+                    <button id="playback-click" style="display: block" disabled="true">Please wait, loading...</button>
+                    <button id="rerecord" style="display: block" disabled="true">Re-record</button>
+                    <canvas></canvas>
+                </p>
+                </p>
+            </div>
         </div>
     </div>
 </section>
 
+
 {{#section 'scripts'}}
+    <!--<script src="/static/js/shared.js"></script>-->
+    <!--<script src="visualizer-sample.js"></script>-->
 
 
     <script>
@@ -77,287 +91,7 @@
         }
 
     </script>
+    <script src="/javascripts/audio-bundle.js"></script>
 
-    <script>
-        if (false /* for Microsoft Edge */) {
-            var cameraPreview = document.getElementById('camera-preview')
-            cameraPreview.parentNode.innerHTML = '<audio id="camera-preview" controls style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio> '
-        }
-        var socketio = io()
-        var mediaStream = null
-        socketio.on('connect', function () {
-            startRecording.disabled = false
-        })
-        var startRecording = document.getElementById('start-recording')
-        var stopRecording = document.getElementById('stop-recording')
-        var cameraPreview = document.getElementById('camera-preview')
-        var progressBar = document.querySelector('#progress-bar')
-        var percentage = document.querySelector('#percentage')
-        var recordAudio, recordVideo
-        var sample = new AudioTagSample()
 
-        startRecording.onclick = function () {
-            startRecording.disabled = true
-            navigator.getUserMedia({
-                audio: true,
-//                video: true
-            }, function (stream) {
-                mediaStream = stream
-                recordAudio = RecordRTC(stream, {
-                    type: 'audio',
-                    recorderType: StereoAudioRecorder,
-                    onAudioProcessStarted: function () {
-                        recordVideo.startRecording()
-                        cameraPreview.src = window.URL.createObjectURL(stream)
-                        cameraPreview.play()
-                        cameraPreview.muted = true
-                        cameraPreview.controls = false
-//                        cameraPreview.context
-                    }
-                })
-                var videoOnlyStream = new MediaStream()
-                stream.getVideoTracks().forEach(function (track) {
-                    videoOnlyStream.addTrack(track)
-                })
-                recordVideo = RecordRTC(videoOnlyStream, {
-                    type: 'video',
-                    recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
-                })
-                recordAudio.startRecording()
-
-                stopRecording.disabled = false
-            }, function (error) {
-                alert(JSON.stringify(error))
-            })
-        }
-        stopRecording.onclick = function () {
-            startRecording.disabled = false
-            stopRecording.disabled = true
-            // stop audio recorder
-            recordAudio.stopRecording(function () {
-                // stop video recorder
-                recordVideo.stopRecording(function () {
-                    // get audio data-URL
-                    recordAudio.getDataURL(function (audioDataURL) {
-                        // get video data-URL
-                        recordVideo.getDataURL(function (videoDataURL) {
-                            var files = {
-                                audio: {
-                                    type: recordAudio.getBlob().type || 'audio/wav',
-                                    dataURL: audioDataURL
-                                },
-                                video: {
-                                    type: recordVideo.getBlob().type || 'video/webm',
-                                    dataURL: videoDataURL
-                                }
-                            }
-                            socketio.emit('message', files)
-                            if (mediaStream) mediaStream.stop()
-                        })
-                    })
-                    cameraPreview.src = ''
-                    cameraPreview.poster = 'ajax-loader.gif'
-                })
-            })
-            // if firefox or if you want to record only audio
-            // stop audio recorder
-            recordAudio.stopRecording(function () {
-                // get audio data-URL
-                recordAudio.getDataURL(function (audioDataURL) {
-                    var files = {
-                        audio: {
-                            type: recordAudio.getBlob().type || 'audio/wav',
-                            dataURL: audioDataURL
-                        }
-                    }
-                    socketio.emit('message', files)
-                    if (mediaStream) mediaStream.stop()
-                })
-                cameraPreview.src = ''
-                cameraPreview.poster = 'ajax-loader.gif'
-            })
-        }
-        socketio.on('merged', function (fileName) {
-            var href = (location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href)
-            href = href + 'uploads/' + fileName
-            console.log('got file ' + href)
-            cameraPreview.src = href
-            cameraPreview.play()
-            cameraPreview.muted = false
-            cameraPreview.controls = true
-//            sample = new VisualizerSample(href);
-//            sample.play(href)
-            sample.play(cameraPreview)
-
-        })
-        socketio.on('ffmpeg-output', function (result) {
-            if (parseInt(result) >= 100) {
-                progressBar.parentNode.style.display = 'none'
-                return
-            }
-            progressBar.parentNode.style.display = 'block'
-            progressBar.value = result
-            percentage.innerHTML = 'Ffmpeg Progress ' + result + '%'
-        })
-        socketio.on('ffmpeg-error', function (error) {
-            alert(error)
-        })
-        /*
-		 * Copyright 2013 Boris Smus. All Rights Reserved.
-
-		 * Licensed under the Apache License, Version 2.0 (the "License");
-		 * you may not use this file except in compliance with the License.
-		 * You may obtain a copy of the License at
-		 *
-		 *     http://www.apache.org/licenses/LICENSE-2.0
-		 *
-		 * Unless required by applicable law or agreed to in writing, software
-		 * distributed under the License is distributed on an "AS IS" BASIS,
-		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-		 * See the License for the specific language governing permissions and
-		 * limitations under the License.
-		 */
-
-        function AudioTagSample () {
-            // Create a new <audio> tag.
-            this.context = new AudioContext()
-            this.analyser
-            // Note: the audio graph must be connected after the page is loaded.
-            // Otherwise, the Audio tag just plays normally and ignores the audio
-            // context. More info: crbug.com/112368
-//            window.addEventListener('load', this.onload.bind(this), false)
-        }
-
-        AudioTagSample.prototype.play = function (stream) {
-//            this.audio.src = url
-//            this.audio.play()
-
-            // Create the audio nodes.
-//            var source = this.context.createMediaStreamSource(stream)
-            var source = this.context.createMediaElementSource(stream)
-//            this.filter = context.createBiquadFilter();
-//            this.filter.type = this.filter.LOWPASS;
-//            this.filter.frequency.value = 500;
-
-            // Connect the audio graph.
-            var filter = this.context.createBiquadFilter()
-            filter.frequency.value = 60.0
-            filter.type = filter.LOWPASS
-            filter.Q = 10.0
-
-            this.analyser = this.context.createAnalyser()
-
-            // Connect graph.
-            source.connect(filter)
-            filter.connect(this.analyser)
-
-            // Set up an animation.
-            this.draw()
-        }
-
-        var context
-        var bufferLoader
-        //        function init (stream) {
-        //            context = window.AudioContext.getContext()
-        //
-        ////            bufferLoader = new BufferLoader(context, [fileName], finishedLoading)
-        ////            bufferLoader.load()
-        ////        }
-        //
-        ////        function finishedLoading (bufferList) {
-        //            // Create two sources and play them both together.
-        ////            var source1 = context.createBufferSource()
-        ////            source1.buffer = bufferList[0]
-        ////
-        ////            source1.connect(context.destination)
-        ////            source1.start(0)
-        ////        }
-        ////
-        ////        function onStream (stream) {
-        //            // Wrap a MediaStreamSourceNode around the live input stream.
-        //            var input = context.createMediaStreamSource(stream)
-        //            // Connect the input to a filter.
-        //            var filter = context.createBiquadFilter()
-        //            filter.frequency.value = 60.0
-        //            filter.type = filter.NOTCH
-        //            filter.Q = 10.0
-        //
-        //            var analyser = context.createAnalyser()
-        //
-        //            // Connect graph.
-        //            input.connect(filter)
-        //            filter.connect(analyser)
-        //
-        //            // Set up an animation.
-        //            requestAnimationFrame(render)
-        //        }/**/
-        function render (analyser) {
-            // Visualize the live audio input.
-            draw(analyser)
-//     requestAnimationFrame(render)
-        }
-
-        var WIDTH = 640
-        var HEIGHT = 360
-
-        // Interesting parameters to tweak!
-        var SMOOTHING = 0.8
-        var FFT_SIZE = 2048
-
-        AudioTagSample.prototype.draw = function () {
-//            this.analyser = _analyser
-            this.analyser.smoothingTimeConstant = SMOOTHING
-            this.analyser.fftSize = FFT_SIZE
-            this.freqs = new Uint8Array(this.analyser.frequencyBinCount)
-            this.times = new Uint8Array(this.analyser.frequencyBinCount)
-            // Get the frequency data from the currently playing music
-            var l = this.analyser.getByteFrequencyData(this.freqs)
-            var z = this.analyser.getByteTimeDomainData(this.times)
-
-            var width = Math.floor(1 / this.freqs.length, 10)
-
-            var canvas = document.getElementById('audio-canvas')
-            var drawContext = canvas.getContext('2d')
-            canvas.width = WIDTH
-            canvas.height = HEIGHT
-            // Draw the frequency domain chart.
-            for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-                var value = this.freqs[i]
-                var percent = value / 256
-                var height = HEIGHT * percent
-                var offset = HEIGHT - height - 1
-                var barWidth = WIDTH / this.analyser.frequencyBinCount
-                var hue = i / this.analyser.frequencyBinCount * 360
-                drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-                drawContext.fillRect(i * barWidth, offset, barWidth, height)
-            }
-
-            // Draw the time domain chart.
-            for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-                var value = this.times[i]
-                var percent = value / 256
-                var height = HEIGHT * percent
-                var offset = HEIGHT - height - 1
-                var barWidth = WIDTH / this.analyser.frequencyBinCount
-                var hue = i / this.analyser.frequencyBinCount * 360
-
-                drawContext.fillStyle = 'white'
-//                drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-//                drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-
-                drawContext.fillRect(i * barWidth, offset, 1, 2)
-//                drawContext.fillRect(i * barWidth, offset, 2, height)
-
-            }
-
-            window.requestAnimationFrame(this.draw.bind(this))
-        }
-
-        function getFrequencyValue (context, freq) {
-            var nyquist = context.sampleRate / 2
-            var index = Math.round(freq / nyquist * this.freqs.length)
-            return this.freqs[index]
-        }
-
-    </script>
 {{/section}}
