@@ -2,9 +2,11 @@
 
 var uuid = require('uuid');
 var fs = require('fs');
+var path = require('path');
+var exec = require('child_process').exec;
+var FFmpeg = require('fluent-ffmpeg');
+
 function server(app) {
-  var path = require('path'),
-      exec = require('child_process').exec;
 
   // var io = require('socket.io').listen(app)
   var opts = {
@@ -58,14 +60,14 @@ function server(app) {
   }
 
   function merge(socket, fileName) {
-    var FFmpeg = require('fluent-ffmpeg');
 
     var audioFile = path.join(__dirname, 'uploads', fileName + '.wav'),
         videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
         mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm');
 
-    new FFmpeg({
-      source: videoFile
+    FFmpeg({
+      source: videoFile,
+      logger: 'debug'
     }).addInput(audioFile).on('error', function (err) {
       socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message);
       console.log(err);

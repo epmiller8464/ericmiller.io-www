@@ -1,9 +1,11 @@
 'use strict'
 const uuid = require('uuid')
 const fs = require('fs')
+const path = require('path')
+const exec = require('child_process').exec
+const FFmpeg = require('fluent-ffmpeg')
+
 function server (app) {
-  var path = require('path'),
-    exec = require('child_process').exec
 
   // var io = require('socket.io').listen(app)
   var opts = {
@@ -62,14 +64,14 @@ function server (app) {
   }
 
   function merge (socket, fileName) {
-    var FFmpeg = require('fluent-ffmpeg')
 
     var audioFile = path.join(__dirname, 'uploads', fileName + '.wav'),
       videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
       mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
 
-    new FFmpeg({
-      source: videoFile
+    FFmpeg({
+      source: videoFile,
+      logger: 'debug'
     })
     .addInput(audioFile)
     .on('error', function (err) {

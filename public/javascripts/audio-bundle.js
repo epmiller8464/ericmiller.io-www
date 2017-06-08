@@ -1,5 +1,5 @@
 // Start off by initializing a new context.
-var context = new (window.AudioContext || window.webkitAudioContext)()
+context = new (window.AudioContext || window.webkitAudioContext)()
 
 if (!context.createGain)
   context.createGain = context.createGainNode
