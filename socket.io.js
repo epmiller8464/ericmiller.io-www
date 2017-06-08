@@ -59,7 +59,9 @@ function server (app) {
     dataURL = dataURL.split(',').pop()
     fileBuffer = new Buffer(dataURL, 'base64')
     fs.writeFileSync(filePath, fileBuffer)
-
+    // let ws = fs.createWriteStream(filePath, 'base64')
+    // ws.write(fileBuffer)
+    // ws.end()
     console.log('filePath', filePath)
   }
 
@@ -69,9 +71,8 @@ function server (app) {
       videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
       mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
 
-    FFmpeg({
-      source: videoFile,
-      logger: 'debug'
+    new FFmpeg({
+      source: fs.createReadStream(videoFile)
     })
     .addInput(audioFile)
     .on('error', function (err) {
@@ -89,10 +90,11 @@ function server (app) {
       }
 
       // removing audio/video files
-      fs.unlink(audioFile)
-      fs.unlink(videoFile)
+      // fs.unlink(audioFile)
+      // fs.unlink(videoFile)
     })
     .saveToFile(mergedFile)
+    // .writeToStream(fs.createWriteStream(mergedFile))
   }
 }
 
