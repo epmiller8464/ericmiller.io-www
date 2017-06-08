@@ -5,7 +5,7 @@ const path = require('path')
 const exec = require('child_process').exec
 const FFmpeg = require('fluent-ffmpeg')
 
-function server (app) {
+function server (app, logger) {
 
   // var io = require('socket.io').listen(app)
   var opts = {
@@ -70,13 +70,12 @@ function server (app) {
       mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
 
     FFmpeg({
-      source: videoFile,
-      logger: 'debug'
+      source: videoFile
     })
     .addInput(audioFile)
     .on('error', function (err) {
       socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message)
-      console.log(err)
+      console.error(err)
     })
     .on('progress', function (progress) {
       socket.emit('ffmpeg-output', Math.round(progress.percent))
