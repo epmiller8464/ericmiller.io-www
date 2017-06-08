@@ -1,7 +1,6 @@
 'use strict';
 
 // Start off by initializing a new context.
-var context
 context = new (window.AudioContext || window.webkitAudioContext)();
 
 if (!context.createGain) context.createGain = context.createGainNode;
