@@ -28,14 +28,6 @@ function server (app) {
       writeToDisk(data.audio.dataURL, fileName + '.wav')
       socket.emit('merged', fileName + '.wav')
 
-      // if it is chrome
-      // if (data.video) {
-      //   writeToDisk(data.video.dataURL, fileName + '.webm')
-      //   merge(socket, fileName)
-      // }
-      // // if it is firefox or if user is recording only audio
-      // else {
-      // }
     })
   })
 

@@ -42,14 +42,14 @@ function VisualizerSample(url, cb) {
     return cb();
   }
 
-  this.isPlaying = false;
+  this.isLive = false;
   this.startTime = 0;
   this.startOffset = 0;
 }
 
 // Toggle playback
 VisualizerSample.prototype.togglePlayback = function () {
-  if (this.isPlaying) {
+  if (this.isLive) {
     // Stop playback
     this.source[this.source.stop ? 'stop' : 'noteOff'](0);
     this.startOffset += context.currentTime - this.startTime;
@@ -68,7 +68,7 @@ VisualizerSample.prototype.togglePlayback = function () {
     // Start visualizer.
     requestAnimFrame(this.draw.bind(this));
   }
-  this.isPlaying = !this.isPlaying;
+  this.isLive = !this.isLive;
 };
 
 VisualizerSample.prototype.draw = function () {
@@ -108,7 +108,7 @@ VisualizerSample.prototype.draw = function () {
     drawContext.fillRect(i * barWidth, offset, 1, 2);
   }
 
-  if (this.isPlaying) {
+  if (this.isLive) {
     requestAnimFrame(this.draw.bind(this));
   }
 };

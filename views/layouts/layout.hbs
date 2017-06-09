@@ -6,100 +6,31 @@
     <title>Eric Miller</title>
     <meta name="description" content=""/>
     <meta name="keywords" content="javascript software developer"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
     <!--<link rel="stylesheet" type="text/css" href="/stylesheets/demo.css" />-->
+    <script>document.documentElement.className = 'js'</script>
+
     {{{_sections.head}}}
 </head>
-<body>
+<body class="loading">
 <div id="particles-js">
 </div>
-<section class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            {{{body}}}
+<div class="navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="freelancer-status pull-right">
+            <p><span class="available"></span>Hire me</p>
         </div>
     </div>
+</div>
+<section>
+    {{{body}}}
 </section>
 </body>
 <script src="/javascripts/jquery.min.js"></script>
 <script src="/javascripts/bootstrap.min.js"></script>
 <script src="/javascripts/typed.min.js"></script>
 <script src="/javascripts/particles.js"></script>
-<script>
-    $(document).ready(function () {
-        particlesJS.load('particles-js', 'particles.json', function () {
-        })
-        retype()
-        $('#read-more').click(function () {
-            $('#read-more').addClass('hide')
-            $('.tech').typed({
-                strings: ['Currently I am writing applications node.js but I love python, go, and swift.'],
-                typeSpeed: 0,
-                html: true,
-                showCursor: false,
-                startDelay: 0,
-                callback: function () {
-                    $('.github').typed({
-                        strings: ['Check me out on <a href="https://github.com/epmiller8464">Github</a>'],
-                        typeSpeed: 0,
-                        html: true,
-                        showCursor: false,
-                        startDelay: 0,
-                        callback: function () {
-                            $('#reload-me').removeClass('hide')
-
-                        }
-                    })
-                }
-            })
-        })
-        $('#reload-me').click(function () {
-            $('#reload-me').addClass('hide')
-            retype()
-        })
-    })
-
-    function retype () {
-
-        $('.greeting').text('')
-        $('.intro').text('')
-        $('.skills').text('')
-        $('.tech').text('')
-        $('.github').text('')
-        $('.greeting').typed({
-            strings: ['Hello'],
-            typeSpeed: 50,
-            showCursor: false,
-            callback: function () {
-//              /,
-                $('.intro').typed({
-                    strings: ['My name is Eric Miller I am software developer in Austin, TX.'],
-                    typeSpeed: 10,
-                    html: true,
-                    showCursor: false,
-                    startDelay: 10,
-                    callback: function () {
-                        $('.skills').typed({
-                            strings: ['I like tight time lines and developing elegant solutions to complex problems. I am a full-stack javascript developer.'],
-                            typeSpeed: 0,
-                            html: true,
-                            showCursor: false,
-                            startDelay: 20,
-                            callback: function () {
-                                $('#read-more').removeClass('hide')
-                            }
-                        })
-                    }
-                })
-
-            }
-        })
-    }
-
-</script>
-
 {{{_sections.scripts}}}
-
 </html>

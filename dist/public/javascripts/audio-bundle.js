@@ -3,9 +3,15 @@
 // Start off by initializing a new context.
 context = new (window.AudioContext || window.webkitAudioContext)();
 
-if (!context.createGain) context.createGain = context.createGainNode;
-if (!context.createDelay) context.createDelay = context.createDelayNode;
-if (!context.createScriptProcessor) context.createScriptProcessor = context.createJavaScriptNode;
+if (!context.createGain) {
+  context.createGain = context.createGainNode;
+}
+if (!context.createDelay) {
+  context.createDelay = context.createDelayNode;
+}
+if (!context.createScriptProcessor) {
+  context.createScriptProcessor = context.createJavaScriptNode;
+}
 
 // shim layer with setTimeout fallback
 window.requestAnimFrame = function () {
@@ -13,6 +19,16 @@ window.requestAnimFrame = function () {
     window.setTimeout(callback, 1000 / 60);
   };
 }();
+
+function bytesToSize(bytes) {
+  var k = 1000;
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
+  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+  return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
 
 function playSound(buffer, time) {
   var source = context.createBufferSource();
@@ -67,7 +83,9 @@ BufferLoader.prototype.loadBuffer = function (url, index) {
         return;
       }
       loader.bufferList[index] = buffer;
-      if (++loader.loadCount == loader.urlList.length) loader.onload(loader.bufferList);
+      if (++loader.loadCount == loader.urlList.length) {
+        loader.onload(loader.bufferList);
+      }
     }, function (error) {
       console.error('decodeAudioData error', error);
     });
@@ -106,17 +124,172 @@ var WIDTH = 640;
 var HEIGHT = 360;
 
 // Interesting parameters to tweak!
-var SMOOTHING = 0.8;
-var FFT_SIZE = 2048;
+var SMOOTHING = 0.4;
+var FFT_SIZE = 2048 << 0x01;
 
-function VisualizerSample(url, cb) {
+function configureAudioAPI(config, cb) {
+  var api = null;
+  switch (config.type) {
+    case 'live-audio':
+      api = WebVoiceMail(config, cb);
+      break;
+    case 'playback-audio':
+      sample = new VisualizerSample(href, function () {
+        sample.togglePlayback();
+        // tes
+        //     cameraPreview.src = href
+        //     cameraPreview.play()
+        //     cameraPreview.muted = false
+        //     cameraPreview.controls = true
+      });
+      break;
+  }
+}
+
+function WebVoiceMail(config, cb) {
+
+  this.mediaStream = config.source;
+  this.input = context.createMediaStreamSource(this.mediaStream);
+  // Connect the input to a filter.
+  this.filter = context.createBiquadFilter();
+  this.filter.frequency.value = 60.0;
+  this.filter.type = 'notch';
+  this.filter.Q = 10.0;
+
+  this.analyser = context.createAnalyser();
+  // Connect graph.
+  this.input.connect(this.filter);
+  this.filter.connect(this.analyser);
+
+  this.draw();
+
+  this.freqs = new Uint8Array(this.analyser.frequencyBinCount);
+  this.times = new Uint8Array(this.analyser.frequencyBinCount);
+  this.sampleBuffer = new Uint8Array(this.analyser.frequencyBinCount);
+  this.isLive = false;
+  this.startTime = 0;
+  this.startOffset = 0;
+  this.maxTime = 45000;
+  this.canvas = config.canvas;
+}
+
+// Toggle playback
+WebVoiceMail.prototype.togglePlayback = function () {
+  this.play();
+};
+
+WebVoiceMail.prototype.play = function () {
+  // $('#rerecord').prop('disabled', true)
+  // this.stop()
+
+  this.startTime = context.currentTime;
+  console.log('started at', this.startOffset);
+  this.source = context.createBufferSource();
+  // Connect graph
+  this.source.connect(this.analyser);
+  this.source.buffer = this.buffer;
+  this.source.loop = false;
+  // Start playback, but make sure we stay in bound of the buffer.
+  this.source[this.source.start ? 'start' : 'noteOn'](0, this.startOffset % this.buffer.duration);
+  // Start visualizer.
+  this.isLive = true;
+
+  this.source.onEnded = this.onEnded;
+  requestAnimationFrame(this.draw.bind(this));
+};
+
+WebVoiceMail.prototype.stop = function () {
+  //   if (this.isLive) {
+  try {
+    // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
+    this.source.disconnect(0);
+    this.mediaStream.stop();
+    // this.startOffset = 0// += context.currentTime - this.startTime
+    console.log('stopped at', context.currentTime);
+  } catch (e) {}
+
+  this.startOffset = 0;
+  this.isLive = false;
+};
+
+WebVoiceMail.prototype.disconnect = function () {
+  this.stop();
+  this.source.disconnect(0);
+  this.startOffset = 0;
+};
+
+WebVoiceMail.prototype.onEnded = function () {
+  // this.stop()
+  // $('#rerecord').prop('disabled', false)
+  console.log('the stream ended do something');
+};
+
+WebVoiceMail.prototype.draw = function () {
+  this.analyser.smoothingTimeConstant = SMOOTHING;
+  this.analyser.fftSize = FFT_SIZE;
+
+  // Get the frequency data from the currently live stream
+  this.analyser.getByteFrequencyData(this.freqs);
+  this.analyser.getByteTimeDomainData(this.times);
+
+  var width = Math.floor(1 / this.freqs.length, 10);
+
+  // var canvas = document.querySelector('canvas')
+  var drawContext = this.canvas.getContext('2d');
+  this.canvas.width = WIDTH;
+  this.canvas.height = HEIGHT;
+  // Draw the frequency domain chart.
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = this.freqs[i];
+    var percent = value / 256;
+    var height = HEIGHT * percent;
+    var offset = HEIGHT - height - 1;
+    var barWidth = WIDTH / this.analyser.frequencyBinCount;
+    var hue = i / this.analyser.frequencyBinCount * 360;
+    drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+    drawContext.fillRect(i * barWidth, offset, barWidth, height);
+  }
+
+  // Draw the time domain chart.
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = this.times[i];
+    var percent = value / 256;
+    var height = HEIGHT * percent;
+    var offset = HEIGHT - height - 1;
+    var barWidth = WIDTH / this.analyser.frequencyBinCount;
+    drawContext.fillStyle = 'white';
+    drawContext.fillRect(i * barWidth, offset, 1, 2);
+  }
+
+  if (this.isLive) {
+    requestAnimationFrame(this.draw.bind(this));
+  }
+};
+
+WebVoiceMail.prototype.getFrequencyValue = function (freq) {
+  var nyquist = context.sampleRate / 2;
+  var index = Math.round(freq / nyquist * this.freqs.length);
+  return this.freqs[index];
+};
+
+WebVoiceMail.prototype.sample = function (freq) {
+  var sampleRate = context.sampleRate;
+  var index = Math.round(freq / sampleRate * this.freqs.length);
+  return this.freqs[index];
+};
+
+WebVoiceMail.prototype.onError = function onStreamError(e) {
+  console.error(e);
+};
+
+function VisualizerSample(config, cb) {
   this.analyser = context.createAnalyser();
 
   this.analyser.connect(context.destination);
-  this.analyser.minDecibels = -140;
-  this.analyser.maxDecibels = 0;
+  this.analyser.minDecibels = config.minDecibels || -140;
+  this.analyser.maxDecibels = config.maxDecibels || 0;
   loadSounds(this, {
-    buffer: url
+    buffer: config.source
   }, onLoaded);
   this.freqs = new Uint8Array(this.analyser.frequencyBinCount);
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
@@ -133,11 +306,11 @@ function VisualizerSample(url, cb) {
   this.isPlaying = false;
   this.startTime = 0;
   this.startOffset = 0;
+  this.canvas = config.canvas;
 }
 
 // Toggle playback
 VisualizerSample.prototype.togglePlayback = function () {
-
   this.play();
 };
 
@@ -157,7 +330,7 @@ VisualizerSample.prototype.play = function () {
   // Start visualizer.
   this.isPlaying = true;
 
-  this.source.onended = this.onended;
+  this.source.onEnded = this.onEnded;
   requestAnimFrame(this.draw.bind(this));
 };
 
@@ -180,14 +353,10 @@ VisualizerSample.prototype.disconnect = function () {
   this.startOffset = 0;
 };
 
-VisualizerSample.prototype.onended = function () {
+VisualizerSample.prototype.onEnded = function () {
   this.stop();
   $('#rerecord').prop('disabled', false);
 };
-
-$('#playback-click').click(function () {
-  sample.togglePlayback();
-});
 
 VisualizerSample.prototype.draw = function () {
   this.analyser.smoothingTimeConstant = SMOOTHING;
@@ -199,10 +368,9 @@ VisualizerSample.prototype.draw = function () {
 
   var width = Math.floor(1 / this.freqs.length, 10);
 
-  var canvas = document.querySelector('canvas');
-  var drawContext = canvas.getContext('2d');
-  canvas.width = WIDTH;
-  canvas.height = HEIGHT;
+  var drawContext = this.canvas.getContext('2d');
+  this.canvas.width = WIDTH;
+  this.canvas.height = HEIGHT;
   // Draw the frequency domain chart.
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i];
@@ -227,7 +395,7 @@ VisualizerSample.prototype.draw = function () {
   }
 
   if (this.isPlaying) {
-    requestAnimFrame(this.draw.bind(this));
+    requestAnimationFrame(this.draw.bind(this));
   }
 };
 
@@ -237,15 +405,12 @@ VisualizerSample.prototype.getFrequencyValue = function (freq) {
   return this.freqs[index];
 };
 
-var sample;
-// document.querySelector('button').addEventListener('click', function () {
-//   sample.togglePlayback()
-// })
-
 var cameraPreview = document.getElementById('camera-preview');
+
 if (false /* for Microsoft Edge */) {
     //            cameraPreview.parentNode.innerHTML = '<audio id="camera-preview" controls style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio> '
   }
+
 var socketio = io();
 var mediaStream = null;
 socketio.on('connect', function () {
@@ -256,21 +421,29 @@ var stopRecording = document.getElementById('stop-recording');
 var cameraPreview = document.getElementById('camera-preview');
 var progressBar = document.querySelector('#progress-bar');
 var percentage = document.querySelector('#percentage');
-var recordAudio, recordVideo;
+var recordAudio;
+var recordVideo;
+var sample;
+var liveSample;
 
 startRecording.onclick = function () {
   startRecording.disabled = true;
 
-  if (sample) sample.disconnect();
+  if (sample) {
+    sample.disconnect();
+  }
 
   navigator.getUserMedia({
     audio: true
+    // video: true
   }, function (stream) {
     mediaStream = stream;
+
     recordAudio = RecordRTC(stream, {
       type: 'audio',
       recorderType: StereoAudioRecorder,
       onAudioProcessStarted: function onAudioProcessStarted() {
+        liveSample = configureAudioAPI({ type: 'live-audio', source: mediaStream });
         // recordVideo.startRecording()
         cameraPreview.src = window.URL.createObjectURL(stream);
         cameraPreview.play();
@@ -352,13 +525,14 @@ socketio.on('merged', function (fileName) {
   console.log('got file ' + href);
   sample = new VisualizerSample(href, function () {
     sample.togglePlayback();
-    //test
+    // tes
     //     cameraPreview.src = href
     //     cameraPreview.play()
     //     cameraPreview.muted = false
     //     cameraPreview.controls = true
   });
 });
+
 socketio.on('ffmpeg-output', function (result) {
   if (parseInt(result) >= 100) {
     progressBar.parentNode.style.display = 'none';
