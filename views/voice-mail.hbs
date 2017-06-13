@@ -6,10 +6,8 @@
 {{/section}}
 <section class="container content">
     <div class="">
-        <h1>
-            Hello, you have reached the web voice mail of Eric Miller.
-            Please leave your name, number and a short message and i will get back to you as soon as possible.
-            Thanks bye
+        <h1 class="voice-message">
+
         </h1>
         <p>
             <a class="btn btn-primary btn-lg" href="#" role="button">I am more likely to reply if you leave me a voice
@@ -17,7 +15,7 @@
         </p>
     </div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
         <span class="input-group-lg step-1">
             <span class="input-lg">
                 <label>Enter a valid email</label>
@@ -25,29 +23,19 @@
                        style="background: transparent;" inputmode=""/>
             </span>
         </span>
-            <canvas></canvas>
+            <canvas id="live-audio-canvas"></canvas>
             <div class="btn-group" role="group" aria-label="...">
-                <button id="start-recording" disabled="disabled" type="button" class="btn btn-default btn-lg">
+                <button id="start-recording" type="button" class="btn btn-default btn-lg">
                     <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
                 </button>
-                <button id="stop-recording" disabled="disabled" type="button" class="btn btn-default btn-lg">
+                <button id="stop-recording" type="button" class="btn btn-default btn-lg">
                     <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
                 </button>
-                <button id="playback" disabled="disabled" type="button" class="btn btn-default btn-lg">
+                <button id="playback" type="button" class="btn btn-default btn-lg">
                     <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete
                 </button>
             </div>
-            <div class="btn-group" role="group" aria-label="...">
-                <button id="start-recording" disabled="disabled" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
-                </button>
-                <button id="stop-recording" disabled="disabled" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
-                </button>
-                <button id="playback" disabled="disabled" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete
-                </button>
-            </div>
+
             <span>
                     <audio id="camera-preview" controls class="hide"
                            style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
@@ -64,10 +52,12 @@
             <span class="input-group-lg step-2">
         </span>
             <button type="button" class="btn btn-link next pull-right">Next</button>
+            <button type="button" class="btn btn-link next pull-right" id="snap">Capture Image</button>
         </div>
+        <img id="captured">
     </div>
 </section>
-<main>
+<main class="hide">
     <div class="content content--side">
         <div class="control control--grids">
             <span class="control__title">Stuff</span>
@@ -136,11 +126,11 @@
             <div class="grid__item">
                 <a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>
             </div>
-            {{#each images}}
-                <div class="grid__item">
-                    <a class="grid__link" href="#"><img class="grid__img" src="{{this}}" alt="Some image"/></a>
-                </div>
-            {{/each}}
+                <!--{{#each images}}-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="{{this}}" alt="Some image"/></a>-->
+            <!--</div>-->
+                <!--{{/each}}-->
             <div class="grid__item">
                 <a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>
             </div>
@@ -205,35 +195,49 @@
             step: 1
         }
         $(document).ready(function () {
-            $('[name=email]').keypress(function () {
-                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
-                    $('.btn.next').removeClass('hide')
-                    incrementStep()
-
-                }
-
-            })
-            $('[name=email]').focusout(function () {
-                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
-                    $('.btn.next').removeClass('hide')
-                    incrementStep()
-                }
-
-            })
-
-            $('.next').click(function () {
-                //1. hide the previous step
-                //2. enable client side socket.io code
-                console.log(stats)
-                $('.step-' + stats.step).removeClass('hide')
-                if ((stats.step - 1) > 0) {
-                    $('.step-' + (stats.step - 1)).addClass('hide')
-                }
-            })
+            showTypedVoiceMailMessage()
+//            $('[name=email]').keypress(function () {
+//                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
+//                    $('.btn.next').removeClass('hide')
+//                    incrementStep()
+//
+//                }
+//
+//            })
+//            $('[name=email]').focusout(function () {
+//                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
+//                    $('.btn.next').removeClass('hide')
+//                    incrementStep()
+//                }
+//
+//            })
+//
+//            $('.next').click(function () {
+//                //1. hide the previous step
+//                //2. enable client side socket.io code
+//                console.log(stats)
+//                $('.step-' + stats.step).removeClass('hide')
+//                if ((stats.step - 1) > 0) {
+//                    $('.step-' + (stats.step - 1)).addClass('hide')
+//                }
+//            })
         })
 
         function incrementStep () {
             stats.step++
+        }
+
+        function showTypedVoiceMailMessage () {
+            $('.voice-message').typed({
+                strings: ['Hello, you have reached the web voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible.Thanks bye'],
+                typeSpeed: 50,
+                html: true,
+                showCursor: false,
+                startDelay: 0,
+                callback: function () {
+
+                }
+            })
         }
 
     </script>

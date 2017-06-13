@@ -120,31 +120,14 @@ BufferLoader.prototype.load = function () {
  * limitations under the License.
  */
 
-var WIDTH = 640;
+var WIDTH = 720;
 var HEIGHT = 360;
 
 // Interesting parameters to tweak!
-var SMOOTHING = 0.4;
-var FFT_SIZE = 2048 << 0x01;
-
-function configureAudioAPI(config, cb) {
-  var api = null;
-  switch (config.type) {
-    case 'live-audio':
-      api = WebVoiceMail(config, cb);
-      break;
-    case 'playback-audio':
-      sample = new VisualizerSample(href, function () {
-        sample.togglePlayback();
-        // tes
-        //     cameraPreview.src = href
-        //     cameraPreview.play()
-        //     cameraPreview.muted = false
-        //     cameraPreview.controls = true
-      });
-      break;
-  }
-}
+var SMOOTHING = 0.85;
+// var FFT_SIZE = 2048 << 0x01
+var FFT_SIZE = 1024;
+// var FFT_SIZE = 2048 / 2
 
 function WebVoiceMail(config, cb) {
 
@@ -161,16 +144,15 @@ function WebVoiceMail(config, cb) {
   this.input.connect(this.filter);
   this.filter.connect(this.analyser);
 
-  this.draw();
-
   this.freqs = new Uint8Array(this.analyser.frequencyBinCount);
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
   this.sampleBuffer = new Uint8Array(this.analyser.frequencyBinCount);
-  this.isLive = false;
+  this.isLive = true;
   this.startTime = 0;
   this.startOffset = 0;
   this.maxTime = 45000;
   this.canvas = config.canvas;
+  return this;
 }
 
 // Toggle playback
@@ -226,40 +208,46 @@ WebVoiceMail.prototype.onEnded = function () {
 
 WebVoiceMail.prototype.draw = function () {
   this.analyser.smoothingTimeConstant = SMOOTHING;
-  this.analyser.fftSize = FFT_SIZE;
+  this.analyser.fftSize = FFT_SIZE / 4;
 
   // Get the frequency data from the currently live stream
   this.analyser.getByteFrequencyData(this.freqs);
   this.analyser.getByteTimeDomainData(this.times);
 
   var width = Math.floor(1 / this.freqs.length, 10);
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
   // var canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d');
-  this.canvas.width = WIDTH;
+
+  this.canvas.width = WIDTH * 1.5;
   this.canvas.height = HEIGHT;
   // Draw the frequency domain chart.
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i];
+    // value = this.getFrequencyValue(value);//[i]
     var percent = value / 256;
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
     var barWidth = WIDTH / this.analyser.frequencyBinCount;
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-    drawContext.fillRect(i * barWidth, offset, barWidth, height);
+    drawContext.fillRect(i * barWidth * 2, offset * 0.5, 2, height);
   }
 
   // Draw the time domain chart.
-  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-    var value = this.times[i];
-    var percent = value / 256;
-    var height = HEIGHT * percent;
-    var offset = HEIGHT - height - 1;
-    var barWidth = WIDTH / this.analyser.frequencyBinCount;
-    drawContext.fillStyle = 'white';
-    drawContext.fillRect(i * barWidth, offset, 1, 2);
-  }
+  // for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+  //   var value = this.times[i]
+  //   var percent = value / 256
+  //   var height = HEIGHT * percent
+  //   var offset = HEIGHT - height - 1
+  //   var barWidth = WIDTH / this.analyser.frequencyBinCount
+  //   drawContext.fillStyle = 'white'
+  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
+  // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
+  // drawContext.fillRect(i * barWidth, offset, barWidth, height)
+
+  // }
 
   if (this.isLive) {
     requestAnimationFrame(this.draw.bind(this));
@@ -282,6 +270,13 @@ WebVoiceMail.prototype.onError = function onStreamError(e) {
   console.error(e);
 };
 
+WebVoiceMail.prototype.captureCanvasImage = function () {
+  // this.canvas
+  $('#captured').prop('src', this.canvas.toDataURL('image/png'));
+};
+$('#snap').click(function () {
+  liveSample.captureCanvasImage();
+});
 function VisualizerSample(config, cb) {
   this.analyser = context.createAnalyser();
 
@@ -405,8 +400,6 @@ VisualizerSample.prototype.getFrequencyValue = function (freq) {
   return this.freqs[index];
 };
 
-var cameraPreview = document.getElementById('camera-preview');
-
 if (false /* for Microsoft Edge */) {
     //            cameraPreview.parentNode.innerHTML = '<audio id="camera-preview" controls style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio> '
   }
@@ -421,6 +414,8 @@ var stopRecording = document.getElementById('stop-recording');
 var cameraPreview = document.getElementById('camera-preview');
 var progressBar = document.querySelector('#progress-bar');
 var percentage = document.querySelector('#percentage');
+var liveAudioCanvas = document.querySelector('#live-audio-canvas');
+var playbackAudioCanvas = document.querySelector('#live-audio-canvas');
 var recordAudio;
 var recordVideo;
 var sample;
@@ -439,19 +434,20 @@ startRecording.onclick = function () {
   }, function (stream) {
     mediaStream = stream;
 
-    recordAudio = RecordRTC(stream, {
-      type: 'audio',
-      recorderType: StereoAudioRecorder,
-      onAudioProcessStarted: function onAudioProcessStarted() {
-        liveSample = configureAudioAPI({ type: 'live-audio', source: mediaStream });
-        // recordVideo.startRecording()
-        cameraPreview.src = window.URL.createObjectURL(stream);
-        cameraPreview.play();
-        cameraPreview.muted = true;
-        cameraPreview.controls = false;
-        //                        cameraPreview.context
-      }
-    });
+    // recordAudio = RecordRTC(stream, {
+    //   type: 'audio',
+    //   recorderType: StereoAudioRecorder,
+    //   onAudioProcessStarted: function () {
+    liveSample = new WebVoiceMail({ type: 'live-audio', source: mediaStream, canvas: liveAudioCanvas });
+    liveSample.draw();
+    // recordVideo.startRecording()
+    cameraPreview.src = window.URL.createObjectURL(stream);
+    cameraPreview.play();
+    cameraPreview.muted = true;
+    cameraPreview.controls = false;
+    //                        cameraPreview.context
+    //       }
+    //     })
     // var videoOnlyStream = new MediaStream()
     // stream.getVideoTracks().forEach(function (track) {
     //   videoOnlyStream.addTrack(track)
