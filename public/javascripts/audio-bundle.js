@@ -228,12 +228,13 @@ WebVoiceMail.prototype.draw = function () {
     var height = HEIGHT * percent
     var offset = HEIGHT - height - 1
     var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-    drawContext.fillRect((i * barWidth) * 2, offset * 0.5, 2, (height))
+    drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
   }
 
-  // Draw the time domain chart.
+  // // Draw the time domain chart.
   // for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
   //   var value = this.times[i]
   //   var percent = value / 256
@@ -242,9 +243,9 @@ WebVoiceMail.prototype.draw = function () {
   //   var barWidth = WIDTH / this.analyser.frequencyBinCount
   //   drawContext.fillStyle = 'white'
   //   drawContext.fillRect(i * barWidth, offset, 1, 2)
-  // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
-  // drawContext.fillRect(i * barWidth, offset, barWidth, height)
-
+  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
+  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
+  //   //
   // }
 
   if (this.isLive) {
