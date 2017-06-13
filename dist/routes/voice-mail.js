@@ -9,6 +9,9 @@ var url = require('url');
 router.get('/', function (req, res, next) {
   fs.readdir('./uploads/ig', function (error, fd) {
 
+    if (!fd) {
+      return res.render('voice-mail', { title: 'Express', images: [] });
+    }
     // let links = fd.filter((x) => { if (/\.wav/.test()) return x }).map((x) => {return `/uploads/${x}`})
     var links = fd.filter(function (s) {
       if (/\.jpg/.test(s)) return s;
