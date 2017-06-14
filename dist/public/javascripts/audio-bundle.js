@@ -184,12 +184,13 @@ WebVoiceMail.prototype.stop = function () {
   //   if (this.isLive) {
   try {
     // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
-    this.input.disconnect(0);
     this.mediaStream.stop();
+    this.input.disconnect(0);
+    this.filter.disconnect(0);
     cameraPreview.src = '';
     // cameraPreview.stop()
 
-    // this.startOffset = 0// += context.currentTime - this.startTime
+    this.startOffset = 0; // += context.currentTime - this.startTime
     console.log('stopped at', context.currentTime);
   } catch (e) {}
 
@@ -341,7 +342,6 @@ VisualizerSample.prototype.stop = function () {
     this.startOffset += context.currentTime - this.startTime;
     console.log('paused at', this.startOffset);
   } catch (e) {}
-
   //   }
   this.startOffset = 0;
   this.isPlaying = false;
@@ -360,7 +360,7 @@ VisualizerSample.prototype.onEnded = function () {
 };
 
 VisualizerSample.prototype.draw = function () {
-  this.analyser.smoothingTimeConstant = SMOOTHING;
+  this.analyser.smoothingTimeConstant = 0.8;
   this.analyser.fftSize = FFT_SIZE / 4;
 
   // Get the frequency data from the currently live stream
@@ -437,6 +437,7 @@ var sample;
 var liveSample;
 
 function initAudio() {
+  startRecording.disabled = false;
   stopRecording.disabled = true;
   playButton.disabled = true;
   deleteButton.disabled = true;
@@ -446,53 +447,40 @@ function initAudio() {
   }
 
   navigator.getUserMedia({
-    audio: true
-    // video: true
+    audio: true,
+    video: false
   }, function (stream) {
     mediaStream = stream;
-    liveSample = new WebVoiceMail({ type: 'live-audio', source: mediaStream, canvas: liveAudioCanvas });
+    liveSample = new WebVoiceMail({ type: 'live-audio', source: stream, canvas: liveAudioCanvas });
     liveSample.draw();
-
-    //     // var videoOnlyStream = new MediaStream()
-    //     // stream.getVideoTracks().forEach(function (track) {
-    //     //   videoOnlyStream.addTrack(track)
-    //     // })
-    //     // recordVideo = RecordRTC(videoOnlyStream, {
-    //     //   type: 'video',
-    //     //   recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
-    //     // })
-    //     recordAudio.startRecording()
-    //
   }, function (error) {
     alert(JSON.stringify(error));
   });
-
   cameraPreview.onEnded = function () {
     alert('done');
   };
 }
 
 startRecording.onclick = function () {
-  initAudio();
+  // initAudio()
   startRecording.disabled = true;
   playButton.disabled = true;
   deleteButton.disabled = true;
-  if (!recordAudio) {
+  // if (!recordAudio) {
 
-    recordAudio = RecordRTC(mediaStream, {
-      type: 'audio',
-      recorderType: StereoAudioRecorder,
-      onAudioProcessStarted: function onAudioProcessStarted() {
-        // recordVideo.startRecording()
-        cameraPreview.src = window.URL.createObjectURL(mediaStream);
-        cameraPreview.play();
-        cameraPreview.muted = true;
-        cameraPreview.controls = false;
-      }
-    });
-  }
+  recordAudio = RecordRTC(liveSample.mediaStream, {
+    type: 'audio',
+    recorderType: StereoAudioRecorder,
+    onAudioProcessStarted: function onAudioProcessStarted() {
+      // recordVideo.startRecording()
+      cameraPreview.src = window.URL.createObjectURL(mediaStream);
+      cameraPreview.play();
+      cameraPreview.muted = true;
+      cameraPreview.controls = false;
+    }
+  });
+  // }
 
-  stopRecording.disabled = false;
   recordAudio.startRecording();
   stopRecording.disabled = false;
 };
@@ -527,6 +515,9 @@ stopRecording.onclick = function () {
   // })
   // if firefox or if you want to record only audio
   // stop audio recorder
+
+  // cameraPreview.stop()
+  cameraPreview.poster = 'ajax-loader.gif';
   recordAudio.stopRecording(function () {
     // get audio data-URL
     recordAudio.getDataURL(function (audioDataURL) {
@@ -537,12 +528,11 @@ stopRecording.onclick = function () {
         }
       };
       socketio.emit('message', files);
-      if (mediaStream) mediaStream.stop();
+      // if (mediaStream)
+      //   mediaStream.stop()
+      liveSample.stop();
+      cameraPreview.src = '';
     });
-    // cameraPreview.stop()
-    cameraPreview.src = '';
-    cameraPreview.poster = 'ajax-loader.gif';
-    liveSample.disconnect();
   });
 };
 
@@ -552,7 +542,8 @@ playButton.onclick = function () {
 
 deleteButton.onclick = function () {
   // $('#start-recording').trigger('click')
-  sample.togglePlayback();
+  // sample.togglePlayback()
+  initAudio();
 };
 
 socketio.on('merged', function (fileName) {
