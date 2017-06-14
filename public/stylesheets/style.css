@@ -6,8 +6,8 @@ body {
   color: #ffffff;
   display: block; }
 
-a {
-  color: #00B7FF; }
+a, .btn-link {
+  color: #2196f3 !important; }
 
 .content {
   position: relative;
@@ -96,5 +96,16 @@ a {
   margin-right: 5px;
   vertical-align: -11px;
   background: url("../images/unavailable.png") no-repeat center; }
+
+.voice-message-container {
+  margin-bottom: 20px; }
+
+.voice-message-container .glyphicon {
+  color: #ff0080; }
+
+.voice-message-text {
+  height: 200px;
+  margin-bottom: 20px;
+  color: #ef5350; }
 
 /*# sourceMappingURL=style.css.map */

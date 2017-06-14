@@ -117,8 +117,8 @@ BufferLoader.prototype.load = function () {
  * limitations under the License.
  */
 
-var WIDTH = 720
-var HEIGHT = 360
+var WIDTH = 640
+var HEIGHT = 230
 
 // Interesting parameters to tweak!
 var SMOOTHING = 0.85
@@ -181,8 +181,11 @@ WebVoiceMail.prototype.stop = function () {
 //   if (this.isLive) {
   try {
     // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
-    this.source.disconnect(0)
+    this.input.disconnect(0)
     this.mediaStream.stop()
+    cameraPreview.src = ''
+    // cameraPreview.stop()
+
     // this.startOffset = 0// += context.currentTime - this.startTime
     console.log('stopped at', context.currentTime)
   } catch (e) {
@@ -194,7 +197,7 @@ WebVoiceMail.prototype.stop = function () {
 
 WebVoiceMail.prototype.disconnect = function () {
   this.stop()
-  this.source.disconnect(0)
+  this.input.disconnect(0)
   this.startOffset = 0
 }
 
@@ -277,6 +280,7 @@ $('#snap').click(function () {
   liveSample.captureCanvasImage()
 })
 function VisualizerSample (config, cb) {
+
   this.analyser = context.createAnalyser()
 
   this.analyser.connect(context.destination)
@@ -309,13 +313,14 @@ VisualizerSample.prototype.togglePlayback = function () {
 }
 
 VisualizerSample.prototype.play = function () {
-  $('#rerecord').prop('disabled', true)
+  // $('#rerecord').prop('disabled', true)
   this.stop()
 
   this.startTime = context.currentTime
   console.log('started at', this.startOffset)
   this.source = context.createBufferSource()
   // Connect graph
+  this.source.onEnded = this.onEnded
   this.source.connect(this.analyser)
   this.source.buffer = this.buffer
   this.source.loop = false
@@ -324,8 +329,7 @@ VisualizerSample.prototype.play = function () {
   // Start visualizer.
   this.isPlaying = true
 
-  this.source.onEnded = this.onEnded
-  requestAnimFrame(this.draw.bind(this))
+  // requestAnimationFrame(this.draw.bind(this))
 }
 
 VisualizerSample.prototype.stop = function () {
@@ -351,44 +355,53 @@ VisualizerSample.prototype.disconnect = function () {
 
 VisualizerSample.prototype.onEnded = function () {
   this.stop()
-  $('#rerecord').prop('disabled', false)
+  // $('#rerecord').prop('disabled', false)
+  alert('done')
 }
 
 VisualizerSample.prototype.draw = function () {
   this.analyser.smoothingTimeConstant = SMOOTHING
-  this.analyser.fftSize = FFT_SIZE
+  this.analyser.fftSize = FFT_SIZE / 4
 
-  // Get the frequency data from the currently playing music
+  // Get the frequency data from the currently live stream
   this.analyser.getByteFrequencyData(this.freqs)
   this.analyser.getByteTimeDomainData(this.times)
 
   var width = Math.floor(1 / this.freqs.length, 10)
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
+  // var canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d')
-  this.canvas.width = WIDTH
+
+  this.canvas.width = WIDTH * 1.5
   this.canvas.height = HEIGHT
   // Draw the frequency domain chart.
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i]
+    // value = this.getFrequencyValue(value);//[i]
     var percent = value / 256
     var height = HEIGHT * percent
     var offset = HEIGHT - height - 1
     var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-    drawContext.fillRect(i * barWidth, offset, barWidth, height)
+    drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
   }
 
-  // Draw the time domain chart.
-  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-    var value = this.times[i]
-    var percent = value / 256
-    var height = HEIGHT * percent
-    var offset = HEIGHT - height - 1
-    var barWidth = WIDTH / this.analyser.frequencyBinCount
-    drawContext.fillStyle = 'white'
-    drawContext.fillRect(i * barWidth, offset, 1, 2)
-  }
+  // // Draw the time domain chart.
+  // for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+  //   var value = this.times[i]
+  //   var percent = value / 256
+  //   var height = HEIGHT * percent
+  //   var offset = HEIGHT - height - 1
+  //   var barWidth = WIDTH / this.analyser.frequencyBinCount
+  //   drawContext.fillStyle = 'white'
+  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
+  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
+  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
+  //   //
+  // }
 
   if (this.isPlaying) {
     requestAnimationFrame(this.draw.bind(this))
@@ -410,20 +423,24 @@ var mediaStream = null
 socketio.on('connect', function () {
   startRecording.disabled = false
 })
-var startRecording = document.getElementById('start-recording')
-var stopRecording = document.getElementById('stop-recording')
+var startRecording = document.getElementById('record-btn')
+var stopRecording = document.getElementById('stop-recording-btn')
+var playButton = document.getElementById('play-btn')
+var deleteButton = document.getElementById('delete-btn')
 var cameraPreview = document.getElementById('camera-preview')
 var progressBar = document.querySelector('#progress-bar')
 var percentage = document.querySelector('#percentage')
 var liveAudioCanvas = document.querySelector('#live-audio-canvas')
-var playbackAudioCanvas = document.querySelector('#live-audio-canvas')
+var playbackAudioCanvas = document.querySelector('#playback-audio-canvas')
 var recordAudio
 var recordVideo
 var sample
 var liveSample
 
-startRecording.onclick = function () {
-  startRecording.disabled = true
+function initAudio () {
+  stopRecording.disabled = true
+  playButton.disabled = true
+  deleteButton.disabled = true
 
   if (sample) { sample.disconnect() }
 
@@ -432,35 +449,47 @@ startRecording.onclick = function () {
     // video: true
   }, function (stream) {
     mediaStream = stream
-
-    // recordAudio = RecordRTC(stream, {
-    //   type: 'audio',
-    //   recorderType: StereoAudioRecorder,
-    //   onAudioProcessStarted: function () {
     liveSample = new WebVoiceMail({type: 'live-audio', source: mediaStream, canvas: liveAudioCanvas})
     liveSample.draw()
-    // recordVideo.startRecording()
-    cameraPreview.src = window.URL.createObjectURL(stream)
-    cameraPreview.play()
-    cameraPreview.muted = true
-    cameraPreview.controls = false
-//                        cameraPreview.context
-//       }
-//     })
-    // var videoOnlyStream = new MediaStream()
-    // stream.getVideoTracks().forEach(function (track) {
-    //   videoOnlyStream.addTrack(track)
-    // })
-    // recordVideo = RecordRTC(videoOnlyStream, {
-    //   type: 'video',
-    //   recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
-    // })
-    recordAudio.startRecording()
 
-    stopRecording.disabled = false
+//     // var videoOnlyStream = new MediaStream()
+//     // stream.getVideoTracks().forEach(function (track) {
+//     //   videoOnlyStream.addTrack(track)
+//     // })
+//     // recordVideo = RecordRTC(videoOnlyStream, {
+//     //   type: 'video',
+//     //   recorderType: !!navigator.mozGetUserMedia ? MediaStreamRecorder : WhammyRecorder
+//     // })
+//     recordAudio.startRecording()
+//
   }, function (error) {
     alert(JSON.stringify(error))
   })
+}
+
+startRecording.onclick = function () {
+  initAudio()
+  startRecording.disabled = true
+  playButton.disabled = true
+  deleteButton.disabled = true
+  if (!recordAudio) {
+
+    recordAudio = RecordRTC(mediaStream, {
+      type: 'audio',
+      recorderType: StereoAudioRecorder,
+      onAudioProcessStarted: function () {
+        // recordVideo.startRecording()
+        cameraPreview.src = window.URL.createObjectURL(mediaStream)
+        cameraPreview.play()
+        cameraPreview.muted = true
+        cameraPreview.controls = false
+      }
+    })
+  }
+
+  stopRecording.disabled = false
+  recordAudio.startRecording()
+  stopRecording.disabled = false
 }
 stopRecording.onclick = function () {
   startRecording.disabled = false
@@ -503,28 +532,33 @@ stopRecording.onclick = function () {
         }
       }
       socketio.emit('message', files)
-      if (mediaStream) mediaStream.stop()
+      if (mediaStream)
+        mediaStream.stop()
     })
+    // cameraPreview.stop()
     cameraPreview.src = ''
     cameraPreview.poster = 'ajax-loader.gif'
+    liveSample.disconnect()
   })
 }
 
-$('#rerecord').click(function () {
+playButton.onclick = function () {
+  sample.togglePlayback()
+}
+
+deleteButton.onclick = function () {
   // $('#start-recording').trigger('click')
-  startRecording.click()
-})
+  sample.togglePlayback()
+}
+
 socketio.on('merged', function (fileName) {
   var href = (location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href)
   href = href + 'uploads/' + fileName
   console.log('got file ' + href)
-  sample = new VisualizerSample(href, function () {
-    sample.togglePlayback()
-// tes
-//     cameraPreview.src = href
-//     cameraPreview.play()
-//     cameraPreview.muted = false
-//     cameraPreview.controls = true
+  sample = new VisualizerSample({source: href, canvas: liveAudioCanvas}, function () {
+    startRecording.disabled = true
+    playButton.disabled = false
+    deleteButton.disabled = false
   })
 })
 

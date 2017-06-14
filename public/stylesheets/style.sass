@@ -2,7 +2,7 @@ $orange: #ef5350
 $pink: #ff0080
 $lght-purple: #9c27b0
 $dark-purple: #673ab7
-$blue: #03a9f4
+$blue: #2196f3
 $yellow: #ffeb3b
 
 body
@@ -13,8 +13,8 @@ body
   color: #ffffff
   display: block
 
-a
-  color: #00B7FF
+a, .btn-link
+  color: $blue !important
 
 .content
   position: relative
@@ -116,3 +116,14 @@ a
   margin-right: 5px
   vertical-align: -11px
   background: url("../images/unavailable.png") no-repeat center
+
+.voice-message-container
+  margin-bottom: 20px
+  
+.voice-message-container .glyphicon
+  color: $pink
+
+.voice-message-text
+  height: 200px
+  margin-bottom: 20px
+  color: $orange

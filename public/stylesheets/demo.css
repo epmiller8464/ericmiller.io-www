@@ -46,16 +46,15 @@ body {
 	to { transform: rotate(360deg); }
 }
 
-a {
-	text-decoration: none;
-	color: #f2f2f2;
-	outline: none;
-}
+/*a {*/
+	/*text-decoration: none;*/
+	/*outline: none;*/
+/*}*/
 
-a:hover,
-a:focus {
-	color: #e6629a;
-}
+/*a:hover,*/
+/*a:focus {*/
+	/*color: #e6629a;*/
+/*}*/
 
 .hidden {
 	position: absolute;

@@ -1,42 +1,59 @@
 {{#section 'head'}}
-    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/demo.css"/>
     <script src="/recordrtc/RecordRTC.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 {{/section}}
 <section class="container content">
-    <div class="">
-        <h1 class="voice-message">
-
+    <div class="voice-message-container">
+        <h1 class="voice-message-text">
         </h1>
-        <p>
-            <a class="btn btn-primary btn-lg" href="#" role="button">I am more likely to reply if you leave me a voice
-                mail on here!</a>
-        </p>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button id="unmute-btn" type="button" class="btn btn-link  btn-lg">
+                    <span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span> Unmute
+                </button>
+                <button id="unmute-btn" type="button" class="btn btn-link  btn-lg hide">
+                    <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span> Mute
+                </button>
+                <button id="replay-btn" type="button" class="btn btn-link btn-lg">
+                    <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Replay
+                </button>
+                <button id="show-record-btn" type="button" class="btn btn-link btn-lg">
+                    <span class="glyphicon glyphicon-record " aria-hidden="true"></span> Leave A Message
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="row">
+    <div id="record-container" class=" hide row">
         <div class="col-md-12">
-        <span class="input-group-lg step-1">
+        <span class="input-group-lg">
             <span class="input-lg">
                 <label>Enter a valid email</label>
                 <input class="form-control" type="email" name="email" placeholder="e.g. tom@gmail.com"
                        style="background: transparent;" inputmode=""/>
             </span>
         </span>
-            <canvas id="live-audio-canvas"></canvas>
-            <div class="btn-group" role="group" aria-label="...">
-                <button id="start-recording" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
-                </button>
-                <button id="stop-recording" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
-                </button>
-                <button id="playback" type="button" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete
-                </button>
+            <div class="audio-controls hide">
+                <canvas id="live-audio-canvas" class=""></canvas>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button id="record-btn" type="button" class="btn btn-link btn-lg">
+                        <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
+                    </button>
+                    <button id="stop-recording-btn" type="button" class="btn btn-link btn-lg">
+                        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
+                    </button>
+                    <button id="play-btn" type="button" class="btn btn-link btn-lg">
+                        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> Play
+                    </button>
+                    <button id="delete-btn" type="button" class="btn btn-link btn-lg">
+                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete
+                    </button>
+
+                </div>
             </div>
 
             <span>
+
                     <audio id="camera-preview" controls class="hide"
                            style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
                 <span style="display:none;">
@@ -51,8 +68,8 @@
 
             <span class="input-group-lg step-2">
         </span>
-            <button type="button" class="btn btn-link next pull-right">Next</button>
-            <button type="button" class="btn btn-link next pull-right" id="snap">Capture Image</button>
+            <button type="button" class="btn btn-link next pull-right hide">Next</button>
+            <!--<button type="button" class="btn btn-link pull-right" id="snap">Capture Image</button>-->
         </div>
         <img id="captured">
     </div>
@@ -196,40 +213,48 @@
         }
         $(document).ready(function () {
             showTypedVoiceMailMessage()
-//            $('[name=email]').keypress(function () {
-//                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
-//                    $('.btn.next').removeClass('hide')
+            $('[name=email]').keypress(function () {
+                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
+                    $('.btn.next').removeClass('hide')
+
+                } else {
+                    hideAudioControls()
+                }
+
+            })
+            $('[name=email]').focusout(function () {
+                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
+                    $('.btn.next').removeClass('hide')
 //                    incrementStep()
-//
-//                }
-//
-//            })
-//            $('[name=email]').focusout(function () {
-//                if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
-//                    $('.btn.next').removeClass('hide')
-//                    incrementStep()
-//                }
-//
-//            })
-//
-//            $('.next').click(function () {
-//                //1. hide the previous step
-//                //2. enable client side socket.io code
-//                console.log(stats)
-//                $('.step-' + stats.step).removeClass('hide')
-//                if ((stats.step - 1) > 0) {
-//                    $('.step-' + (stats.step - 1)).addClass('hide')
-//                }
-//            })
+                } else {
+                    hideAudioControls()
+                }
+
+            })
+
+            $('.next').click(function () {
+                //1. hide the previous step
+                //2. enable client side socket.io code
+                showAudioControls()
+            })
+
+            $('#show-record-btn').click(function () {
+                $('#record-container').toggleClass('hide')
+            })
+
         })
 
-        function incrementStep () {
-            stats.step++
+        function showAudioControls () {
+            $('.audio-controls').removeClass('hide')
+            initAudio()
+        }
+        function hideAudioControls () {
+            $('.audio-controls').addClass('hide')
         }
 
         function showTypedVoiceMailMessage () {
-            $('.voice-message').typed({
-                strings: ['Hello, you have reached the web voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible.Thanks bye'],
+            $('.voice-message-text').typed({
+                strings: ['Hello, you have reached the voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible. <br/> Thanks!'],
                 typeSpeed: 50,
                 html: true,
                 showCursor: false,
