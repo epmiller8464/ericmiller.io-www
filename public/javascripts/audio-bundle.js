@@ -329,7 +329,7 @@ VisualizerSample.prototype.play = function () {
   // Start visualizer.
   this.isPlaying = true
 
-  // requestAnimationFrame(this.draw.bind(this))
+  requestAnimationFrame(this.draw.bind(this))
 }
 
 VisualizerSample.prototype.stop = function () {
@@ -407,7 +407,6 @@ VisualizerSample.prototype.draw = function () {
     requestAnimationFrame(this.draw.bind(this))
   }
 }
-
 VisualizerSample.prototype.getFrequencyValue = function (freq) {
   var nyquist = context.sampleRate / 2
   var index = Math.round(freq / nyquist * this.freqs.length)
@@ -465,6 +464,11 @@ function initAudio () {
   }, function (error) {
     alert(JSON.stringify(error))
   })
+
+
+  cameraPreview.onEnded = function () {alert('done')}
+
+
 }
 
 startRecording.onclick = function () {
