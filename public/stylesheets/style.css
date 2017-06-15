@@ -15,6 +15,9 @@ a, .btn-link {
   padding: 150px 50px;
   color: #ff0080; }
 
+.container.content {
+  padding: 100px 50px; }
+
 #particles-js {
   position: absolute;
   z-index: -1;
@@ -97,15 +100,42 @@ a, .btn-link {
   vertical-align: -11px;
   background: url("../images/unavailable.png") no-repeat center; }
 
-.voice-message-container {
-  margin-bottom: 20px; }
-
 .voice-message-container .glyphicon {
   color: #ff0080; }
 
+.voice-message-container .btn-link {
+  color: #82888a !important; }
+
 .voice-message-text {
   height: 200px;
-  margin-bottom: 20px;
-  color: #ef5350; }
+  color: #ffffff; }
+
+.glyphicon-record {
+  color: #ff0080; }
+
+.fs-1x25 {
+  font-size: 1.25em; }
+
+.fs-1x5 {
+  font-size: 1.5em; }
+
+.fs-1x75 {
+  font-size: 1.75em; }
+
+.fs-2x {
+  font-size: 2em; }
+
+.fs-3x {
+  font-size: 3em; }
+
+.form-control:-webkit-autofill {
+  background-color: #000000 !important;
+  border: 1px solid #ffeb3b; }
+
+label.status.on {
+  color: #00ff48; }
+
+label.status.recording {
+  color: #ff0080; }
 
 /*# sourceMappingURL=style.css.map */

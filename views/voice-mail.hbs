@@ -5,37 +5,49 @@
 {{/section}}
 <section class="container content">
     <div class="voice-message-container">
-        <h1 class="voice-message-text">
-        </h1>
         <div class="row">
-            <div class="col-md-12 text-center">
-                <button id="unmute-btn" type="button" class="btn btn-link  btn-lg">
+            <div class="col-md-12">
+                <h1 class="voice-message-text">
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <span class="pull-right ">
+                <button id="unmute-btn" type="button" class="btn btn-link">
                     <span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span> Unmute
                 </button>
-                <button id="unmute-btn" type="button" class="btn btn-link  btn-lg hide">
-                    <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span> Mute
-                </button>
-                <button id="replay-btn" type="button" class="btn btn-link btn-lg">
+                <button id="replay-btn" type="button" class="btn btn-link">
                     <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Replay
                 </button>
-                <button id="show-record-btn" type="button" class="btn btn-link btn-lg">
-                    <span class="glyphicon glyphicon-record " aria-hidden="true"></span> Leave A Message
-                </button>
+                </span>
             </div>
         </div>
     </div>
-    <div id="record-container" class=" hide row">
-        <div class="col-md-12">
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button id="show-record-btn" type="button" class="btn btn-link btn-lg fs-2x ">
+                <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record Me A Message
+            </button>
+        </div>
+        <div id="record-container" class="col-md-12 hide">
         <span class="input-group-lg">
             <span class="input-lg">
                 <label>Enter a valid email</label>
-                <input class="form-control" type="email" name="email" placeholder="e.g. tom@gmail.com"
-                       style="background: transparent;" inputmode=""/>
+                <input class="form-control" type="email" autocomplete="off" name="email"
+                       placeholder="e.g. tom@gmail.com" style="background: transparent;"/>
             </span>
         </span>
             <div class="audio-controls hide">
-                <canvas id="live-audio-canvas" class=""></canvas>
-                <div class="btn-group" role="group" aria-label="...">
+                <div class="col-md-12">
+                    <canvas id="live-audio-canvas" class=""></canvas>
+                    <img id="snapshot">
+                    <label class="status on">The mic is hot.....</label>
+                    <label class="time-remaining pull-right"></label>
+
+                </div>
+                <div class="text-center" role="group" aria-label="...">
                     <button id="record-btn" type="button" class="btn btn-link btn-lg">
                         <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
                     </button>
@@ -45,19 +57,17 @@
                     <button id="play-btn" type="button" class="btn btn-link btn-lg">
                         <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> Play
                     </button>
-                    <button id="delete-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Delete
+                    <button id="save-upload-btn" type="button" class="btn btn-link btn-lg">
+                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Upload Recording
                     </button>
 
                 </div>
             </div>
-
             <span>
-
                     <audio id="camera-preview" controls class="hide"
                            style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
                 <span style="display:none;">
-                    <label id="percentage">Ffmpeg Progress 0%</label>
+
                     <progress id="progress-bar" value="0" max="100"></progress>
                     <br/>
                     </span>
@@ -68,10 +78,9 @@
 
             <span class="input-group-lg step-2">
         </span>
-            <button type="button" class="btn btn-link next pull-right hide">Next</button>
+            <button type="button" class="btn btn-link next pull-right ">Next</button>
             <!--<button type="button" class="btn btn-link pull-right" id="snap">Capture Image</button>-->
         </div>
-        <img id="captured">
     </div>
 </section>
 <main class="hide">
@@ -255,12 +264,12 @@
         function showTypedVoiceMailMessage () {
             $('.voice-message-text').typed({
                 strings: ['Hello, you have reached the voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible. <br/> Thanks!'],
-                typeSpeed: 50,
+                typeSpeed: 0,
                 html: true,
                 showCursor: false,
                 startDelay: 0,
                 callback: function () {
-
+                    $('#show-record-btn').toggleClass('hide')
                 }
             })
         }

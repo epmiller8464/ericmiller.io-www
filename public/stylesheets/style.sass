@@ -4,7 +4,7 @@ $lght-purple: #9c27b0
 $dark-purple: #673ab7
 $blue: #2196f3
 $yellow: #ffeb3b
-
+$grey: #82888a
 body
   padding: 0px
   font: 14px Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
@@ -21,6 +21,9 @@ a, .btn-link
   z-index: 0
   padding: 150px 50px
   color: #ff0080
+
+.container.content
+  padding: 100px 50px
 
 #particles-js
   position: absolute
@@ -118,12 +121,42 @@ a, .btn-link
   background: url("../images/unavailable.png") no-repeat center
 
 .voice-message-container
-  margin-bottom: 20px
-  
+//margin-bottom: 20px
+
 .voice-message-container .glyphicon
   color: $pink
 
+.voice-message-container .btn-link
+  color: $grey !important
+
 .voice-message-text
   height: 200px
-  margin-bottom: 20px
-  color: $orange
+  color: #ffffff
+
+.glyphicon-record
+  color: $pink
+
+.fs-1x25
+  font-size: 1.25em
+
+.fs-1x5
+  font-size: 1.5em
+
+.fs-1x75
+  font-size: 1.75em
+
+.fs-2x
+  font-size: 2em
+
+.fs-3x
+  font-size: 3em
+
+.form-control:-webkit-autofill
+  background-color: #000000 !important
+  border: 1px solid $yellow
+
+
+label.status.on
+  color: #00ff48
+label.status.recording
+  color: $pink
