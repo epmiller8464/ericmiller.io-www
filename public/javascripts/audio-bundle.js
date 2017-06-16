@@ -284,10 +284,11 @@ WebVoiceMail.prototype.sample = function (freq) {
 WebVoiceMail.prototype.onError = function onStreamError (e) {
   console.error(e)
 }
-
+var image
 WebVoiceMail.prototype.captureCanvasImage = function () {
   // this.canvas
-  $('#snapshot').prop('src', this.canvas.toDataURL('image/png'))
+  image = this.canvas.toDataURL('image/png')
+  $('#snapshot').prop('src', image)
 }
 
 function VisualizerSample (config, cb) {
@@ -509,8 +510,8 @@ var duration = 45
 var imageCaptured = false
 function showProgress () {
   $('.time-remaining').text(duration + ' seconds')
-  if(duration < (45 / 2) && !imageCaptured){
-    liveSample.captureCanvasImage();
+  if (duration < (45 / 2) && !imageCaptured) {
+    liveSample.captureCanvasImage()
     imageCaptured = true
   }
   duration--
@@ -557,7 +558,9 @@ stopRecording.onclick = function () {
       var files = {
         audio: {
           type: recordAudio.getBlob().type || 'audio/wav',
-          dataURL: audioDataURL
+          dataURL: audioDataURL,
+          image: image,
+          email: 'epmiller8464@gmail.com'
         }
       }
       socketio.emit('message', files)

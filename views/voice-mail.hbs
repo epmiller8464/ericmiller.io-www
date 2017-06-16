@@ -83,7 +83,7 @@
         </div>
     </div>
 </section>
-<main class="hide">
+<main class="">
     <div class="content content--side">
         <div class="control control--grids">
             <span class="control__title">Stuff</span>
@@ -110,80 +110,75 @@
         </div>
     </div>
     <div class="content content--center">
+        <div class="row">
+            <div class="col-md-12">
+                {{#each images}}
+                    <div class="grid__item">
+                        <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">
+                            <audio src="{{this.audio_path}}" controls
+                                   style="background-color: transparent;display:none;"></audio>
+                            <img class="grid__img" src="{{this.image}}" alt="Some image"/>
+                        </button>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
         <div class="grid grid--type-c">
             <div class="grid__sizer"></div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/1.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link pater" href="http://synd.co/2oQTgFH">
-                    <div class="pater__img"></div>
-                    <div class="pater__content">
-                        <h2 class="pater__title" aria-label="fullstory">See Every Click, Swipe, <br> and Scroll</h2>
-                        <p class="pater__desc">See how users experience your designs with FullStory.</p>
-                        <span class="pater__call">Get it free today!</span>
-                    </div>
-                </a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/3.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/5.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/11.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>
-            </div>
-                <!--{{#each images}}-->
+
+
             <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="{{this}}" alt="Some image"/></a>-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/3.jpg" alt="Some image"/></a>-->
             <!--</div>-->
-                <!--{{/each}}-->
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/9.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/1.jpg" alt="Some image"/></a>
-            </div>
-            <div class="grid__item">
-                <a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>
-            </div>
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/5.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/11.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/9.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/1.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
+            <!--<div class="grid__item">-->
+            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>-->
+            <!--</div>-->
         </div>
         <!--<div class="grid grid--type-c">-->
         <!--<div class="grid__sizer"></div>-->
@@ -221,6 +216,10 @@
             step: 1
         }
         $(document).ready(function () {
+
+            $('button[data-audio-url]').click(function () {
+                $(this).children('audio')[0].play()
+            })
             showTypedVoiceMailMessage()
             $('[name=email]').keypress(function () {
                 if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
@@ -269,7 +268,7 @@
                 showCursor: false,
                 startDelay: 0,
                 callback: function () {
-                    $('#show-record-btn').toggleClass('hide')
+                    $('#show-record-btn').removeClass('hide')
                 }
             })
         }

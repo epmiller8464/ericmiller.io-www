@@ -285,10 +285,11 @@ WebVoiceMail.prototype.sample = function (freq) {
 WebVoiceMail.prototype.onError = function onStreamError(e) {
   console.error(e);
 };
-
+var image;
 WebVoiceMail.prototype.captureCanvasImage = function () {
   // this.canvas
-  $('#snapshot').prop('src', this.canvas.toDataURL('image/png'));
+  image = this.canvas.toDataURL('image/png');
+  $('#snapshot').prop('src', image);
 };
 
 function VisualizerSample(config, cb) {
@@ -559,7 +560,9 @@ stopRecording.onclick = function () {
       var files = {
         audio: {
           type: recordAudio.getBlob().type || 'audio/wav',
-          dataURL: audioDataURL
+          dataURL: audioDataURL,
+          image: image,
+          email: 'epmiller8464@gmail.com'
         }
       };
       socketio.emit('message', files);

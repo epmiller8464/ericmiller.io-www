@@ -3,15 +3,19 @@
 var uuid = require('uuid');
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
-var FFmpeg = require('fluent-ffmpeg');
+var moment = require('moment');
+// const exec = require('child_process').exec
+// const FFmpeg = require('fluent-ffmpeg')
+
+var _require = require('./level')('vm', { valueEncoding: 'json' }),
+    level = _require.level;
 
 function server(app) {
 
   // var io = require('socket.io').listen(app)
   var opts = {
     transports: ['polling', 'websocket', 'xhr-polling', 'jsonp-polling'],
-    log: false,
+    log: true,
     origins: '*:*'
   }; // 'disconnect' EVENT will work only with 'websocket
   var io = require('socket.io')(app, opts);
@@ -21,8 +25,15 @@ function server(app) {
 
       socket.emit('ffmpeg-output', 0);
       // console.log(data)
-      writeToDisk(data.audio.dataURL, fileName + '.wav');
-      socket.emit('merged', fileName + '.wav');
+      console.log('my nigga we have the image %s', data.audio.image);
+      writeToDisk(data.audio, fileName + '.wav', function (error, result) {
+
+        if (error) {
+          socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message);
+          return;
+        }
+        socket.emit('merged', fileName + '.wav');
+      });
     });
   });
 
@@ -30,12 +41,12 @@ function server(app) {
   // app.listen(8888);
   var set = new Set();
 
-  function writeToDisk(dataURL, fileName) {
-    var fileExtension = fileName.split('.').pop(),
-        fileRootNameWithBase = './uploads/' + fileName,
-        filePath = fileRootNameWithBase,
-        fileID = 2,
-        fileBuffer;
+  function writeToDisk(audio, fileName, cb) {
+    var dataURL = audio.dataURL;
+    var fileExtension = fileName.split('.').pop();
+    var fileRootNameWithBase = './uploads/' + fileName;
+    var filePath = fileRootNameWithBase;
+    var fileID = 2;
 
     // @todo return the new filename to client
     while (fs.existsSync(filePath)) {
@@ -46,9 +57,15 @@ function server(app) {
     dataURL = dataURL.split(',').pop();
     // fileBuffer = new Buffer(dataURL, 'base64')
     // fs.writeFileSync(filePath, fileBuffer)
-    var ws = fs.createWriteStream(filePath, 'base64').write(new Buffer(dataURL, 'base64'));
-    // ws.end()
+    var ws = fs.createWriteStream(filePath, 'base64').write(Buffer.from(dataURL, 'base64'));
     console.log('filePath', filePath);
+    var key = buildKeyName(audio.email);
+    console.log('key: ' + key + ' path: ' + filePath);
+    level.put(key, { image: audio.image, audio_path: filePath }, cb);
+  }
+
+  function buildKeyName(email) {
+    return email + '.' + moment().valueOf();
   }
 
   // function merge (socket, fileName) {
