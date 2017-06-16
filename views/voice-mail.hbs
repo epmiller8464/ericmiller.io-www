@@ -83,7 +83,21 @@
         </div>
     </div>
 </section>
-<main class="">
+<div class="row">
+    <div class="col-md-12">
+        {{#each images}}
+            <div class="grid__item">
+                <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">
+                    <audio src="{{this.audio_path}}" controls
+                           style="background-color: transparent;display:none;"></audio>
+                    <img class="grid__img" src="{{this.image}}" alt="Some image"/>
+                </button>
+            </div>
+        {{/each}}
+    </div>
+</div>
+
+<main class="hide">
     <div class="content content--side">
         <div class="control control--grids">
             <span class="control__title">Stuff</span>
@@ -109,20 +123,9 @@
             <button class="control__btn" data-fx="Shu">Shu</button>
         </div>
     </div>
+
     <div class="content content--center">
-        <div class="row">
-            <div class="col-md-12">
-                {{#each images}}
-                    <div class="grid__item">
-                        <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">
-                            <audio src="{{this.audio_path}}" controls
-                                   style="background-color: transparent;display:none;"></audio>
-                            <img class="grid__img" src="{{this.image}}" alt="Some image"/>
-                        </button>
-                    </div>
-                {{/each}}
-            </div>
-        </div>
+
         <div class="grid grid--type-c">
             <div class="grid__sizer"></div>
 
@@ -210,6 +213,7 @@
     <script src="/javascripts/masonry.pkgd.min.js"></script>
     <script src="/javascripts/anime.min.js"></script>
     <script src="/javascripts/main.js"></script>
+    <script src="/javascripts/audio-bundle.js"></script>
 
     <script>
         var stats = {
@@ -274,7 +278,6 @@
         }
 
     </script>
-    <script src="/javascripts/audio-bundle.js"></script>
 
 
 {{/section}}

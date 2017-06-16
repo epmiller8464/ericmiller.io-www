@@ -20,44 +20,25 @@ window.requestAnimFrame = function () {
   };
 }();
 
-function bytesToSize(bytes) {
-  var k = 1000;
-  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) {
-    return '0 Bytes';
-  }
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
-  return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-}
-
-function playSound(buffer, time) {
-  var source = context.createBufferSource();
-  source.buffer = buffer;
-  source.connect(context.destination);
-  source[source.start ? 'start' : 'noteOn'](time);
-}
-
-function loadSounds(obj, soundMap, callback) {
-  // Array-ify
-  var names = [];
-  var paths = [];
-  for (var name in soundMap) {
-    var path = soundMap[name];
-    names.push(name);
-    paths.push(path);
-  }
-  bufferLoader = new BufferLoader(context, paths, function (bufferList) {
-    for (var i = 0; i < bufferList.length; i++) {
-      var buffer = bufferList[i];
-      var name = names[i];
-      obj[name] = buffer;
-    }
-    if (callback) {
-      callback();
-    }
-  });
-  bufferLoader.load();
-}
+var socketio = io();
+var mediaStream = null;
+socketio.on('connect', function () {
+  startRecording.disabled = false;
+});
+var currentTime = 0;
+var startRecording = document.getElementById('record-btn');
+var stopRecording = document.getElementById('stop-recording-btn');
+var playButton = document.getElementById('play-btn');
+var uploadRecordingButton = document.getElementById('save-upload-btn');
+var cameraPreview = document.getElementById('camera-preview');
+var progressBar = document.querySelector('#progress-bar');
+var percentage = document.querySelector('#percentage');
+var liveAudioCanvas = document.querySelector('#live-audio-canvas');
+var playbackAudioCanvas = document.querySelector('#playback-audio-canvas');
+var recordAudio = void 0;
+var recordVideo = void 0;
+var sample = void 0;
+var liveSample = void 0;
 
 function BufferLoader(context, urlList, callback) {
   this.context = context;
@@ -104,6 +85,45 @@ BufferLoader.prototype.load = function () {
   }
 };
 
+function bytesToSize(bytes) {
+  var k = 1000;
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
+  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+  return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
+
+function playSound(buffer, time) {
+  var source = context.createBufferSource();
+  source.buffer = buffer;
+  source.connect(context.destination);
+  source[source.start ? 'start' : 'noteOn'](time);
+}
+
+function loadSounds(obj, soundMap, callback) {
+  // Array-ify
+  var names = [];
+  var paths = [];
+  for (var name in soundMap) {
+    var path = soundMap[name];
+    names.push(name);
+    paths.push(path);
+  }
+  var bufferLoader = new BufferLoader(context, paths, function (bufferList) {
+    for (var i = 0; i < bufferList.length; i++) {
+      var buffer = bufferList[i];
+      var _name = names[i];
+      obj[_name] = buffer;
+    }
+    if (callback) {
+      callback();
+    }
+  });
+  bufferLoader.load();
+}
+
 /*
  * Copyright 2013 Boris Smus. All Rights Reserved.
 
@@ -119,7 +139,7 @@ BufferLoader.prototype.load = function () {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var clearInterval;
+var clearInterval = void 0;
 var MAXRECORDTIME = 45000;
 
 var WIDTH = 640;
@@ -127,12 +147,11 @@ var HEIGHT = 230;
 
 // Interesting parameters to tweak!
 var SMOOTHING = 0.85;
-// var FFT_SIZE = 2048 << 0x01
+// let FFT_SIZE = 2048 << 0x01
 var FFT_SIZE = 1024;
-// var FFT_SIZE = 2048 / 2
+// let FFT_SIZE = 2048 / 2
 
 function WebVoiceMail(config, cb) {
-
   this.mediaStream = config.source;
   this.input = context.createMediaStreamSource(this.mediaStream);
   // Connect the input to a filter.
@@ -223,9 +242,9 @@ WebVoiceMail.prototype.draw = function () {
   this.analyser.getByteTimeDomainData(this.times);
 
   var width = Math.floor(1 / this.freqs.length, 10);
-  // var width = Math.floor(1 / this.freqs.length, 10)
+  // let width = Math.floor(1 / this.freqs.length, 10)
 
-  // var canvas = document.querySelector('canvas')
+  // let canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d');
 
   this.canvas.width = WIDTH * 1.5;
@@ -238,19 +257,19 @@ WebVoiceMail.prototype.draw = function () {
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
     var barWidth = WIDTH / this.analyser.frequencyBinCount;
-    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
     drawContext.fillRect(i * barWidth * 1.5, offset * 0.5, 2, height + 0.25);
   }
 
   // // Draw the time domain chart.
-  // for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   var value = this.times[i]
-  //   var percent = value / 256
-  //   var height = HEIGHT * percent
-  //   var offset = HEIGHT - height - 1
-  //   var barWidth = WIDTH / this.analyser.frequencyBinCount
+  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
+  //   let value = this.times[i]
+  //   let percent = value / 256
+  //   let height = HEIGHT * percent
+  //   let offset = HEIGHT - height - 1
+  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
   //   drawContext.fillStyle = 'white'
   //   drawContext.fillRect(i * barWidth, offset, 1, 2)
   //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
@@ -270,7 +289,6 @@ WebVoiceMail.prototype.getFrequencyValue = function (freq) {
 };
 
 VisualizerSample.prototype.monitorTime = function () {
-
   console.log('context time: %s, buffer duration', context.currentTime, this.buffer.duration);
 
   requestAnimationFrame(this.time.bind(this));
@@ -285,7 +303,7 @@ WebVoiceMail.prototype.sample = function (freq) {
 WebVoiceMail.prototype.onError = function onStreamError(e) {
   console.error(e);
 };
-var image;
+var image = void 0;
 WebVoiceMail.prototype.captureCanvasImage = function () {
   // this.canvas
   image = this.canvas.toDataURL('image/png');
@@ -293,7 +311,6 @@ WebVoiceMail.prototype.captureCanvasImage = function () {
 };
 
 function VisualizerSample(config, cb) {
-
   this.analyser = context.createAnalyser();
 
   this.analyser.connect(context.destination);
@@ -306,7 +323,7 @@ function VisualizerSample(config, cb) {
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
 
   function onLoaded() {
-    // var button = document.querySelector('button')
+    // let button = document.querySelector('button')
     // button.removeAttribute('disabled')
     $('#playback-click').text('Play/pause');
     $('#playback-click').prop('disabled', false);
@@ -386,9 +403,9 @@ VisualizerSample.prototype.draw = function () {
   this.analyser.getByteTimeDomainData(this.times);
 
   var width = Math.floor(1 / this.freqs.length, 10);
-  // var width = Math.floor(1 / this.freqs.length, 10)
+  // let width = Math.floor(1 / this.freqs.length, 10)
 
-  // var canvas = document.querySelector('canvas')
+  // let canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d');
 
   this.canvas.width = WIDTH * 1.5;
@@ -401,19 +418,19 @@ VisualizerSample.prototype.draw = function () {
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
     var barWidth = WIDTH / this.analyser.frequencyBinCount;
-    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
     drawContext.fillRect(i * barWidth * 1.5, offset * 0.5, 2, height + 0.25);
   }
 
   // // Draw the time domain chart.
-  // for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   var value = this.times[i]
-  //   var percent = value / 256
-  //   var height = HEIGHT * percent
-  //   var offset = HEIGHT - height - 1
-  //   var barWidth = WIDTH / this.analyser.frequencyBinCount
+  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
+  //   let value = this.times[i]
+  //   let percent = value / 256
+  //   let height = HEIGHT * percent
+  //   let offset = HEIGHT - height - 1
+  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
   //   drawContext.fillStyle = 'white'
   //   drawContext.fillRect(i * barWidth, offset, 1, 2)
   //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
@@ -434,27 +451,6 @@ VisualizerSample.prototype.getFrequencyValue = function (freq) {
 if (false /* for Microsoft Edge */) {
     //            cameraPreview.parentNode.innerHTML = '<audio id="camera-preview" controls style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio> '
   }
-
-var socketio = io();
-var mediaStream = null;
-socketio.on('connect', function () {
-  startRecording.disabled = false;
-});
-var currentTime = 0;
-
-var startRecording = document.getElementById('record-btn');
-var stopRecording = document.getElementById('stop-recording-btn');
-var playButton = document.getElementById('play-btn');
-var uploadRecordingButton = document.getElementById('save-upload-btn');
-var cameraPreview = document.getElementById('camera-preview');
-var progressBar = document.querySelector('#progress-bar');
-var percentage = document.querySelector('#percentage');
-var liveAudioCanvas = document.querySelector('#live-audio-canvas');
-var playbackAudioCanvas = document.querySelector('#playback-audio-canvas');
-var recordAudio;
-var recordVideo;
-var sample;
-var liveSample;
 
 function initAudio() {
   startRecording.disabled = false;
@@ -531,7 +527,7 @@ stopRecording.onclick = function () {
   //     recordAudio.getDataURL(function (audioDataURL) {
   //       // get video data-URL
   //       recordVideo.getDataURL(function (videoDataURL) {
-  //         var files = {
+  //         let files = {
   //           audio: {
   //             type: recordAudio.getBlob().type || 'audio/wav',
   //             dataURL: audioDataURL
