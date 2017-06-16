@@ -138,4 +138,8 @@ label.status.on {
 label.status.recording {
   color: #ff0080; }
 
+.thumbnail.audio-control {
+  background-color: transparent !important;
+  border: 1px solid #82888a; }
+
 /*# sourceMappingURL=style.css.map */

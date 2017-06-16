@@ -24,7 +24,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-12 text-center">
             <button id="show-record-btn" type="button" class="btn btn-link btn-lg fs-2x ">
@@ -82,20 +81,27 @@
             <!--<button type="button" class="btn btn-link pull-right" id="snap">Capture Image</button>-->
         </div>
     </div>
-</section>
-<div class="row">
-    <div class="col-md-12">
+    <div class="row">
+        <h2 class="text-center">Previous Recordings</h2>
         {{#each images}}
-            <div class="grid__item">
-                <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">
-                    <audio src="{{this.audio_path}}" controls
+            <div class="col-md-3">
+
+                <div class="thumbnail audio-control">
+                    <audio src="{{this.audio_path}}" controls preload="metadata"
                            style="background-color: transparent;display:none;"></audio>
-                    <img class="grid__img" src="{{this.image}}" alt="Some image"/>
-                </button>
+                    <img src="{{this.image}}" alt="Some image"/>
+                    <div class="caption">
+                        <h6>{{this.key}}</h6>
+                        <p>
+                            <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">Listen
+                            </button>
+                        </p>
+                    </div>
+                </div>
             </div>
         {{/each}}
     </div>
-</div>
+</section>
 
 <main class="hide">
     <div class="content content--side">
@@ -222,7 +228,10 @@
         $(document).ready(function () {
 
             $('button[data-audio-url]').click(function () {
-                $(this).children('audio')[0].play()
+//                $(this).parent('audio')[0].play()
+                $('.audio-control audio').each(function (a, b) {b.pause()})
+                $(this).parents('.audio-control').children('audio')[0].play()
+                $(this).parents('.audio-control').children('audio')[0].volume = (0.1)
             })
             showTypedVoiceMailMessage()
             $('[name=email]').keypress(function () {

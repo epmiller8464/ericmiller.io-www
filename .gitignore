@@ -4,3 +4,5 @@ node_modules
 *.webm
 *.sh
 ig
+vm
+*.db
