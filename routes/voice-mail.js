@@ -10,11 +10,11 @@ router.get('/', function (req, res, next) {
   let links = []
   level.createReadStream({keys: true, values: true})
   .on('data', function (data) {
-    console.log('value=', data)
+    // console.log('value=', data)
     let value = JSON.parse(data.value)
     links.push({key: data.key, image: value.image, audio_path: value.audio_path})
   }).on('end', (err) => {
-    console.log(links)
+    // console.log(links)
     // let links = fd.map((x) => {return `/uploads/${x}`})
     res.render('voice-mail', {title: 'Express', images: links})
     // fs.readdir('./uploads/ig', (error, fd) => {

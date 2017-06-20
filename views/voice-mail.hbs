@@ -83,17 +83,25 @@
     </div>
     <div class="row">
         <h2 class="text-center">Previous Recordings</h2>
+        <hr/>
         {{#each images}}
             <div class="col-md-3">
 
                 <div class="thumbnail audio-control">
-                    <audio src="{{this.audio_path}}" controls preload="metadata"
+                    <audio src="{{this.audio_path}}" controls preload="none"
                            style="background-color: transparent;display:none;"></audio>
                     <img src="{{this.image}}" alt="Some image"/>
                     <div class="caption">
                         <h6>{{this.key}}</h6>
                         <p>
-                            <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}">Listen
+                            <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}"
+                                    data-state="play">
+                                <span class="play">
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>&nbsp;Play
+                                </span>
+                                <span class="pause hide">
+                                <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>&nbsp;Pause
+                                </span>
                             </button>
                         </p>
                     </div>
@@ -227,12 +235,30 @@
         }
         $(document).ready(function () {
 
-            $('button[data-audio-url]').click(function () {
-//                $(this).parent('audio')[0].play()
+            function togglePlay (target) {
                 $('.audio-control audio').each(function (a, b) {b.pause()})
-                $(this).parents('.audio-control').children('audio')[0].play()
-                $(this).parents('.audio-control').children('audio')[0].volume = (0.1)
+                $(target).parents('.audio-control').children('audio')[0].play()
+                $(target).parents('.audio-control').children('audio')[0].volume = (0.1)
+//                $(target).data('state', 'playing')
+            }
+
+            $('button[data-audio-url]').click(function () {
+                togglePlay(this)
+                $('button[data-audio-url]').children('.pause').addClass('hide')
+                $('button[data-audio-url]').children('.play').removeClass('hide')
+
+                if ($(this).data('state') === 'play') {
+                    $(this).data('state', 'paused')
+                    $(this).children('.play').addClass('hide')
+                    $(this).children('.pause').removeClass('hide')
+                } else {
+                    $(this).data('state', 'play')
+                    $(this).children('.pause').addClass('hide')
+                    $(this).children('.play').removeClass('hide')
+                    $(this).parents('.audio-control').children('audio')[0].pause()
+                }
             })
+
             showTypedVoiceMailMessage()
             $('[name=email]').keypress(function () {
                 if (new RegExp(/.+\@.+\..+/).test($(this).val())) {

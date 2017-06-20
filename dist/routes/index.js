@@ -10,6 +10,7 @@ var url = require('url');
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
+
 router.use('/uploads', function (req, response, next) {
   var uri = url.parse(req.url).pathname,
       filename = path.join(process.cwd() + '/uploads', uri);
