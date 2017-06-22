@@ -61,7 +61,7 @@ function server(app) {
     console.log('filePath', filePath);
     var key = buildKeyName(audio.email);
     console.log('key: ' + key + ' path: ' + filePath);
-    level.put(key, { image: audio.image, audio_path: filePath }, cb);
+    level.put(key, { image: audio.image, audio_path: filePath, read: false, waveForm: audio.waveForm }, cb);
   }
 
   function buildKeyName(email) {

@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
   .on('data', function (data) {
     // console.log('value=', data)
     let value = JSON.parse(data.value)
-    links.push({key: data.key, image: value.image, audio_path: value.audio_path})
+    links.push({key: data.key, image: value.image, audio_path: value.audio_path, waveForm: value.waveForm})
   }).on('end', (err) => {
     // console.log(links)
     // let links = fd.map((x) => {return `/uploads/${x}`})
@@ -30,6 +30,11 @@ router.get('/', function (req, res, next) {
   })
 
   // res.render('voice-mail', {title: 'Express'})
+})
+
+router.post('/delete/:id', (req, res, next) => {
+
+  res.status(200).json({success: true})
 })
 
 function loadVoiceMessages () {

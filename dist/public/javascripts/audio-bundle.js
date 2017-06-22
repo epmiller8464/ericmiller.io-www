@@ -1,6 +1,5 @@
 'use strict';
 
-// Start off by initializing a new context.
 context = new (window.AudioContext || window.webkitAudioContext)();
 
 if (!context.createGain) {
@@ -35,10 +34,10 @@ var progressBar = document.querySelector('#progress-bar');
 var percentage = document.querySelector('#percentage');
 var liveAudioCanvas = document.querySelector('#live-audio-canvas');
 var playbackAudioCanvas = document.querySelector('#playback-audio-canvas');
-var recordAudio = void 0;
-var recordVideo = void 0;
-var sample = void 0;
-var liveSample = void 0;
+var recordAudio;
+var recordVideo;
+var sample;
+var liveSample;
 
 function BufferLoader(context, urlList, callback) {
   this.context = context;
@@ -114,8 +113,8 @@ function loadSounds(obj, soundMap, callback) {
   var bufferLoader = new BufferLoader(context, paths, function (bufferList) {
     for (var i = 0; i < bufferList.length; i++) {
       var buffer = bufferList[i];
-      var _name = names[i];
-      obj[_name] = buffer;
+      var name = names[i];
+      obj[name] = buffer;
     }
     if (callback) {
       callback();
@@ -139,7 +138,7 @@ function loadSounds(obj, soundMap, callback) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var clearInterval = void 0;
+var _clearInterval;
 var MAXRECORDTIME = 45000;
 
 var WIDTH = 640;
@@ -147,9 +146,9 @@ var HEIGHT = 230;
 
 // Interesting parameters to tweak!
 var SMOOTHING = 0.85;
-// let FFT_SIZE = 2048 << 0x01
+// var FFT_SIZE = 2048 << 0x01
 var FFT_SIZE = 1024;
-// let FFT_SIZE = 2048 / 2
+// var FFT_SIZE = 2048 / 2
 
 function WebVoiceMail(config, cb) {
   this.mediaStream = config.source;
@@ -167,11 +166,12 @@ function WebVoiceMail(config, cb) {
 
   this.freqs = new Uint8Array(this.analyser.frequencyBinCount);
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
-  this.sampleBuffer = new Uint8Array(this.analyser.frequencyBinCount);
+  this.sampleBuffer = new Uint8Array(46);
   this.isLive = true;
   this.startTime = 0;
   this.startOffset = 0;
   this.maxTime = 45000;
+  this.index = 0;
   this.canvas = config.canvas;
   return this;
 }
@@ -226,14 +226,14 @@ WebVoiceMail.prototype.disconnect = function () {
 };
 
 WebVoiceMail.prototype.onEnded = function () {
-  alert();
+  // alert()
   $('#stop-recording-btn').trigger('click');
   clearInterval(clearInterval);
   console.log('max record time reached...');
   console.log('the stream ended do something');
 };
-
-WebVoiceMail.prototype.draw = function () {
+var time = 0;
+WebVoiceMail.prototype.draw = function (timestamp) {
   this.analyser.smoothingTimeConstant = SMOOTHING;
   this.analyser.fftSize = FFT_SIZE / 4;
 
@@ -242,41 +242,47 @@ WebVoiceMail.prototype.draw = function () {
   this.analyser.getByteTimeDomainData(this.times);
 
   var width = Math.floor(1 / this.freqs.length, 10);
-  // let width = Math.floor(1 / this.freqs.length, 10)
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
-  // let canvas = document.querySelector('canvas')
+  // var canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d');
 
   this.canvas.width = WIDTH * 1.5;
   this.canvas.height = HEIGHT;
   // Draw the frequency domain chart.
+  var t = 0;
+
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i];
-    // value = this.getFrequencyValue(value);//[i]
     var percent = value / 256;
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
     var barWidth = WIDTH / this.analyser.frequencyBinCount;
-    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
     drawContext.fillRect(i * barWidth * 1.5, offset * 0.5, 2, height + 0.25);
+    t += value;
+  }
+  this.sampleBuffer[i] = this.getFrequencyValue(t / this.analyser.frequencyBinCount);
+  // this.index++
+  // Draw the time domain chart.
+  for (var i = 0; i < this.sampleBuffer.length; i++) {
+    var value = this.sampleBuffer[i] / 2;
+    var percent = value / 256;
+    var height = HEIGHT * percent;
+    var offset = HEIGHT - height - 1;
+    // var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // drawContext.fillStyle = 'rgba(233,233,233,0.5)'
+    var hue = i / this.sampleBuffer.length * 360;
+    drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+    drawContext.fillRect(i * (this.canvas.width / 45), HEIGHT - value, 4, this.sampleBuffer[i]);
+    // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
+    // drawContext.fillRect(i * barWidth, offset, barWidth, height)
+    //
   }
 
-  // // Draw the time domain chart.
-  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   let value = this.times[i]
-  //   let percent = value / 256
-  //   let height = HEIGHT * percent
-  //   let offset = HEIGHT - height - 1
-  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
-  //   drawContext.fillStyle = 'white'
-  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
-  //   //
-  // }
-
+  // this.sampleBuffer.push()
   if (this.isLive) {
     requestAnimationFrame(this.draw.bind(this));
   }
@@ -294,16 +300,35 @@ VisualizerSample.prototype.monitorTime = function () {
   requestAnimationFrame(this.time.bind(this));
 };
 
-WebVoiceMail.prototype.sample = function (freq) {
-  var sampleRate = context.sampleRate;
-  var index = Math.round(freq / sampleRate * this.freqs.length);
-  return this.freqs[index];
+WebVoiceMail.prototype.sample = function (time) {
+
+  var freqs = new Uint8Array(this.analyser.frequencyBinCount);
+  var times = new Uint8Array(this.analyser.frequencyBinCount);
+  var t = 0;
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = freqs[i];
+    // value = this.getFrequencyValue(value)//[i]
+    // var percent = value / 256
+    // var height = HEIGHT * percent
+    // var offset = HEIGHT - height - 1
+    // var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // var hue = i / this.analyser.frequencyBinCount * 360
+    // drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
+    // drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
+    t += value;
+  }
+  this.sampleBuffer[time] = this.getFrequencyValue(t / this.analyser.frequencyBinCount);
+  this.index++;
+  // var sampleRate = context.sampleRate
+  // var index = Math.round(freq / sampleRate * this.freqs.length)
+  // return this.freqs[index]
 };
 
 WebVoiceMail.prototype.onError = function onStreamError(e) {
   console.error(e);
 };
-var image = void 0;
+var image;
 WebVoiceMail.prototype.captureCanvasImage = function () {
   // this.canvas
   image = this.canvas.toDataURL('image/png');
@@ -323,7 +348,7 @@ function VisualizerSample(config, cb) {
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
 
   function onLoaded() {
-    // let button = document.querySelector('button')
+    // var button = document.querySelector('button')
     // button.removeAttribute('disabled')
     $('#playback-click').text('Play/pause');
     $('#playback-click').prop('disabled', false);
@@ -334,6 +359,7 @@ function VisualizerSample(config, cb) {
   this.isPlaying = false;
   this.startTime = 0;
   this.startOffset = 0;
+  this.index = 0;
   this.canvas = config.canvas;
 }
 
@@ -403,9 +429,9 @@ VisualizerSample.prototype.draw = function () {
   this.analyser.getByteTimeDomainData(this.times);
 
   var width = Math.floor(1 / this.freqs.length, 10);
-  // let width = Math.floor(1 / this.freqs.length, 10)
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
-  // let canvas = document.querySelector('canvas')
+  // var canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d');
 
   this.canvas.width = WIDTH * 1.5;
@@ -414,29 +440,16 @@ VisualizerSample.prototype.draw = function () {
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i];
     // value = this.getFrequencyValue(value);//[i]
+
     var percent = value / 256;
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
     var barWidth = WIDTH / this.analyser.frequencyBinCount;
-    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
     drawContext.fillRect(i * barWidth * 1.5, offset * 0.5, 2, height + 0.25);
   }
-
-  // // Draw the time domain chart.
-  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   let value = this.times[i]
-  //   let percent = value / 256
-  //   let height = HEIGHT * percent
-  //   let offset = HEIGHT - height - 1
-  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
-  //   drawContext.fillStyle = 'white'
-  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
-  //   //
-  // }
 
   // if (this.isPlaying) {
   requestAnimationFrame(this.draw.bind(this));
@@ -494,8 +507,8 @@ startRecording.onclick = function () {
       cameraPreview.play();
       cameraPreview.muted = true;
       cameraPreview.controls = false;
-      clearInterval = showProgress();
-      setInterval(showProgress, 1000);
+      showProgress();
+      // _clearInterval = setInterval(showProgress, 1000)
     }
   });
   // }
@@ -505,14 +518,32 @@ startRecording.onclick = function () {
   stopRecording.disabled = false;
 };
 var duration = 45;
+var start = null;
 var imageCaptured = false;
-function showProgress() {
-  $('.time-remaining').text(duration + ' seconds');
-  if (duration < 45 / 2 && !imageCaptured) {
+function showProgress(timestamp) {
+  if (!start) {
+    start = Date.now();
+    liveSample.sample(0);
+  }
+  // console.log()
+  var diff = Date.now() - start;
+  var current = Math.floor(diff) / 1000 >> 0;
+
+  if (current !== time) {
+    time = current;
+    console.log(time, timestamp);
+    $('.time-remaining').text(duration - time + ' seconds');
+    liveSample.sample(time);
+  }
+
+  if (time > duration / 2 && !imageCaptured) {
     liveSample.captureCanvasImage();
     imageCaptured = true;
   }
-  duration--;
+  // duration--
+  // time += timestamp
+
+  requestAnimationFrame(showProgress);
 }
 
 stopRecording.onclick = function () {
@@ -527,7 +558,7 @@ stopRecording.onclick = function () {
   //     recordAudio.getDataURL(function (audioDataURL) {
   //       // get video data-URL
   //       recordVideo.getDataURL(function (videoDataURL) {
-  //         let files = {
+  //         var files = {
   //           audio: {
   //             type: recordAudio.getBlob().type || 'audio/wav',
   //             dataURL: audioDataURL
@@ -558,7 +589,8 @@ stopRecording.onclick = function () {
           type: recordAudio.getBlob().type || 'audio/wav',
           dataURL: audioDataURL,
           image: image,
-          email: 'epmiller8464@gmail.com'
+          email: 'epmiller8464@gmail.com',
+          waveForm: liveSample.sampleBuffer
         }
       };
       socketio.emit('message', files);

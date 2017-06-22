@@ -1,5 +1,4 @@
-// Start off by initializing a new context.
- context = new (window.AudioContext || window.webkitAudioContext)()
+context = new (window.AudioContext || window.webkitAudioContext)()
 
 if (!context.createGain) { context.createGain = context.createGainNode }
 if (!context.createDelay) { context.createDelay = context.createDelayNode }
@@ -17,25 +16,25 @@ window.requestAnimFrame = (function () {
     }
 })()
 
-let socketio = io()
-let mediaStream = null
+var socketio = io()
+var mediaStream = null
 socketio.on('connect', function () {
   startRecording.disabled = false
 })
-let currentTime = 0
-let startRecording = document.getElementById('record-btn')
-let stopRecording = document.getElementById('stop-recording-btn')
-let playButton = document.getElementById('play-btn')
-let uploadRecordingButton = document.getElementById('save-upload-btn')
-let cameraPreview = document.getElementById('camera-preview')
-let progressBar = document.querySelector('#progress-bar')
-let percentage = document.querySelector('#percentage')
-let liveAudioCanvas = document.querySelector('#live-audio-canvas')
-let playbackAudioCanvas = document.querySelector('#playback-audio-canvas')
-let recordAudio
-let recordVideo
-let sample
-let liveSample
+var currentTime = 0
+var startRecording = document.getElementById('record-btn')
+var stopRecording = document.getElementById('stop-recording-btn')
+var playButton = document.getElementById('play-btn')
+var uploadRecordingButton = document.getElementById('save-upload-btn')
+var cameraPreview = document.getElementById('camera-preview')
+var progressBar = document.querySelector('#progress-bar')
+var percentage = document.querySelector('#percentage')
+var liveAudioCanvas = document.querySelector('#live-audio-canvas')
+var playbackAudioCanvas = document.querySelector('#playback-audio-canvas')
+var recordAudio
+var recordVideo
+var sample
+var liveSample
 
 function BufferLoader (context, urlList, callback) {
   this.context = context
@@ -47,11 +46,11 @@ function BufferLoader (context, urlList, callback) {
 
 BufferLoader.prototype.loadBuffer = function (url, index) {
   // Load buffer asynchronously
-  let request = new XMLHttpRequest()
+  var request = new XMLHttpRequest()
   request.open('GET', url, true)
   request.responseType = 'arraybuffer'
 
-  let loader = this
+  var loader = this
 
   request.onload = function () {
     // Asynchronously decode the audio file data in request.response
@@ -79,21 +78,21 @@ BufferLoader.prototype.loadBuffer = function (url, index) {
 }
 
 BufferLoader.prototype.load = function () {
-  for (let i = 0; i < this.urlList.length; ++i) { this.loadBuffer(this.urlList[i], i) }
+  for (var i = 0; i < this.urlList.length; ++i) { this.loadBuffer(this.urlList[i], i) }
 }
 
 function bytesToSize (bytes) {
-  let k = 1000
-  let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  var k = 1000
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
   if (bytes === 0) {
     return '0 Bytes'
   }
-  let i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10)
+  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10)
   return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
 }
 
 function playSound (buffer, time) {
-  let source = context.createBufferSource()
+  var source = context.createBufferSource()
   source.buffer = buffer
   source.connect(context.destination)
   source[source.start ? 'start' : 'noteOn'](time)
@@ -101,17 +100,17 @@ function playSound (buffer, time) {
 
 function loadSounds (obj, soundMap, callback) {
   // Array-ify
-  let names = []
-  let paths = []
-  for (let name in soundMap) {
-    let path = soundMap[name]
+  var names = []
+  var paths = []
+  for (var name in soundMap) {
+    var path = soundMap[name]
     names.push(name)
     paths.push(path)
   }
-  let bufferLoader = new BufferLoader(context, paths, function (bufferList) {
-    for (let i = 0; i < bufferList.length; i++) {
-      let buffer = bufferList[i]
-      let name = names[i]
+  var bufferLoader = new BufferLoader(context, paths, function (bufferList) {
+    for (var i = 0; i < bufferList.length; i++) {
+      var buffer = bufferList[i]
+      var name = names[i]
       obj[name] = buffer
     }
     if (callback) {
@@ -136,17 +135,17 @@ function loadSounds (obj, soundMap, callback) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let clearInterval
-let MAXRECORDTIME = 45000
+var _clearInterval
+var MAXRECORDTIME = 45000
 
-let WIDTH = 640
-let HEIGHT = 230
+var WIDTH = 640
+var HEIGHT = 230
 
 // Interesting parameters to tweak!
-let SMOOTHING = 0.85
-// let FFT_SIZE = 2048 << 0x01
-let FFT_SIZE = 1024
-// let FFT_SIZE = 2048 / 2
+var SMOOTHING = 0.85
+// var FFT_SIZE = 2048 << 0x01
+var FFT_SIZE = 1024
+// var FFT_SIZE = 2048 / 2
 
 function WebVoiceMail (config, cb) {
   this.mediaStream = config.source
@@ -164,11 +163,12 @@ function WebVoiceMail (config, cb) {
 
   this.freqs = new Uint8Array(this.analyser.frequencyBinCount)
   this.times = new Uint8Array(this.analyser.frequencyBinCount)
-  this.sampleBuffer = new Uint8Array(this.analyser.frequencyBinCount)
+  this.sampleBuffer = new Uint8Array(46)
   this.isLive = true
   this.startTime = 0
   this.startOffset = 0
   this.maxTime = 45000
+  this.index = 0
   this.canvas = config.canvas
   return this
 }
@@ -224,14 +224,14 @@ WebVoiceMail.prototype.disconnect = function () {
 }
 
 WebVoiceMail.prototype.onEnded = function () {
-  alert()
+  // alert()
   $('#stop-recording-btn').trigger('click')
   clearInterval(clearInterval)
   console.log('max record time reached...')
   console.log('the stream ended do something')
 }
-
-WebVoiceMail.prototype.draw = function () {
+var time = 0
+WebVoiceMail.prototype.draw = function (timestamp) {
   this.analyser.smoothingTimeConstant = SMOOTHING
   this.analyser.fftSize = FFT_SIZE / 4
 
@@ -239,50 +239,56 @@ WebVoiceMail.prototype.draw = function () {
   this.analyser.getByteFrequencyData(this.freqs)
   this.analyser.getByteTimeDomainData(this.times)
 
-  let width = Math.floor(1 / this.freqs.length, 10)
-  // let width = Math.floor(1 / this.freqs.length, 10)
+  var width = Math.floor(1 / this.freqs.length, 10)
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
-  // let canvas = document.querySelector('canvas')
-  let drawContext = this.canvas.getContext('2d')
+  // var canvas = document.querySelector('canvas')
+  var drawContext = this.canvas.getContext('2d')
 
   this.canvas.width = WIDTH * 1.5
   this.canvas.height = HEIGHT
   // Draw the frequency domain chart.
-  for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-    let value = this.freqs[i]
-    // value = this.getFrequencyValue(value);//[i]
-    let percent = value / 256
-    let height = HEIGHT * percent
-    let offset = HEIGHT - height - 1
-    let barWidth = WIDTH / this.analyser.frequencyBinCount
-    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
-    let hue = i / this.analyser.frequencyBinCount * 360
+  var t = 0
+
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = this.freqs[i]
+    var percent = value / 256
+    var height = HEIGHT * percent
+    var offset = HEIGHT - height - 1
+    var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    var hue = i / this.analyser.frequencyBinCount * 360
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
     drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
+    t += value
+  }
+  this.sampleBuffer[i] = this.getFrequencyValue(t / this.analyser.frequencyBinCount)
+  // this.index++
+  // Draw the time domain chart.
+  for (var i = 0; i < this.sampleBuffer.length; i++) {
+    var value = this.sampleBuffer[i] / 2
+    var percent = value / 256
+    var height = HEIGHT * percent
+    var offset = HEIGHT - height - 1
+    // var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // drawContext.fillStyle = 'rgba(233,233,233,0.5)'
+    var hue = i / this.sampleBuffer.length * 360
+    drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
+    drawContext.fillRect(i * (this.canvas.width / 45), HEIGHT - value, 4, this.sampleBuffer[i])
+    // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
+    // drawContext.fillRect(i * barWidth, offset, barWidth, height)
+    //
   }
 
-  // // Draw the time domain chart.
-  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   let value = this.times[i]
-  //   let percent = value / 256
-  //   let height = HEIGHT * percent
-  //   let offset = HEIGHT - height - 1
-  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
-  //   drawContext.fillStyle = 'white'
-  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
-  //   //
-  // }
-
+// this.sampleBuffer.push()
   if (this.isLive) {
     requestAnimationFrame(this.draw.bind(this))
   }
 }
 
 WebVoiceMail.prototype.getFrequencyValue = function (freq) {
-  let nyquist = context.sampleRate / 2
-  let index = Math.round(freq / nyquist * this.freqs.length)
+  var nyquist = context.sampleRate / 2
+  var index = Math.round(freq / nyquist * this.freqs.length)
   return this.freqs[index]
 }
 
@@ -292,16 +298,35 @@ VisualizerSample.prototype.monitorTime = function () {
   requestAnimationFrame(this.time.bind(this))
 }
 
-WebVoiceMail.prototype.sample = function (freq) {
-  let sampleRate = context.sampleRate
-  let index = Math.round(freq / sampleRate * this.freqs.length)
-  return this.freqs[index]
+WebVoiceMail.prototype.sample = function (time) {
+
+  var freqs = new Uint8Array(this.analyser.frequencyBinCount)
+  var times = new Uint8Array(this.analyser.frequencyBinCount)
+  var t = 0
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = freqs[i]
+    // value = this.getFrequencyValue(value)//[i]
+    // var percent = value / 256
+    // var height = HEIGHT * percent
+    // var offset = HEIGHT - height - 1
+    // var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    // var hue = i / this.analyser.frequencyBinCount * 360
+    // drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
+    // drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
+    t += value
+  }
+  this.sampleBuffer[time] = this.getFrequencyValue(t / this.analyser.frequencyBinCount)
+  this.index++
+  // var sampleRate = context.sampleRate
+  // var index = Math.round(freq / sampleRate * this.freqs.length)
+  // return this.freqs[index]
 }
 
 WebVoiceMail.prototype.onError = function onStreamError (e) {
   console.error(e)
 }
-let image
+var image
 WebVoiceMail.prototype.captureCanvasImage = function () {
   // this.canvas
   image = this.canvas.toDataURL('image/png')
@@ -321,7 +346,7 @@ function VisualizerSample (config, cb) {
   this.times = new Uint8Array(this.analyser.frequencyBinCount)
 
   function onLoaded () {
-    // let button = document.querySelector('button')
+    // var button = document.querySelector('button')
     // button.removeAttribute('disabled')
     $('#playback-click').text('Play/pause')
     $('#playback-click').prop('disabled', false)
@@ -332,6 +357,7 @@ function VisualizerSample (config, cb) {
   this.isPlaying = false
   this.startTime = 0
   this.startOffset = 0
+  this.index = 0
   this.canvas = config.canvas
 }
 
@@ -402,49 +428,36 @@ VisualizerSample.prototype.draw = function () {
   this.analyser.getByteFrequencyData(this.freqs)
   this.analyser.getByteTimeDomainData(this.times)
 
-  let width = Math.floor(1 / this.freqs.length, 10)
-  // let width = Math.floor(1 / this.freqs.length, 10)
+  var width = Math.floor(1 / this.freqs.length, 10)
+  // var width = Math.floor(1 / this.freqs.length, 10)
 
-  // let canvas = document.querySelector('canvas')
-  let drawContext = this.canvas.getContext('2d')
+  // var canvas = document.querySelector('canvas')
+  var drawContext = this.canvas.getContext('2d')
 
   this.canvas.width = WIDTH * 1.5
   this.canvas.height = HEIGHT
   // Draw the frequency domain chart.
-  for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-    let value = this.freqs[i]
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
+    var value = this.freqs[i]
     // value = this.getFrequencyValue(value);//[i]
-    let percent = value / 256
-    let height = HEIGHT * percent
-    let offset = HEIGHT - height - 1
-    let barWidth = WIDTH / this.analyser.frequencyBinCount
-    // let barWidth = this.freqs.length / this.analyser.frequencyBinCount
-    let hue = i / this.analyser.frequencyBinCount * 360
+
+    var percent = value / 256
+    var height = HEIGHT * percent
+    var offset = HEIGHT - height - 1
+    var barWidth = WIDTH / this.analyser.frequencyBinCount
+    // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
+    var hue = i / this.analyser.frequencyBinCount * 360
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
     drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
   }
-
-  // // Draw the time domain chart.
-  // for (let i = 0; i < this.analyser.frequencyBinCount; i++) {
-  //   let value = this.times[i]
-  //   let percent = value / 256
-  //   let height = HEIGHT * percent
-  //   let offset = HEIGHT - height - 1
-  //   let barWidth = WIDTH / this.analyser.frequencyBinCount
-  //   drawContext.fillStyle = 'white'
-  //   drawContext.fillRect(i * barWidth, offset, 1, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
-  //   // drawContext.fillRect(i * barWidth, offset, barWidth, height)
-  //   //
-  // }
 
   // if (this.isPlaying) {
   requestAnimationFrame(this.draw.bind(this))
   // }
 }
 VisualizerSample.prototype.getFrequencyValue = function (freq) {
-  let nyquist = context.sampleRate / 2
-  let index = Math.round(freq / nyquist * this.freqs.length)
+  var nyquist = context.sampleRate / 2
+  var index = Math.round(freq / nyquist * this.freqs.length)
   return this.freqs[index]
 }
 
@@ -490,8 +503,8 @@ startRecording.onclick = function () {
       cameraPreview.play()
       cameraPreview.muted = true
       cameraPreview.controls = false
-      clearInterval = showProgress()
-      setInterval(showProgress, 1000)
+      showProgress()
+      // _clearInterval = setInterval(showProgress, 1000)
     }
   })
   // }
@@ -500,15 +513,34 @@ startRecording.onclick = function () {
   currentTime = recordAudio.recordingDuration
   stopRecording.disabled = false
 }
-let duration = 45
-let imageCaptured = false
-function showProgress () {
-  $('.time-remaining').text(duration + ' seconds')
-  if (duration < (45 / 2) && !imageCaptured) {
+var duration = 45
+var start = null
+var imageCaptured = false
+function showProgress (timestamp) {
+  if (!start) {
+    start = Date.now()
+    liveSample.sample(0)
+  }
+  // console.log()
+  var diff = Date.now() - start
+  var current = (Math.floor(diff) / 1000) >> 0
+
+  if (current !== time) {
+    time = current
+    console.log(time, timestamp)
+    $('.time-remaining').text((duration - time) + ' seconds')
+    liveSample.sample(time)
+  }
+
+  if (time > (duration / 2) && !imageCaptured) {
     liveSample.captureCanvasImage()
     imageCaptured = true
   }
-  duration--
+  // duration--
+  // time += timestamp
+
+  requestAnimationFrame(showProgress)
+
 }
 
 stopRecording.onclick = function () {
@@ -523,7 +555,7 @@ stopRecording.onclick = function () {
   //     recordAudio.getDataURL(function (audioDataURL) {
   //       // get video data-URL
   //       recordVideo.getDataURL(function (videoDataURL) {
-  //         let files = {
+  //         var files = {
   //           audio: {
   //             type: recordAudio.getBlob().type || 'audio/wav',
   //             dataURL: audioDataURL
@@ -549,12 +581,13 @@ stopRecording.onclick = function () {
   recordAudio.stopRecording(function () {
     // get audio data-URL
     recordAudio.getDataURL(function (audioDataURL) {
-      let files = {
+      var files = {
         audio: {
           type: recordAudio.getBlob().type || 'audio/wav',
           dataURL: audioDataURL,
           image: image,
-          email: 'epmiller8464@gmail.com'
+          email: 'epmiller8464@gmail.com',
+          waveForm: liveSample.sampleBuffer
         }
       }
       socketio.emit('message', files)
@@ -579,7 +612,7 @@ uploadRecordingButton.onclick = function () {
 }
 
 socketio.on('merged', function (fileName) {
-  let href = (location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href)
+  var href = (location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href)
   href = href + 'uploads/' + fileName
   console.log('got file ' + href)
   sample = new VisualizerSample({source: href, canvas: liveAudioCanvas}, function () {
