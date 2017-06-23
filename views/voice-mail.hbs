@@ -54,10 +54,10 @@
                         <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
                     </button>
                     <button id="play-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> Play
+                        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> replay
                     </button>
-                    <button id="save-upload-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Upload Recording
+                    <button id="delete-upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip" data-placement="right" title="Recording save automatically but you can delete yours">
+                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Delete Recording
                     </button>
 
                 </div>
@@ -91,7 +91,7 @@
                     <audio src="{{this.audio_path}}" controls preload="none"
                            style="background-color: transparent;display:none;"></audio>
                     <img src="{{this.image}}" alt="Some image"/>
-                    <canvas class="hide"></canvas>
+                    <!--<canvas class="hide"></canvas>-->
                     <div class="caption">
                         <h6>{{this.key}}</h6>
                         <p>

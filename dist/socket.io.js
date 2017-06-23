@@ -25,14 +25,14 @@ function server(app) {
 
       socket.emit('ffmpeg-output', 0);
       // console.log(data)
-      console.log('my nigga we have the image %s', data.audio.image);
-      writeToDisk(data.audio, fileName + '.wav', function (error, result) {
+      // console.log('my nigga we have the image %s', data.audio.image)
+      writeToDisk(data.audio, fileName + '.wav', function (error, key) {
 
         if (error) {
           socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message);
           return;
         }
-        socket.emit('merged', fileName + '.wav');
+        socket.emit('merged', { fileName: fileName + '.wav', key: key });
       });
     });
   });
@@ -58,10 +58,17 @@ function server(app) {
     // fileBuffer = new Buffer(dataURL, 'base64')
     // fs.writeFileSync(filePath, fileBuffer)
     var ws = fs.createWriteStream(filePath, 'base64').write(Buffer.from(dataURL, 'base64'));
-    console.log('filePath', filePath);
+    // console.log('filePath', filePath)
     var key = buildKeyName(audio.email);
-    console.log('key: ' + key + ' path: ' + filePath);
-    level.put(key, { image: audio.image, audio_path: filePath, read: false, waveForm: audio.waveForm }, cb);
+    // console.log(`key: ${key} path: ${filePath}`)
+    level.put(key, { image: audio.image, audio_path: filePath, read: false, waveForm: audio.waveForm }, function (result) {
+
+      cb(null, key);
+      // if (!result) {
+      //   cb(null, new Error('opps something bad happened'))
+      // } else {
+      // }
+    });
   }
 
   function buildKeyName(email) {

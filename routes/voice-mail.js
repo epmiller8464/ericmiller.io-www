@@ -32,13 +32,36 @@ router.get('/', function (req, res, next) {
   // res.render('voice-mail', {title: 'Express'})
 })
 
-router.post('/delete/:id', (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
 
-  res.status(200).json({success: true})
+  level.del(req.body.key, function (err) {
+    if (err) {
+      res.status(200).json({
+        success: false,
+        message: `Error deleting DB ref for key: ${req.body.key}, message: ${err.message}`
+      })
+    }
+    deleteFileOnDisk(req.body.fileName, (err, result) => {
+
+      if (err) {
+        res.status(200).json({
+          success: false,
+          message: `Error file on disk for file: ${req.body.fileName}, message: ${err.message}`
+        })
+      }
+      res.status(200).json({success: true, message: 'Recording deleted.'})
+    })
+  })
 })
 
-function loadVoiceMessages () {
-
+function deleteFileOnDisk (fileName, cb) {
+  fs.unlink(`./uploads/${fileName}`, (err) => {
+    if (err) {
+      return cb(err)
+    }
+    console.log(`successfully deleted ${fileName}`)
+    return cb(null, true)
+  })
 }
 
 module.exports = router

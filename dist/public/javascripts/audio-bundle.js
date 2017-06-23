@@ -28,7 +28,7 @@ var currentTime = 0;
 var startRecording = document.getElementById('record-btn');
 var stopRecording = document.getElementById('stop-recording-btn');
 var playButton = document.getElementById('play-btn');
-var uploadRecordingButton = document.getElementById('save-upload-btn');
+var deleteRecordingButton = document.getElementById('delete-upload-btn');
 var cameraPreview = document.getElementById('camera-preview');
 var progressBar = document.querySelector('#progress-bar');
 var percentage = document.querySelector('#percentage');
@@ -227,10 +227,8 @@ WebVoiceMail.prototype.disconnect = function () {
 
 WebVoiceMail.prototype.onEnded = function () {
   // alert()
-  $('#stop-recording-btn').trigger('click');
-  clearInterval(clearInterval);
-  console.log('max record time reached...');
-  console.log('the stream ended do something');
+  clearInterval(_clearInterval);
+  endRecording();
 };
 var time = 0;
 WebVoiceMail.prototype.draw = function (timestamp) {
@@ -469,7 +467,7 @@ function initAudio() {
   startRecording.disabled = false;
   stopRecording.disabled = true;
   playButton.disabled = true;
-  uploadRecordingButton.disabled = true;
+  deleteRecordingButton.disabled = true;
 
   if (sample) {
     sample.disconnect();
@@ -494,7 +492,7 @@ startRecording.onclick = function () {
   // initAudio()
   startRecording.disabled = true;
   playButton.disabled = true;
-  uploadRecordingButton.disabled = true;
+  deleteRecordingButton.disabled = true;
   $('.status.on').text('Recording....').addClass('recording');
   // if (!recordAudio) {
 
@@ -531,7 +529,7 @@ function showProgress(timestamp) {
 
   if (current !== time) {
     time = current;
-    console.log(time, timestamp);
+    // console.log(time, timestamp)
     $('.time-remaining').text(duration - time + ' seconds');
     liveSample.sample(time);
   }
@@ -547,38 +545,69 @@ function showProgress(timestamp) {
 }
 
 stopRecording.onclick = function () {
+  endRecording();
+};
+
+playButton.onclick = function () {
+  sample.togglePlayback();
+};
+var recordingKey = null;
+var fileName = null;
+deleteRecordingButton.onclick = function () {
+  // $('#start-recording').trigger('click')
+  // sample.togglePlayback()
+  // sample.startOffset = sample.buffer.duration / 2
+  // sample.play()
+  // initAudio()
+  $.ajax({
+    // method: 'POST',
+    method: 'DELETE',
+    url: '/voice-mail/' + recordingKey,
+    data: { key: recordingKey, fileName: fileName }
+  }).done(function (msg) {
+    alert('recoding deleted: ' + msg);
+  });
+  // $.ajax({method:'POST',})
+};
+
+socketio.on('merged', function (payload) {
+  var _fileName = payload.fileName;
+  var key = payload.key;
+  var href = location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href;
+  href = href + 'uploads/' + _fileName;
+  console.log('got file ' + href);
+  sample = new VisualizerSample({ source: href, canvas: liveAudioCanvas }, function () {
+    startRecording.disabled = true;
+    playButton.disabled = false;
+    deleteRecordingButton.disabled = false;
+    recordingKey = key;
+    fileName = _fileName;
+    console.log(key, fileName);
+    // $('#delete-upload-btn').data('recording-key', key)
+  });
+});
+
+socketio.on('ffmpeg-output', function (result) {
+  if (parseInt(result) >= 100) {
+    progressBar.parentNode.style.display = 'none';
+    return;
+  }
+  progressBar.parentNode.style.display = 'block';
+  progressBar.value = result;
+  //   percentage.innerHTML = 'Ffmpeg Progress ' + result + '%'
+});
+socketio.on('ffmpeg-error', function (error) {
+  alert(error);
+});
+
+function endRecording() {
+  if (!liveSample.isLive) {
+    console.log('Recording stopped.');
+    return;
+  }
   $('.status.on.recording').text('Recording stopped').removeClass('recording');
   startRecording.disabled = false;
   stopRecording.disabled = true;
-  // stop audio recorder
-  // recordAudio.stopRecording(function () {
-  //   // stop video recorder
-  //   recordVideo.stopRecording(function () {
-  //     // get audio data-URL
-  //     recordAudio.getDataURL(function (audioDataURL) {
-  //       // get video data-URL
-  //       recordVideo.getDataURL(function (videoDataURL) {
-  //         var files = {
-  //           audio: {
-  //             type: recordAudio.getBlob().type || 'audio/wav',
-  //             dataURL: audioDataURL
-  //           },
-  //           video: {
-  //             type: recordVideo.getBlob().type || 'video/webm',
-  //             dataURL: videoDataURL
-  //           }
-  //         }
-  //         socketio.emit('message', files)
-  //         if (mediaStream) mediaStream.stop()
-  //       })
-  //     })
-  //     cameraPreview.src = ''
-  //     cameraPreview.poster = 'ajax-loader.gif'
-  //   })
-  // })
-  // if firefox or if you want to record only audio
-  // stop audio recorder
-
   // cameraPreview.stop()
   cameraPreview.poster = 'ajax-loader.gif';
   recordAudio.stopRecording(function () {
@@ -600,41 +629,5 @@ stopRecording.onclick = function () {
       cameraPreview.src = '';
     });
   });
-};
-
-playButton.onclick = function () {
-  sample.togglePlayback();
-};
-
-uploadRecordingButton.onclick = function () {
-  // $('#start-recording').trigger('click')
-  // sample.togglePlayback()
-  sample.startOffset = sample.buffer.duration / 2;
-  sample.play();
-  // initAudio()
-};
-
-socketio.on('merged', function (fileName) {
-  var href = location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href;
-  href = href + 'uploads/' + fileName;
-  console.log('got file ' + href);
-  sample = new VisualizerSample({ source: href, canvas: liveAudioCanvas }, function () {
-    startRecording.disabled = true;
-    playButton.disabled = false;
-    uploadRecordingButton.disabled = false;
-  });
-});
-
-socketio.on('ffmpeg-output', function (result) {
-  if (parseInt(result) >= 100) {
-    progressBar.parentNode.style.display = 'none';
-    return;
-  }
-  progressBar.parentNode.style.display = 'block';
-  progressBar.value = result;
-  percentage.innerHTML = 'Ffmpeg Progress ' + result + '%';
-});
-socketio.on('ffmpeg-error', function (error) {
-  alert(error);
-});
+}
 //# sourceMappingURL=audio-bundle.js.map
