@@ -14,7 +14,14 @@ router.get('/', function (req, res, next) {
   level.createReadStream({ keys: true, values: true }).on('data', function (data) {
     // console.log('value=', data)
     var value = JSON.parse(data.value);
-    links.push({ key: data.key, image: value.image, audio_path: value.audio_path, waveForm: value.waveForm });
+    var waveForm = [];
+    for (var key in value.waveForm) {
+      if (value.waveForm[key]) waveForm.push(value.waveForm[key]);
+    }
+    waveForm = waveForm.filter(function (i, v) {
+      if (v) return v;
+    }).reverse();
+    links.push({ key: data.key, image: value.image, audio_path: value.audio_path, waveForm: waveForm.join(',') });
   }).on('end', function (err) {
     // console.log(links)
     // let links = fd.map((x) => {return `/uploads/${x}`})
@@ -35,29 +42,38 @@ router.get('/', function (req, res, next) {
 });
 
 router.delete('/:id', function (req, res, next) {
-
-  level.del(req.body.key, function (err) {
+  var fileName = '';
+  level.get(req.body.key, function (err, value) {
     if (err) {
       res.status(200).json({
         success: false,
         message: 'Error deleting DB ref for key: ' + req.body.key + ', message: ' + err.message
       });
     }
-    deleteFileOnDisk(req.body.fileName, function (err, result) {
-
+    fileName = value.audio_path;
+    level.del(req.body.key, function (err) {
       if (err) {
         res.status(200).json({
           success: false,
-          message: 'Error file on disk for file: ' + req.body.fileName + ', message: ' + err.message
+          message: 'Error deleting DB ref for key: ' + req.body.key + ', message: ' + err.message
         });
       }
-      res.status(200).json({ success: true, message: 'Recording deleted.' });
+      deleteFileOnDisk(fileName, function (err, result) {
+
+        if (err) {
+          res.status(200).json({
+            success: false,
+            message: 'Error file on disk for file: ' + req.body.fileName + ', message: ' + err.message
+          });
+        }
+        res.status(200).json({ success: true, message: 'Recording deleted.' });
+      });
     });
   });
 });
 
 function deleteFileOnDisk(fileName, cb) {
-  fs.unlink('./uploads/' + fileName, function (err) {
+  fs.unlink(fileName.search('./uploads') >= 0 ? fileName : './uploads/' + fileName, function (err) {
     if (err) {
       return cb(err);
     }

@@ -56,7 +56,8 @@
                     <button id="play-btn" type="button" class="btn btn-link btn-lg">
                         <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> replay
                     </button>
-                    <button id="delete-upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip" data-placement="right" title="Recording save automatically but you can delete yours">
+                    <button id="delete-upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip"
+                            data-placement="right" title="Recording save automatically but you can delete yours">
                         <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Delete Recording
                     </button>
 
@@ -85,17 +86,22 @@
         <h2 class="text-center">Previous Recordings</h2>
         <hr/>
         {{#each images}}
-            <div class="col-md-3">
+            <div class="col-md-6">
 
                 <div class="thumbnail audio-control">
                     <audio src="{{this.audio_path}}" controls preload="none"
                            style="background-color: transparent;display:none;"></audio>
                     <img src="{{this.image}}" alt="Some image"/>
                     <!--<canvas class="hide"></canvas>-->
+                    <div id="wf_{{@index}}" style="overflow: hidden;" class="wave-form"
+                         data-wave-form="{{this.waveForm}}">
+
+                    </div>
                     <div class="caption">
                         <h6>{{this.key}}</h6>
                         <p>
-                            <button type="button" class="btn btn-link" data-audio-url="{{this.audio_path}}"
+                            <button type="button" data-target-id="wf_{{@index}}" class="btn btn-link"
+                                    data-audio-url="{{this.audio_path}}"
                                     data-state="play">
                                 <span class="play">
                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span>&nbsp;Play
@@ -104,7 +110,14 @@
                                 <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>&nbsp;Pause
                                 </span>
                             </button>
+                            <button type="button" data-key="{{this.key}}" class="delete btn btn-link btn-lg pull-right"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="Recording save automatically but you can delete yours">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
                         </p>
+
                     </div>
                 </div>
             </div>
@@ -112,136 +125,92 @@
     </div>
 </section>
 
-<main class="hide">
-    <div class="content content--side">
-        <div class="control control--grids">
-            <span class="control__title">Stuff</span>
-        </div>
-    </div>
-    <div class="content content--side content--right">
-        <div class="control control--effects">
-            <span class="control__title">run effect</span>
-            <button class="control__btn" data-fx="Hapi">Hapi</button>
-            <button class="control__btn" data-fx="Amun">Amun</button>
-            <button class="control__btn" data-fx="Kek">Kek</button>
-            <button class="control__btn" data-fx="Isis">Isis</button>
-            <button class="control__btn" data-fx="Montu">Montu</button>
-            <button class="control__btn" data-fx="Osiris">Osiris</button>
-            <button class="control__btn" data-fx="Satet">Satet</button>
-            <button class="control__btn" data-fx="Atum">Atum</button>
-            <button class="control__btn" data-fx="Ra">Ra</button>
-            <button class="control__btn" data-fx="Sobek">Sobek</button>
-            <button class="control__btn" data-fx="Ptah">Ptah</button>
-            <button class="control__btn" data-fx="Bes">Bes</button>
-            <button class="control__btn" data-fx="Seker">Seker</button>
-            <button class="control__btn" data-fx="Nut">Nut</button>
-            <button class="control__btn" data-fx="Shu">Shu</button>
-        </div>
-    </div>
-
-    <div class="content content--center">
-
-        <div class="grid grid--type-c">
-            <div class="grid__sizer"></div>
-
-
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/3.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/5.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/11.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/7.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/9.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/4.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/6.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/8.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/10.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/1.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-            <!--<div class="grid__item">-->
-            <!--<a class="grid__link" href="#"><img class="grid__img" src="images/set3/2.jpg" alt="Some image"/></a>-->
-            <!--</div>-->
-        </div>
-        <!--<div class="grid grid--type-c">-->
-        <!--<div class="grid__sizer"></div>-->
-
-        <!--<div class="grid__item">-->
-        <!--<a class="grid__link" href="#"><img class="grid__img" src="/uploads/ig/lit-1.jpg" alt="Some image"/></a>-->
-
-        <!--</div>-->
-        <!--<div class="grid__item">-->
-        <!--<a class="grid__link pater" href="http://synd.co/2oQTgFH">-->
-        <!--<div class="pater__img"></div>-->
-        <!--<div class="pater__content">-->
-        <!--<h2 class="pater__title" aria-label="fullstory">See Every Click, Swipe, <br> and Scroll</h2>-->
-        <!--<p class="pater__desc">See how users experience your designs with FullStory.</p>-->
-        <!--<span class="pater__call">Get it free today!</span>-->
-        <!--</div>-->
-        <!--</a>-->
-        <!--</div>-->
-
-        <!--</div>-->
-
-    </div>
-</main>
 
 
 
 {{#section 'scripts'}}
-    <!--<script src="/javascripts/imagesloaded.pkgd.min.js"></script>-->
-    <!--<script src="/javascripts/masonry.pkgd.min.js"></script>-->
-    <!--<script src="/javascripts/anime.min.js"></script>-->
-    <!--<script src="/javascripts/main.js"></script>-->
+    <script src="/d3/build/d3.js"></script>
     <script src="/javascripts/audio-bundle.js"></script>
 
     <script>
         var stats = {
             step: 1
         }
+        var ci
+        var pos2 = 50
+        function progress (elementId) {
+            var pos = $($('#' + elementId).children('svg')[0]).data('wave-form-length')
+            var position = $($('#' + elementId).children('svg')[0]).position().left
+            ci = setInterval(function () {
+                        $($('#' + elementId).children('svg')[0]).css('left', pos2 + '%')
+                        pos2 -= 0.25
+                        if ((pos2 % 1) === 0) {
+                            pos--
+                        }
+                        $($('#' + elementId).children('svg')[0]).children('rect')
+                        .each(function (a, b) {
+                            if ($(b).position().left <= position) {
+                                $(b).attr('fill', 'rgba(255,255,255,0.2)')
+                            }
+                        })
+                    },
+                    250)
+
+        }
+
+        function buildWaveFormTimeSeries (elementId, waveForm) {
+            $('#' + elementId).css(['overflow', 'hidden', 'position', 'relative'])
+            var h = 100, w = $('#' + elementId).width(), p = 2
+
+            var svg = d3.select(document.getElementById(elementId))
+            .append('svg')
+            .attr('width', w)
+            .attr('height', h)
+            .attr('transform', 'rotate(180)')
+            .attr('data-wave-form-length', waveForm.length)
+            .style('position', 'relative')
+            .style('left', '50%')
+            .style('overflow', 'hidden')
+
+//            .attr('left', '50%')
+
+            svg.selectAll('rect')
+            .data(waveForm.map(function (i, d) {if (d > 100) {return d - 100} else {return d}}))
+            .enter()
+            .append('rect')
+            .attr('x', function (d, i) {return i * (w / waveForm.length)})
+            .attr('y', 0)
+            .attr('width', (w / waveForm.length - (p)))
+            //            .attr('width', waveForm.length / 100 * 2)
+            .attr('height', function (d) {
+                console.log(arguments)
+                return (waveForm[d] / 3)
+            })
+            .attr('fill', 'rgba(33,33,33,0.5)')
+            .attr('data-index', function (d, i) {return i})
+
+        }
+
         $(document).ready(function () {
 
             function togglePlay (target) {
+
                 $('.audio-control audio').each(function (a, b) {b.pause()})
                 $(target).parents('.audio-control').children('audio')[0].play()
                 $(target).parents('.audio-control').children('audio')[0].volume = (0.1)
 //                $(target).data('state', 'playing')
+                $('#id-form-tag').data('')
+                clearInterval(ci)
+                progress($(target).data('target-id'))
             }
+
+            $('div[data-wave-form]').each(function (i, el) {
+                console.log(el, $(el).prop('id'))
+                var elementId = $(el).prop('id')
+                var formString = $(this).data('wave-form')
+                var waveForm = formString.split(',')
+                buildWaveFormTimeSeries(elementId, waveForm)
+            })
 
             $('button[data-audio-url]').click(function () {
                 togglePlay(this)
@@ -288,6 +257,23 @@
 
             $('#show-record-btn').click(function () {
                 $('#record-container').toggleClass('hide')
+            })
+
+            $('button.delete').click(function () {
+                var recordingKey = $(this).data('key')
+                togglePlay($(this).siblings('button')[0])
+                $.ajax({
+                    // method: 'POST',
+                    method: 'DELETE',
+                    url: '/voice-mail/' + recordingKey,
+                    data: {key: recordingKey, fileName: fileName}
+                })
+                .done(function (msg) {
+                    if (msg.success)
+                        window.location.href = window.location.href
+                    else
+                        console.log(msg)
+                })
             })
 
         })

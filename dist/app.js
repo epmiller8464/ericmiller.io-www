@@ -9,7 +9,9 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var hbs = require('express-handlebars');
 var fs = require('fs');
+var compression = require('compression');
 var app = express();
+app.use(compression());
 
 // view engine setup
 var exphbs = hbs.create({

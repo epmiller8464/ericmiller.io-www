@@ -565,7 +565,7 @@ deleteRecordingButton.onclick = function () {
     url: '/voice-mail/' + recordingKey,
     data: { key: recordingKey, fileName: fileName }
   }).done(function (msg) {
-    alert('recoding deleted: ' + msg);
+    window.location.href = window.location.href;
   });
   // $.ajax({method:'POST',})
 };
