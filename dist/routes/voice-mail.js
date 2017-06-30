@@ -66,7 +66,7 @@ router.delete('/:id', function (req, res, next) {
             message: 'Error file on disk for file: ' + req.body.fileName + ', message: ' + err.message
           });
         }
-        res.status(200).json({ success: true, message: 'Recording deleted.' });
+        res.status(200).json({ success: true, message: 'Recording deleted...' });
       });
     });
   });

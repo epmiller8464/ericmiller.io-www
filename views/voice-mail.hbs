@@ -89,23 +89,13 @@
             <div class="col-md-6">
 
                 <div class="thumbnail audio-control" id="acid_{{@index}}" data-audio-src="{{this.audio_path}}"
-                     data-key="{{this.key}}"
+                     data-recording-key="{{this.key}}"
                      data-wave-form="{{this.waveForm}}">
-                    <!--<audio src="{{this.audio_path}}" controls preload="none"-->
-                    <!--style="background-color: transparent;display:none;"></audio>-->
                     <img src="{{this.image}}" alt="Some image"/>
-                    <!--<canvas class="hide"></canvas>-->
                     <div id="wf_{{@index}}" style="overflow: hidden;" class="wave-form"
                          data-wave-form="{{this.waveForm}}">
-
                     </div>
                     <div class="caption">
-                        <div class="text-success clearfix">
-
-                            <label class="status pull-left"></label>
-                            <label class="duration pull-right"></label>
-                        </div>
-                        <!--<h6>{{this.key}}</h6>-->
                         <p>
                             <button type="button" class="play btn btn-link" disabled>
                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
@@ -116,14 +106,18 @@
                             <button type="button" class="stop btn btn-link" disabled>
                                 <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                             </button>
-                            <button type="button" data-key="{{this.key}}" class="delete btn btn-link btn-lg pull-right"
-                                    data-toggle="tooltip"
+                            <button type="button" class="delete btn btn-link btn-lg pull-right" data-toggle="tooltip"
                                     data-placement="right"
                                     title="Recording save automatically but you can delete yours">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                             </button>
                         </p>
-
+                    </div>
+                    <div class="row" style="padding: 0 10px 5px 10px !important;margin: 0;">
+                        <div class="col-md-12 col-sm-12 text-success">
+                            <label class="status pull-left">&nbsp;</label>
+                            <label class="duration pull-right">&nbsp;</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,13 +204,15 @@
             var voices = $('div[data-audio-src]').map(function (i, el) {
                 return {
                     el: '#' + $(el).prop('id'),
-                    audioKey: $(el).data('key'),
+                    recordingKey: $(el).data('recording-key'),
                     waveform: [$(el).data('wave-form').split(',')],
                     controls: {
                         $play: $(el).find('button.play')[0],
                         $pause: $(el).find('button.pause')[0],
                         $stop: $(el).find('button.stop')[0],
-                        $delete: $(el).find('button.delete')[0]
+                        $delete: $(el).find('button.delete')[0],
+                        $status: $(el).find('.status')[0],
+                        $duration: $(el).find('.duration')[0]
                     },
                     howl: {
                         src: [$(el).data('audio-src')],
@@ -268,23 +264,6 @@
 
             $('#show-record-btn').click(function () {
                 $('#record-container').toggleClass('hide')
-            })
-
-            $('button.delete').click(function () {
-                var recordingKey = $(this).data('key')
-                togglePlay($(this).siblings('button')[0])
-                $.ajax({
-                    // method: 'POST',
-                    method: 'DELETE',
-                    url: '/voice-mail/' + recordingKey,
-                    data: {key: recordingKey, fileName: fileName}
-                })
-                .done(function (msg) {
-                    if (msg.success)
-                        window.location.href = window.location.href
-                    else
-                        console.log(msg)
-                })
             })
 
         })
