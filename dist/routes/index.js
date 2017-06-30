@@ -15,6 +15,8 @@ router.use('/uploads', function (req, response, next) {
   var uri = url.parse(req.url).pathname,
       filename = path.join(process.cwd() + '/uploads', uri);
   // var filename = `./../uploads${req.url}`
+  // let ws = fs.createReadStream(filename, 'binary').write(Buffer.from(dataURL, 'binary'))
+
   fs.readFile(filename, 'binary', function (err, file) {
     if (err) {
       response.writeHead(500, {
@@ -24,8 +26,16 @@ router.use('/uploads', function (req, response, next) {
       response.end();
       return;
     }
-
-    response.writeHead(200);
+    console.log(file.length);
+    response.writeHead(206, {
+      // 'Content-Type': 'audio/wav',
+      // 'Content-Type': 'application/octet-stream',
+      // 'content-range': `bytes 0-1/${file.length}`,
+      // 'content-range': `bytes 9750-${file.length - 9750}/${file.length}`,
+      // 'content-length': `${file.length}`,
+      // 'Accept-Range': `bytes`
+      // 'Content-Length': `XX`
+    });
     response.write(file, 'binary');
     response.end();
   });

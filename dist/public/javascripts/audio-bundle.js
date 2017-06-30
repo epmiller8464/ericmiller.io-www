@@ -1,6 +1,6 @@
 'use strict';
 
-context = new (window.AudioContext || window.webkitAudioContext)();
+context = new (window.AudioContext || window.webkitAudioContext || webkitAudioContext)();
 
 if (!context.createGain) {
   context.createGain = context.createGainNode;
@@ -50,6 +50,7 @@ function BufferLoader(context, urlList, callback) {
 BufferLoader.prototype.loadBuffer = function (url, index) {
   // Load buffer asynchronously
   var request = new XMLHttpRequest();
+  console.log(url);
   request.open('GET', url, true);
   request.responseType = 'arraybuffer';
 
@@ -166,7 +167,7 @@ function WebVoiceMail(config, cb) {
 
   this.freqs = new Uint8Array(this.analyser.frequencyBinCount);
   this.times = new Uint8Array(this.analyser.frequencyBinCount);
-  this.sampleBuffer = new Uint8Array(46);
+  this.sampleBuffer = new Uint8Array(this.analyser.frequencyBinCount);
   this.isLive = true;
   this.startTime = 0;
   this.startOffset = 0;
@@ -210,7 +211,7 @@ WebVoiceMail.prototype.stop = function () {
     this.filter.disconnect(0);
     cameraPreview.src = '';
     // cameraPreview.stop()
-
+    this.captureCanvasImage();
     this.startOffset = 0; // += context.currentTime - this.startTime
     console.log('stopped at', context.currentTime);
   } catch (e) {}
@@ -227,6 +228,8 @@ WebVoiceMail.prototype.disconnect = function () {
 
 WebVoiceMail.prototype.onEnded = function () {
   // alert()
+  // this.captureCanvasImage()
+
   clearInterval(_clearInterval);
   endRecording();
 };
@@ -259,7 +262,7 @@ WebVoiceMail.prototype.draw = function (timestamp) {
     // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360;
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-    drawContext.fillRect(i * barWidth * 1.5, offset * 0.5, 2, height + 0.25);
+    // drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
     t += value;
   }
   this.sampleBuffer[i] = this.getFrequencyValue(t / this.analyser.frequencyBinCount);
@@ -270,11 +273,13 @@ WebVoiceMail.prototype.draw = function (timestamp) {
     var percent = value / 256;
     var height = HEIGHT * percent;
     var offset = HEIGHT - height - 1;
-    // var barWidth = WIDTH / this.analyser.frequencyBinCount
+    var barWidth = WIDTH / this.analyser.frequencyBinCount;
     // drawContext.fillStyle = 'rgba(233,233,233,0.5)'
-    var hue = i / this.sampleBuffer.length * 360;
+    // var hue = i / this.sampleBuffer.length * 360
+    var hue = i / this.analyser.frequencyBinCount * 360;
+
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-    drawContext.fillRect(i * (this.canvas.width / 45), HEIGHT - value, 4, this.sampleBuffer[i]);
+    drawContext.fillRect(i * (this.canvas.width / 100), HEIGHT - value, 4, this.sampleBuffer[i] > 2 ? this.sampleBuffer[i] * 0.5 : 2);
     // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
     // drawContext.fillRect(i * barWidth, offset, barWidth, height)
     //
@@ -525,19 +530,19 @@ function showProgress(timestamp) {
   }
   // console.log()
   var diff = Date.now() - start;
-  var current = Math.floor(diff) / 1000 >> 0;
+  var current = Math.floor(diff) / 500 >> 0;
 
+  liveSample.sample(current);
   if (current !== time) {
     time = current;
     // console.log(time, timestamp)
     $('.time-remaining').text(duration - time + ' seconds');
-    liveSample.sample(time);
   }
 
-  if (time > duration / 2 && !imageCaptured) {
-    liveSample.captureCanvasImage();
-    imageCaptured = true;
-  }
+  if (time > duration / 2 && !imageCaptured) {}
+  // liveSample.captureCanvasImage()
+  // imageCaptured = true
+
   // duration--
   // time += timestamp
 
@@ -605,11 +610,14 @@ function endRecording() {
     console.log('Recording stopped.');
     return;
   }
+  // liveSample.captureCanvasImage()
   $('.status.on.recording').text('Recording stopped').removeClass('recording');
   startRecording.disabled = false;
   stopRecording.disabled = true;
   // cameraPreview.stop()
   cameraPreview.poster = 'ajax-loader.gif';
+  liveSample.stop();
+
   recordAudio.stopRecording(function () {
     // get audio data-URL
     recordAudio.getDataURL(function (audioDataURL) {
@@ -625,9 +633,8 @@ function endRecording() {
       socketio.emit('message', files);
       // if (mediaStream)
       //   mediaStream.stop()
-      liveSample.stop();
       cameraPreview.src = '';
     });
   });
 }
-//# sourceMappingURL=audio-bundle.js.map
+//# sourceMappingURL=Audio-Bundle.js.map

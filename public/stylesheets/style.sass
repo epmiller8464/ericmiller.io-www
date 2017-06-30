@@ -5,6 +5,7 @@ $dark-purple: #673ab7
 $blue: #2196f3
 $yellow: #ffeb3b
 $grey: #82888a
+$green: #00ff48
 body
   padding: 0px
   font: 14px Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
@@ -156,7 +157,7 @@ a, .btn-link
   border: 1px solid $yellow
 
 label.status.on
-  color: #00ff48
+  color: $green
 
 label.status.recording
   color: $pink
@@ -164,3 +165,42 @@ label.status.recording
 .thumbnail.audio-control
   background-color: transparent !important
   border: 1px solid $grey
+
+.text-muted
+  color: $grey !important
+
+.text-primary
+  color: $blue !important
+
+a.text-primary:hover,
+a.text-primary:focus
+  color: rgba(33, 150, 243, 0.8) !important
+
+.text-success
+  color: $green !important
+
+a.text-success:hover,
+a.text-success:focus
+  color: rgba(0, 255, 72, 0.5) !important
+
+.text-info
+  color: #ffffff !important
+
+a.text-info:hover,
+a.text-info:focus
+  color: #c8c8c8 !important
+
+.text-warning
+  color: $orange !important
+
+
+a.text-warning:hover,
+a.text-warning:focus
+  color: rgba(255,70,75,1) !important
+
+.text-danger
+  color: $pink !important
+
+a.text-danger:hover,
+a.text-danger:focus
+  color: rgba(255,0,128,0.7) !important

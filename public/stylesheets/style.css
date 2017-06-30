@@ -142,4 +142,42 @@ label.status.recording {
   background-color: transparent !important;
   border: 1px solid #82888a; }
 
+.text-muted {
+  color: #82888a !important; }
+
+.text-primary {
+  color: #2196f3 !important; }
+
+a.text-primary:hover,
+a.text-primary:focus {
+  color: rgba(33, 150, 243, 0.8) !important; }
+
+.text-success {
+  color: #00ff48 !important; }
+
+a.text-success:hover,
+a.text-success:focus {
+  color: rgba(0, 255, 72, 0.5) !important; }
+
+.text-info {
+  color: #ffffff !important; }
+
+a.text-info:hover,
+a.text-info:focus {
+  color: #c8c8c8 !important; }
+
+.text-warning {
+  color: #ef5350 !important; }
+
+a.text-warning:hover,
+a.text-warning:focus {
+  color: #ff464b !important; }
+
+.text-danger {
+  color: #ff0080 !important; }
+
+a.text-danger:hover,
+a.text-danger:focus {
+  color: rgba(255, 0, 128, 0.7) !important; }
+
 /*# sourceMappingURL=style.css.map */

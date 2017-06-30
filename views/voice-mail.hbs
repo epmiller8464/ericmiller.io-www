@@ -88,9 +88,11 @@
         {{#each images}}
             <div class="col-md-6">
 
-                <div class="thumbnail audio-control">
-                    <audio src="{{this.audio_path}}" controls preload="none"
-                           style="background-color: transparent;display:none;"></audio>
+                <div class="thumbnail audio-control" id="acid_{{@index}}" data-audio-src="{{this.audio_path}}"
+                     data-key="{{this.key}}"
+                     data-wave-form="{{this.waveForm}}">
+                    <!--<audio src="{{this.audio_path}}" controls preload="none"-->
+                    <!--style="background-color: transparent;display:none;"></audio>-->
                     <img src="{{this.image}}" alt="Some image"/>
                     <!--<canvas class="hide"></canvas>-->
                     <div id="wf_{{@index}}" style="overflow: hidden;" class="wave-form"
@@ -98,17 +100,21 @@
 
                     </div>
                     <div class="caption">
-                        <h6>{{this.key}}</h6>
+                        <div class="text-success clearfix">
+
+                            <label class="status pull-left"></label>
+                            <label class="duration pull-right"></label>
+                        </div>
+                        <!--<h6>{{this.key}}</h6>-->
                         <p>
-                            <button type="button" data-target-id="wf_{{@index}}" class="btn btn-link"
-                                    data-audio-url="{{this.audio_path}}"
-                                    data-state="play">
-                                <span class="play">
-                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>&nbsp;Play
-                                </span>
-                                <span class="pause hide">
-                                <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>&nbsp;Pause
-                                </span>
+                            <button type="button" class="play btn btn-link" disabled>
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="pause btn btn-link" disabled>
+                                <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="stop btn btn-link" disabled>
+                                <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                             </button>
                             <button type="button" data-key="{{this.key}}" class="delete btn btn-link btn-lg pull-right"
                                     data-toggle="tooltip"
@@ -129,8 +135,13 @@
 
 
 {{#section 'scripts'}}
+
+    <script src="/lodash/lodash.min.js"></script>
+    <script src="/javascripts/EventEmitter.js"></script>
     <script src="/d3/build/d3.min.js"></script>
-    <script src="/javascripts/audio-bundle.js"></script>
+    <script src="/howler/dist/howler.min.js"></script>
+    <script src="/javascripts/Audio-Bundle.js"></script>
+    <script src="/javascripts/AudioComponent.js"></script>
 
     <script>
         var stats = {
@@ -166,7 +177,10 @@
             .append('svg')
             .attr('width', w)
             .attr('height', h)
-            .attr('transform', 'rotate(180)')
+            .style('moz-transform', 'rotate(180deg)')
+            .style('webkit-transform', 'rotate(180deg)')
+            .style('transform', 'rotate(180deg)')
+            //            .attr('-moz-transform', 'rotate(0)')
             .attr('data-wave-form-length', waveForm.length)
             .style('position', 'relative')
             .style('left', '50%')
@@ -184,50 +198,49 @@
             //            .attr('width', waveForm.length / 100 * 2)
             .attr('height', function (d) {
                 console.log(arguments)
-                return (waveForm[d] / 3)
+                return ((waveForm[d] / 3))
             })
             .attr('fill', 'rgba(33,33,33,0.5)')
             .attr('data-index', function (d, i) {return i})
 
         }
+        function init () {
+            showTypedVoiceMailMessage()
+
+            var voices = $('div[data-audio-src]').map(function (i, el) {
+                return {
+                    el: '#' + $(el).prop('id'),
+                    audioKey: $(el).data('key'),
+                    waveform: [$(el).data('wave-form').split(',')],
+                    controls: {
+                        $play: $(el).find('button.play')[0],
+                        $pause: $(el).find('button.pause')[0],
+                        $stop: $(el).find('button.stop')[0],
+                        $delete: $(el).find('button.delete')[0]
+                    },
+                    howl: {
+                        src: [$(el).data('audio-src')],
+                        autoplay: false,
+                        preload: false,
+                        loop: false,
+                        volume: 0.5
+                    }
+                }
+            }).toArray()
+            console.log('audio components: %s', voices.length)
+            console.log(voices)
+            for (var i = 0; i < voices.length; i++) {
+                var config = voices[i]
+                var audio = new AudioComponent(config)
+                audioComponents.push(audio)
+            }
+            //todo: clear laoding dialoge
+//                progress($(target).data('target-id'))
+        }
+        var audioComponents = []
 
         $(document).ready(function () {
-            showTypedVoiceMailMessage()
-            function togglePlay (target) {
-
-                $('.audio-control audio').each(function (a, b) {b.pause()})
-                $(target).parents('.audio-control').children('audio')[0].play()
-                $(target).parents('.audio-control').children('audio')[0].volume = (0.1)
-//                $(target).data('state', 'playing')
-                $('#id-form-tag').data('')
-                clearInterval(ci)
-                progress($(target).data('target-id'))
-            }
-
-            $('div[data-wave-form]').each(function (i, el) {
-                console.log(el, $(el).prop('id'))
-                var elementId = $(el).prop('id')
-                var formString = $(this).data('wave-form')
-                var waveForm = formString.split(',')
-                buildWaveFormTimeSeries(elementId, waveForm)
-            })
-
-            $('button[data-audio-url]').click(function () {
-                togglePlay(this)
-                $('button[data-audio-url]').children('.pause').addClass('hide')
-                $('button[data-audio-url]').children('.play').removeClass('hide')
-
-                if ($(this).data('state') === 'play') {
-                    $(this).data('state', 'paused')
-                    $(this).children('.play').addClass('hide')
-                    $(this).children('.pause').removeClass('hide')
-                } else {
-                    $(this).data('state', 'play')
-                    $(this).children('.pause').addClass('hide')
-                    $(this).children('.play').removeClass('hide')
-                    $(this).parents('.audio-control').children('audio')[0].pause()
-                }
-            })
+            init()
 
             $('[name=email]').keypress(function () {
                 if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
@@ -236,7 +249,6 @@
                 } else {
                     hideAudioControls()
                 }
-
             })
             $('[name=email]').focusout(function () {
                 if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
