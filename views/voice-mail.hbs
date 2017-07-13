@@ -1,10 +1,19 @@
 {{#section 'head'}}
-    <link rel="stylesheet" type="text/css" href="/stylesheets/demo.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/obnoxious.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="/stylesheets/demo.css"/>-->
+    <!--<link rel="stylesheet" type="text/css" href="/stylesheets/obnoxious.css"/>-->
     <script src="/recordrtc/RecordRTC.min.js"></script>
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
 {{/section}}
-<section class="container content fade in">
+<section id="alert-row" class="row hide">
+    <div class="col-md-12">
+        <div class="alert alert-info alert-dismissible text-center" role="alert" style="font-size:0.80em;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            <small>This site is built with WebRTC for the full experience it's recommended to use a desktop version of Chrome, Firefox, Opera or IE Edge!</small>
+        </div>
+    </div>
+</section>
+<section class="container content">
     <section class="voice-message-container row">
         <div class="col-xs-12">
             <div class="text-center">
@@ -23,14 +32,15 @@
 
     </section>
     <div id="scroll-to-section" class="col-md-12 text-center scroll-container">
-        <a id="go-to-record" data-scroll href="#record-section" class="fade in fs-3x">
-            <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
+        <a id="go-to-record" data-scroll href="#record-section" class="fs-2x">
+            <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
         </a>
     </div>
     <section id="record-section" class="row">
         <div class="col-md-12 text-center">
-            <button id="show-record-btn" type="button" class="btn btn-link btn-lg fs-4x">
-                <span class="glyphicon glyphicon-record" aria-hidden="true"></span><br/>Record
+            <button id="show-record-btn" type="button" class="btn btn-link fs-3x">
+                <span class="glyphicon glyphicon-record" aria-hidden="true"></span><br/>
+                <small>Record</small>
             </button>
         </div>
         <div id="record-container" class="col-md-12 hide">
@@ -43,12 +53,14 @@
         </span>
             <div class="audio-controls hide">
                 <div class="col-md-12">
-                    <canvas id="live-audio-canvas" class=""></canvas>
-                    <img id="snapshot">
-                    <label class="status on">The mic is hot.....</label>
-                    <label class="time-remaining pull-right"></label>
-
+                    <canvas id="live-audio-canvas" class="center-block"></canvas>
+                    <img id="snapshot" class="center-block">
+                    <div class="col-md-12">
+                        <label class="status on clearfix">The mic is hot.....</label>
+                        <label class="time-remaining pull-right"></label>
+                    </div>
                 </div>
+
                 <div class="text-center" role="group" aria-label="...">
                     <button id="record-btn" type="button" class="btn btn-link btn-lg">
                         <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
@@ -87,7 +99,7 @@
 
     </section>
     <div class="col-md-12 text-center scroll-container">
-        <a href="#recorded-section" data-scroll id="" type="button" class="btn btn-link btn-lg fs-4x">
+        <a href="#recorded-section" data-scroll id="" type="button" class="fs-2x">
             <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
         </a>
     </div>
@@ -132,6 +144,11 @@
             </div>
         {{/each}}
     </section>
+    <div id="top-scroll" class="">
+        <a href="#" class="btn btn-link pull-right" data-scroll>
+            <span class="glyphicon glyphicon-menu-up animated" aria-hidden="true"></span><br/><b>Top</b>
+        </a>
+    </div>
 </section>
 
 
@@ -153,9 +170,9 @@
             $('.container.content').height(h * 3)
         }
         function repositionCarrot () {
-            var h = $(window).height()
-            var z = h - (h * 0.05) - $('.voice-message-container').offset().top
-//            $('#scroll-to-section').offset({top: z})
+//            var h = $(window).height()
+//            var z = h - (h * 0.05) - $('.voice-message-container').offset().top
+//            $('[data-scroll]').parent('div').offset({top: z})
 //            $('#record-section').offset({top: z + ( z * 0.5)})
         }
         resizeContainer()
@@ -167,7 +184,11 @@
         var ci, pos2 = 50
 
         function progress (elementId) {}
+        console.log()
+        if (browser().mobile) {
+            $('#alert-row').removeClass('hide')
 
+        }
         function init () {
 
             showTypedVoiceMailMessage()
@@ -211,6 +232,14 @@
 
         $(document).ready(function () {
 
+            $('#top-scroll').affix({
+                offset: {
+                    top: $(window).height(),
+//                    bottom: function () {
+//                        return (this.bottom = $('.footer').outerHeight(true))
+//                    }
+                }
+            })
             $(window).on('resize', function () {
                 if ($(window).scrollTop() === 0) {
                     repositionCarrot()

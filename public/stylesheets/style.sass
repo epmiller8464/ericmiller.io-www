@@ -8,11 +8,13 @@ $grey: #82888a
 $green: #00ff48
 body
   padding: 0px
-  font: 14px Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
+  font-family: 'Roboto Mono', monospace
+  font-size: 14px
   text-rendering: geometricPrecision
   background-color: #000000
   color: #ffffff
-  display: block
+  @media screen and (max-width: 768px)
+    font-size: 10px
 
 a, .btn-link
   color: $blue !important
@@ -20,11 +22,14 @@ a, .btn-link
 .content
   position: relative
   z-index: 0
-  padding: 150px 50px
-  color: #ff0080
+  padding: 50px 50px
+//color: #ff0080
 
 .container.content
   padding: 50px 50px
+
+#alert-row
+  margin-top: 50px
 
 #particles-js
   position: absolute
@@ -122,14 +127,14 @@ a, .btn-link
   background: url("../images/unavailable.png") no-repeat center
 
 .scroll-container
-  margin: 50px 0
+  margin: 100px 0
+  padding-top: 40px
+
+.scroll-container:first-of-type
+  margin: 50px 0 !important
 
 .voice-message-container
   padding-top: 0 !important
-
-@media screen and (max-width: 786px)
-  .voice-message-container
-    font-size: 0.80em
 
 .voice-message-container .glyphicon
   color: $pink
@@ -225,8 +230,23 @@ a.text-danger:hover,
 a.text-danger:focus
   color: rgba(255, 0, 128, 0.7) !important
 
-#scroll-to-section
-//margin-bottom: 25em
+#show-record-btn
+  line-height: 1
 
-#record-section
-//margin-top: calc(100em)
+#top-scroll
+  margin: 0 15px 15px 0
+  position: fixed
+  right: 0
+  bottom: 0
+  z-index: 1030
+  min-height: 50px
+
+#top-scroll a
+  color: $orange !important
+
+#top-scroll.affix-top
+  visibility: hidden
+
+#top-scroll.affix
+  visibility: visible
+

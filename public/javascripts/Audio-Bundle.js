@@ -140,7 +140,7 @@ var _clearInterval
 var MAXRECORDTIME = 45000
 
 var WIDTH = 640
-var HEIGHT = 230
+var HEIGHT = 130
 
 // Interesting parameters to tweak!
 var SMOOTHING = 0.85
@@ -171,6 +171,7 @@ function WebVoiceMail (config, cb) {
   this.maxTime = 45000
   this.index = 0
   this.canvas = config.canvas
+  this.recording = false
   return this
 }
 
@@ -203,6 +204,7 @@ WebVoiceMail.prototype.stop = function () {
 //   if (this.isLive) {
   try {
     // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
+    this.recording = false
     this.mediaStream.stop()
     this.input.disconnect(0)
     this.filter.disconnect(0)
@@ -246,7 +248,7 @@ WebVoiceMail.prototype.draw = function (timestamp) {
   // var canvas = document.querySelector('canvas')
   var drawContext = this.canvas.getContext('2d')
 
-  this.canvas.width = WIDTH * 1.5
+  this.canvas.width = WIDTH
   this.canvas.height = HEIGHT
   // Draw the frequency domain chart.
   var t = 0
@@ -254,19 +256,25 @@ WebVoiceMail.prototype.draw = function (timestamp) {
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.freqs[i]
     var percent = value / 256
+    // var height = value * (value * percent)
     var height = HEIGHT * percent
     var offset = HEIGHT - height - 1
     var barWidth = WIDTH / this.analyser.frequencyBinCount
     // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     var hue = i / this.analyser.frequencyBinCount * 360
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-    // drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
-    t += value
+    if (!this.recording) {
+      drawContext.fillRect((i * barWidth) * 1, offset * 0.5, 1.5, (height / 2) > 0 ? (height / 2) : 1)
+    }else{
+      drawContext.fillRect((i * barWidth) * 1, offset, 1.5, 1)
+    }
+    t += value// (height / 2) > 0 ? (height / 2) : 1
   }
-  this.sampleBuffer[i] = this.getFrequencyValue(t / this.analyser.frequencyBinCount)
+  this.sampleBuffer[i] += this.getFrequencyValue(t / this.analyser.frequencyBinCount)
+  // this.sampleBuffer[i] = this.getFrequencyValue(t / this.analyser.frequencyBinCount)
   // this.index++
   // Draw the time domain chart.
-  for (var i = 0; i < this.sampleBuffer.length; i++) {
+  for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = this.sampleBuffer[i] / 2
     var percent = value / 256
     var height = HEIGHT * percent
@@ -277,7 +285,8 @@ WebVoiceMail.prototype.draw = function (timestamp) {
     var hue = i / this.analyser.frequencyBinCount * 360
 
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
-    drawContext.fillRect(i * (this.canvas.width / 100), HEIGHT - value, 4, this.sampleBuffer[i] > 2 ? (this.sampleBuffer[i] * 0.5) : 2)
+    drawContext.fillRect(i * (this.canvas.width / 100), HEIGHT - height, 2, height > 0 ? height : 1)
+    // drawContext.fillRect(i * (this.canvas.width / 100), HEIGHT - value, 2, this.sampleBuffer[i] > 2 ? (this.sampleBuffer[i]) : 2)
     // drawContext.fillRect(i * barWidth, offset, barWidth, 2)
     // drawContext.fillRect(i * barWidth, offset, barWidth, height)
     //
@@ -309,15 +318,15 @@ WebVoiceMail.prototype.sample = function (time) {
   for (var i = 0; i < this.analyser.frequencyBinCount; i++) {
     var value = freqs[i]
     // value = this.getFrequencyValue(value)//[i]
-    // var percent = value / 256
-    // var height = HEIGHT * percent
+    var percent = value / 256
+    var height = HEIGHT * percent
     // var offset = HEIGHT - height - 1
     // var barWidth = WIDTH / this.analyser.frequencyBinCount
     // // var barWidth = this.freqs.length / this.analyser.frequencyBinCount
     // var hue = i / this.analyser.frequencyBinCount * 360
     // drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
     // drawContext.fillRect((i * barWidth) * 1.5, offset * 0.5, 2, (height + 0.25))
-    t += value
+    t += height
   }
   this.sampleBuffer[time] = this.getFrequencyValue(t / this.analyser.frequencyBinCount)
   this.index++
@@ -495,7 +504,7 @@ startRecording.onclick = function () {
   playButton.disabled = true
   deleteRecordingButton.disabled = true
   $('.status.on').text('Recording....').addClass('recording')
-  // if (!recordAudio) {
+  liveSample.recording = true
 
   recordAudio = RecordRTC(liveSample.mediaStream, {
     type: 'audio',

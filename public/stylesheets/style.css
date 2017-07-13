@@ -1,10 +1,13 @@
 body {
   padding: 0px;
-  font: 14px Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+  font-family: "Roboto Mono", monospace;
+  font-size: 14px;
   text-rendering: geometricPrecision;
   background-color: #000000;
-  color: #ffffff;
-  display: block; }
+  color: #ffffff; }
+  @media screen and (max-width: 768px) {
+    body {
+      font-size: 10px; } }
 
 a, .btn-link {
   color: #2196f3 !important; }
@@ -12,11 +15,13 @@ a, .btn-link {
 .content {
   position: relative;
   z-index: 0;
-  padding: 150px 50px;
-  color: #ff0080; }
+  padding: 50px 50px; }
 
 .container.content {
   padding: 50px 50px; }
+
+#alert-row {
+  margin-top: 50px; }
 
 #particles-js {
   position: absolute;
@@ -62,25 +67,24 @@ a, .btn-link {
   height: 18px;
   -webkit-animation: pulsate 2s ease-out;
   -webkit-animation-iteration-count: infinite;
-  opacity: .0;
+  opacity: 0;
   border: 3px solid #e7797a;
   -webkit-border-radius: 30px; }
 
 .gps_ring-available {
-  opacity: .0;
+  opacity: 0;
   border: 1px solid rgba(0, 200, 83, 0.75);
   -webkit-border-radius: 10px; }
 
 @-webkit-keyframes pulsate {
   0% {
     -webkit-transform: scale(0.1, 0.1);
-    opacity: .0; }
+    opacity: 0; }
   50% {
-    opacity: 1.0; }
+    opacity: 1; }
   100% {
     -webkit-transform: scale(1.2, 1.2);
-    opacity: .0; } }
-
+    opacity: 0; } }
 .freelancer-status p span.available {
   z-index: 99;
   display: inline-block;
@@ -101,14 +105,14 @@ a, .btn-link {
   background: url("../images/unavailable.png") no-repeat center; }
 
 .scroll-container {
-  margin: 50px 0; }
+  margin: 100px 0;
+  padding-top: 40px; }
+
+.scroll-container:first-of-type {
+  margin: 50px 0 !important; }
 
 .voice-message-container {
   padding-top: 0 !important; }
-
-@media screen and (max-width: 786px) {
-  .voice-message-container {
-    font-size: 0.80em; } }
 
 .voice-message-container .glyphicon {
   color: #ff0080; }
@@ -203,5 +207,25 @@ a.text-warning:focus {
 a.text-danger:hover,
 a.text-danger:focus {
   color: rgba(255, 0, 128, 0.7) !important; }
+
+#show-record-btn {
+  line-height: 1; }
+
+#top-scroll {
+  margin: 0 15px 15px 0;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  min-height: 50px; }
+
+#top-scroll a {
+  color: #ef5350 !important; }
+
+#top-scroll.affix-top {
+  visibility: hidden; }
+
+#top-scroll.affix {
+  visibility: visible; }
 
 /*# sourceMappingURL=style.css.map */
