@@ -16,7 +16,7 @@ a, .btn-link {
   color: #ff0080; }
 
 .container.content {
-  padding: 100px 50px; }
+  padding: 50px 50px; }
 
 #particles-js {
   position: absolute;
@@ -100,14 +100,29 @@ a, .btn-link {
   vertical-align: -11px;
   background: url("../images/unavailable.png") no-repeat center; }
 
+.scroll-container {
+  margin: 50px 0; }
+
+.voice-message-container {
+  padding-top: 0 !important; }
+
+@media screen and (max-width: 786px) {
+  .voice-message-container {
+    font-size: 0.80em; } }
+
 .voice-message-container .glyphicon {
   color: #ff0080; }
 
 .voice-message-container .btn-link {
   color: #82888a !important; }
 
+.container.content section.row {
+  height: 25%;
+  clear: both;
+  padding-top: 50px; }
+
 .voice-message-text {
-  height: 200px;
+  height: 50%;
   color: #ffffff; }
 
 .glyphicon-record {
@@ -125,8 +140,17 @@ a, .btn-link {
 .fs-2x {
   font-size: 2em; }
 
+.fs-2_5x {
+  font-size: 2.5em; }
+
 .fs-3x {
   font-size: 3em; }
+
+.fs-4x {
+  font-size: 4em; }
+
+.fs-5x {
+  font-size: 5em; }
 
 .form-control:-webkit-autofill {
   background-color: #000000 !important;

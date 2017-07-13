@@ -1,33 +1,36 @@
 {{#section 'head'}}
     <link rel="stylesheet" type="text/css" href="/stylesheets/demo.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/obnoxious.css"/>
     <script src="/recordrtc/RecordRTC.min.js"></script>
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
 {{/section}}
-<section class="container content">
-    <div class="voice-message-container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="voice-message-text">
-                </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <span class="pull-right ">
+<section class="container content fade in">
+    <section class="voice-message-container row">
+        <div class="col-xs-12">
+            <div class="text-center">
                 <button id="unmute-btn" type="button" class="btn btn-link">
                     <span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span> Unmute
                 </button>
                 <button id="replay-btn" type="button" class="btn btn-link">
                     <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Replay
                 </button>
-                </span>
             </div>
         </div>
+        <div class="col-md-12">
+            <p class="voice-message-text fs-2_5x">
+            </p>
+        </div>
+
+    </section>
+    <div id="scroll-to-section" class="col-md-12 text-center scroll-container">
+        <a id="go-to-record" data-scroll href="#record-section" class="fade in fs-3x">
+            <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
+        </a>
     </div>
-    <div class="row">
+    <section id="record-section" class="row">
         <div class="col-md-12 text-center">
-            <button id="show-record-btn" type="button" class="btn btn-link btn-lg fs-2x ">
-                <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record Me A Message
+            <button id="show-record-btn" type="button" class="btn btn-link btn-lg fs-4x">
+                <span class="glyphicon glyphicon-record" aria-hidden="true"></span><br/>Record
             </button>
         </div>
         <div id="record-container" class="col-md-12 hide">
@@ -81,8 +84,14 @@
             <button type="button" class="btn btn-link next pull-right ">Next</button>
             <!--<button type="button" class="btn btn-link pull-right" id="snap">Capture Image</button>-->
         </div>
+
+    </section>
+    <div class="col-md-12 text-center scroll-container">
+        <a href="#recorded-section" data-scroll id="" type="button" class="btn btn-link btn-lg fs-4x">
+            <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
+        </a>
     </div>
-    <div class="row">
+    <section id="recorded-section" class="row">
         <h2 class="text-center">Previous Recordings</h2>
         <hr/>
         {{#each images}}
@@ -90,10 +99,10 @@
 
                 <div class="thumbnail audio-control" id="acid_{{@index}}" data-audio-src="{{this.audio_path}}"
                      data-recording-key="{{this.key}}"
-                     data-wave-form="{{this.waveForm}}">
+                     data-wave-form="{{this.waveForm}}"
+                     data-wave-form-container="wf_{{@index}}">
                     <img src="{{this.image}}" alt="Some image"/>
-                    <div id="wf_{{@index}}" style="overflow: hidden;" class="wave-form"
-                         data-wave-form="{{this.waveForm}}">
+                    <div id="wf_{{@index}}" style="overflow: hidden;" class="wave-form">
                     </div>
                     <div class="caption">
                         <p>
@@ -122,7 +131,7 @@
                 </div>
             </div>
         {{/each}}
-    </div>
+    </section>
 </section>
 
 
@@ -138,73 +147,36 @@
     <script src="/javascripts/AudioComponent.js"></script>
 
     <script>
-        var stats = {
-            step: 1
+
+        function resizeContainer () {
+            var h = $(window).height()
+            $('.container.content').height(h * 3)
         }
-        var ci
-        var pos2 = 50
-        function progress (elementId) {
-            var pos = $($('#' + elementId).children('svg')[0]).data('wave-form-length')
-            var position = $($('#' + elementId).children('svg')[0]).position().left
-            ci = setInterval(function () {
-                        $($('#' + elementId).children('svg')[0]).css('left', pos2 + '%')
-                        pos2 -= 0.25
-                        if ((pos2 % 1) === 0) {
-                            pos--
-                        }
-                        $($('#' + elementId).children('svg')[0]).children('rect')
-                        .each(function (a, b) {
-                            if ($(b).position().left <= position) {
-                                $(b).attr('fill', 'rgba(255,255,255,0.2)')
-                            }
-                        })
-                    },
-                    250)
-
+        function repositionCarrot () {
+            var h = $(window).height()
+            var z = h - (h * 0.05) - $('.voice-message-container').offset().top
+//            $('#scroll-to-section').offset({top: z})
+//            $('#record-section').offset({top: z + ( z * 0.5)})
         }
+        resizeContainer()
+        smoothScroll.init()
+        repositionCarrot()
 
-        function buildWaveFormTimeSeries (elementId, waveForm) {
-            $('#' + elementId).css(['overflow', 'hidden', 'position', 'relative'])
-            var h = 100, w = $('#' + elementId).width(), p = 2
+        var stats = {step: 1}
 
-            var svg = d3.select(document.getElementById(elementId))
-            .append('svg')
-            .attr('width', w)
-            .attr('height', h)
-            .style('moz-transform', 'rotate(180deg)')
-            .style('webkit-transform', 'rotate(180deg)')
-            .style('transform', 'rotate(180deg)')
-            //            .attr('-moz-transform', 'rotate(0)')
-            .attr('data-wave-form-length', waveForm.length)
-            .style('position', 'relative')
-            .style('left', '50%')
-            .style('overflow', 'hidden')
+        var ci, pos2 = 50
 
-//            .attr('left', '50%')
+        function progress (elementId) {}
 
-            svg.selectAll('rect')
-            .data(waveForm.map(function (i, d) {if (d > 100) {return d - 100} else {return d}}))
-            .enter()
-            .append('rect')
-            .attr('x', function (d, i) {return i * (w / waveForm.length)})
-            .attr('y', 0)
-            .attr('width', (w / waveForm.length - (p)))
-            //            .attr('width', waveForm.length / 100 * 2)
-            .attr('height', function (d) {
-                console.log(arguments)
-                return ((waveForm[d] / 3))
-            })
-            .attr('fill', 'rgba(33,33,33,0.5)')
-            .attr('data-index', function (d, i) {return i})
-
-        }
         function init () {
+
             showTypedVoiceMailMessage()
 
             var voices = $('div[data-audio-src]').map(function (i, el) {
                 return {
                     el: '#' + $(el).prop('id'),
                     recordingKey: $(el).data('recording-key'),
+                    waveFormEl: $(el).data('wave-form-container'),
                     waveform: [$(el).data('wave-form').split(',')],
                     controls: {
                         $play: $(el).find('button.play')[0],
@@ -223,19 +195,28 @@
                     }
                 }
             }).toArray()
-            console.log('audio components: %s', voices.length)
-            console.log(voices)
+
+//            console.log('audio components: %s', voices.length)
+//            console.log(voices)
+
             for (var i = 0; i < voices.length; i++) {
                 var config = voices[i]
                 var audio = new AudioComponent(config)
                 audioComponents.push(audio)
             }
-            //todo: clear laoding dialoge
-//                progress($(target).data('target-id'))
+            // todo: clear loading dialog
+//             progress($(target).data('target-id'))
         }
         var audioComponents = []
 
         $(document).ready(function () {
+
+            $(window).on('resize', function () {
+                if ($(window).scrollTop() === 0) {
+                    repositionCarrot()
+                }
+            })
+
             init()
 
             $('[name=email]').keypress(function () {
@@ -284,7 +265,7 @@
                 showCursor: false,
                 startDelay: 0,
                 callback: function () {
-                    $('#show-record-btn').removeClass('hide')
+                    $('#go-to-record').removeClass('hide').children('.glyphicon').addClass('intensifies').fadeIn()
                 }
             })
         }

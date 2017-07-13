@@ -5,6 +5,7 @@ var AudioComponent = function (options) {
   self._src = []
   self._el = options.el
   self._recordingKey = options.recordingKey
+  self._waveformEl = options.waveformEl
   self._waveform = options.waveform
   self._emitter = new EventEmitter()
   self._player = {}
@@ -96,13 +97,12 @@ AudioComponent.prototype.deleteClick = function () {
   .done(function (response) {
     if (response.success) {
       self._controls.$status.innerHTML = response.message + '<br/> <b class="text-warning">The page will reload in a few seconds...</b>'
-      setTimeout(function () {window.location.href = window.location.href}, 3000)
+      setTimeout(function () { window.location.href = window.location.href }, 3000)
     } else {
       console.log(response)
     }
   }).fail(function (e) {
     console.log(e)
-
   })
 }
 
@@ -158,6 +158,22 @@ AudioComponent.prototype.onEnd = function () {
 
 AudioComponent.prototype.progress = function () {
   var self = this
+  var elementId = self._waveformEl
+  var pos = $($('#' + elementId).children('svg')[0]).data('wave-form-length')
+  var position = $($('#' + elementId).children('svg')[0]).position().left
+  ci = setInterval(function () {
+      $($('#' + elementId).children('svg')[0]).css('left', pos2 + '%')
+      pos2 -= 0.25
+      if ((pos2 % 1) === 0) {
+        pos--
+      }
+      $($('#' + elementId).children('svg')[0]).children('rect')
+      .each(function (a, b) {
+        if ($(b).position().left <= position) {
+          $(b).attr('fill', 'rgba(255,255,255,0.2)')
+        }
+      })
+    }, 250)
 }
 
 AudioComponent.prototype.onPlaying = function (self) {
@@ -165,6 +181,43 @@ AudioComponent.prototype.onPlaying = function (self) {
   console.log('Playing')
   // self._clearAnimationFrame = setInterval(function () {self.animateWaveform()}, 500)
   self._clearAnimationFrame = window.requestAnimationFrame(function () {self.animateWaveform()})
+}
+
+AudioComponent.prototype.buildWaveform = function () {
+  var self = this
+  var elementId = self._waveformEl
+  var waveForm = self._waveform
+  var element = document.getElementById(elementId)
+  $('#' + elementId).css(['overflow', 'hidden', 'position', 'relative'])
+  var h = 100, w = $('#' + elementId).width(), p = 2
+
+  var svg = d3.select(element)
+  .append('svg')
+  .attr('width', w)
+  .attr('height', h)
+  .style('moz-transform', 'rotate(180deg)')
+  .style('webkit-transform', 'rotate(180deg)')
+  .style('transform', 'rotate(180deg)')
+  .attr('data-wave-form-length', waveForm.length)
+  .style('position', 'relative')
+  .style('left', '50%')
+  .style('overflow', 'hidden')
+
+  svg.selectAll('rect')
+  .data(waveForm.map(function (i, d) {if (d > 100) {return d - 100} else {return d}}))
+  .enter()
+  .append('rect')
+  .attr('x', function (d, i) {return i * (w / waveForm.length)})
+  .attr('y', 0)
+  .attr('width', (w / waveForm.length - (p)))
+  //            .attr('width', waveForm.length / 100 * 2)
+  .attr('height', function (d) {
+//                console.log(arguments)
+    return ((waveForm[d] / 3))
+  })
+  .attr('fill', 'rgba(33,33,33,0.5)')
+  .attr('data-index', function (d, i) {return i})
+
 }
 
 AudioComponent.prototype.animateWaveform = function () {
