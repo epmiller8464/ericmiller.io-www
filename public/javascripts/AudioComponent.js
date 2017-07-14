@@ -9,6 +9,7 @@ var AudioComponent = function (options) {
   self._waveform = options.waveform
   self._emitter = new EventEmitter()
   self._player = {}
+  self._siriWave = {}
   self._controls = {
     $play: null,
     $pause: null,
@@ -40,7 +41,7 @@ AudioComponent.prototype = {
     self._controls.$pause.onclick = function () { self.pauseClick() }
     self._controls.$stop.onclick = function () { self.stopClick() }
     self._controls.$delete.onclick = function () { self.deleteClick() }
-
+    // self._siriWave = options.siriWave
     self._player = new Howl(options.howl)
 
     self._player.once('load', function () { self.onLoaded() })
@@ -162,24 +163,25 @@ AudioComponent.prototype.progress = function () {
   var pos = $($('#' + elementId).children('svg')[0]).data('wave-form-length')
   var position = $($('#' + elementId).children('svg')[0]).position().left
   ci = setInterval(function () {
-      $($('#' + elementId).children('svg')[0]).css('left', pos2 + '%')
-      pos2 -= 0.25
-      if ((pos2 % 1) === 0) {
-        pos--
+    $($('#' + elementId).children('svg')[0]).css('left', pos2 + '%')
+    pos2 -= 0.25
+    if ((pos2 % 1) === 0) {
+      pos--
+    }
+    $($('#' + elementId).children('svg')[0]).children('rect')
+    .each(function (a, b) {
+      if ($(b).position().left <= position) {
+        $(b).attr('fill', 'rgba(255,255,255,0.2)')
       }
-      $($('#' + elementId).children('svg')[0]).children('rect')
-      .each(function (a, b) {
-        if ($(b).position().left <= position) {
-          $(b).attr('fill', 'rgba(255,255,255,0.2)')
-        }
-      })
-    }, 250)
+    })
+  }, 250)
 }
 
 AudioComponent.prototype.onPlaying = function (self) {
   // var self = this
   console.log('Playing')
   // self._clearAnimationFrame = setInterval(function () {self.animateWaveform()}, 500)
+
   self._clearAnimationFrame = window.requestAnimationFrame(function () {self.animateWaveform()})
 }
 

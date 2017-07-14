@@ -9,7 +9,93 @@
         <div class="alert alert-info alert-dismissible text-center" role="alert" style="font-size:0.80em;">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                     aria-hidden="true">&times;</span></button>
-            <small>This site is built with WebRTC for the full experience it's recommended to use a desktop version of Chrome, Firefox, Opera or IE Edge!</small>
+            <small>This site is built with WebRTC for the full experience it's recommended to use a desktop version of
+                Chrome, Firefox, Opera or IE Edge!
+            </small>
+        </div>
+    </div>
+</section>
+<section class="content content--bg content--bg-mic content--nopadding">
+    <div class="content content--bg content-bg-overlay overlay-dark">
+        <div class="content__inner content__inner--fheight flexy flexy--center">
+            <h2 class="content__title br text-muted">Web Voice Mail</h2>
+            <p class="voice-message-text fs-2_5x">
+            </p>
+        </div>
+        <div class="interaction interaction--corner interaction--light">
+            <a id="go-to-record" data-scroll href="#record-section" class="link-more">
+                <span class="fa fa-microphone fs-2x"></span><br>Record A New Message
+            </a>
+        </div>
+    </div>
+</section>
+<section id="record-section" class="content content--bg content--bg-recorder content--nopadding row">
+    <div id="wavebg" class="content content--bg content-bg-overlay overlay-dark">
+        <div class="content__inner content__inner--fheight flexy flexy--center">
+            <!--<h2 class="content__title br text-muted">Web Voice Mail</h2>-->
+            <div class="">
+                <button id="show-record-btn" type="button" class="btn btn-link fs-3x">
+                    <span class="fa fa-microphone" aria-hidden="true"></span><br/>
+                    <small>Record</small>
+                </button>
+            </div>
+            <div id="record-container" class="col-md-12">
+        <span class="input-group-lg">
+            <span class="input-lg">
+                <label>Enter a valid email</label>
+                <input class="form-control" type="email" autocomplete="off" name="email"
+                       placeholder="e.g. tom@gmail.com" style="background: transparent;"/>
+            </span>
+        </span>
+                <div class="audio-controls">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <canvas id="live-audio-canvas" class="center-block"></canvas>
+                            <img id="snapshot" class="center-block">
+                            <div class="col-md-12">
+                                <label class="status on clearfix">The mic is hot.....</label>
+                                <label class="time-remaining pull-right"></label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="text-center" role="group" aria-label="...">
+                        <button id="record-btn" type="button" class="btn btn-link btn-lg">
+                            <span class="fa fa-microphone" aria-hidden="true"></span> Record
+                        </button>
+                        <button id="stop-recording-btn" type="button" class="btn btn-link btn-lg">
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
+                        </button>
+                        <button id="play-btn" type="button" class="btn btn-link btn-lg">
+                            <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> replay
+                        </button>
+                        <button id="delete-upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip"
+                                data-placement="right" title="Recording save automatically but you can delete yours">
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Delete Recording
+                        </button>
+
+                    </div>
+                </div>
+                <span>
+                    <audio id="camera-preview" controls class="hide"
+                           style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
+                <span style="display:none;">
+                    <progress id="progress-bar" value="0" max="100"></progress>
+                    <br/>
+                    </span>
+                <span>
+            </span>
+            </span>
+                <span class="input-group-lg step-2">
+        </span>
+                <button type="button" class="btn btn-link next pull-right ">Next</button>
+            </div>
+        </div>
+        <div class="interaction interaction--corner interaction--light">
+            <a id="go-to-record" data-scroll href="#record-section" class="link-more">
+                <span class="fa fa-microphone fs-2x"></span><br>Record A New Message
+            </a>
         </div>
     </div>
 </section>
@@ -36,68 +122,7 @@
             <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
         </a>
     </div>
-    <section id="record-section" class="row">
-        <div class="col-md-12 text-center">
-            <button id="show-record-btn" type="button" class="btn btn-link fs-3x">
-                <span class="glyphicon glyphicon-record" aria-hidden="true"></span><br/>
-                <small>Record</small>
-            </button>
-        </div>
-        <div id="record-container" class="col-md-12 hide">
-        <span class="input-group-lg">
-            <span class="input-lg">
-                <label>Enter a valid email</label>
-                <input class="form-control" type="email" autocomplete="off" name="email"
-                       placeholder="e.g. tom@gmail.com" style="background: transparent;"/>
-            </span>
-        </span>
-            <div class="audio-controls hide">
-                <div class="col-md-12">
-                    <canvas id="live-audio-canvas" class="center-block"></canvas>
-                    <img id="snapshot" class="center-block">
-                    <div class="col-md-12">
-                        <label class="status on clearfix">The mic is hot.....</label>
-                        <label class="time-remaining pull-right"></label>
-                    </div>
-                </div>
 
-                <div class="text-center" role="group" aria-label="...">
-                    <button id="record-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
-                    </button>
-                    <button id="stop-recording-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
-                    </button>
-                    <button id="play-btn" type="button" class="btn btn-link btn-lg">
-                        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> replay
-                    </button>
-                    <button id="delete-upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip"
-                            data-placement="right" title="Recording save automatically but you can delete yours">
-                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Delete Recording
-                    </button>
-
-                </div>
-            </div>
-            <span>
-                    <audio id="camera-preview" controls class="hide"
-                           style="border: 1px solid rgb(15, 158, 238); width: 94%;"></audio>
-                <span style="display:none;">
-
-                    <progress id="progress-bar" value="0" max="100"></progress>
-                    <br/>
-                    </span>
-                <span>
-
-            </span>
-            </span>
-
-            <span class="input-group-lg step-2">
-        </span>
-            <button type="button" class="btn btn-link next pull-right ">Next</button>
-            <!--<button type="button" class="btn btn-link pull-right" id="snap">Capture Image</button>-->
-        </div>
-
-    </section>
     <div class="col-md-12 text-center scroll-container">
         <a href="#recorded-section" data-scroll id="" type="button" class="fs-2x">
             <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
@@ -160,6 +185,7 @@
     <script src="/javascripts/EventEmitter.js"></script>
     <script src="/d3/build/d3.min.js"></script>
     <script src="/howler/dist/howler.min.js"></script>
+    <script src="/siriwavejs/siriwave.js"></script>
     <script src="/javascripts/Audio-Bundle.js"></script>
     <script src="/javascripts/AudioComponent.js"></script>
 
@@ -193,6 +219,7 @@
 
             showTypedVoiceMailMessage()
 
+//            siriWave.start()
             var voices = $('div[data-audio-src]').map(function (i, el) {
                 return {
                     el: '#' + $(el).prop('id'),
@@ -214,6 +241,7 @@
                         loop: false,
                         volume: 0.5
                     }
+
                 }
             }).toArray()
 
@@ -247,6 +275,7 @@
             })
 
             init()
+            showAudioControls()
 
             $('[name=email]').keypress(function () {
                 if (new RegExp(/.+\@.+\..+/).test($(this).val())) {
@@ -273,7 +302,7 @@
             })
 
             $('#show-record-btn').click(function () {
-                $('#record-container').toggleClass('hide')
+//                $('#record-container').toggleClass('hide')
             })
 
         })
@@ -283,7 +312,7 @@
             initAudio()
         }
         function hideAudioControls () {
-            $('.audio-controls').addClass('hide')
+//            $('.audio-controls').addClass('hide')
         }
 
         function showTypedVoiceMailMessage () {

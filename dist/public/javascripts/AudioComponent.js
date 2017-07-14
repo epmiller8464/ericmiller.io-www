@@ -11,6 +11,7 @@ var AudioComponent = function AudioComponent(options) {
   self._waveform = options.waveform;
   self._emitter = new EventEmitter();
   self._player = {};
+  self._siriWave = {};
   self._controls = {
     $play: null,
     $pause: null,
@@ -50,7 +51,7 @@ AudioComponent.prototype = {
     self._controls.$delete.onclick = function () {
       self.deleteClick();
     };
-
+    // self._siriWave = options.siriWave
     self._player = new Howl(options.howl);
 
     self._player.once('load', function () {
@@ -201,6 +202,7 @@ AudioComponent.prototype.onPlaying = function (self) {
   // var self = this
   console.log('Playing');
   // self._clearAnimationFrame = setInterval(function () {self.animateWaveform()}, 500)
+
   self._clearAnimationFrame = window.requestAnimationFrame(function () {
     self.animateWaveform();
   });

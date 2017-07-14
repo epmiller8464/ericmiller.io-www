@@ -1,3 +1,5 @@
+@import "./font-awesome.css"
+
 $orange: #ef5350
 $pink: #ff0080
 $lght-purple: #9c27b0
@@ -6,6 +8,7 @@ $blue: #2196f3
 $yellow: #ffeb3b
 $grey: #82888a
 $green: #00ff48
+
 body
   padding: 0px
   font-family: 'Roboto Mono', monospace
@@ -19,10 +22,10 @@ body
 a, .btn-link
   color: $blue !important
 
-.content
-  position: relative
-  z-index: 0
-  padding: 50px 50px
+//.content
+//  position: relative
+//  z-index: 0
+//  padding: 50px 50px
 //color: #ff0080
 
 .container.content
@@ -150,6 +153,7 @@ a, .btn-link
 .voice-message-text
   height: 50%
   color: #ffffff
+  margin-top: 10px
 
 .glyphicon-record
   color: $pink
@@ -249,4 +253,172 @@ a.text-danger:focus
 
 #top-scroll.affix
   visibility: visible
+
+/* Flexbox helper classes */
+.flexy
+  display: flex
+  flex-direction: column
+  align-items: center
+
+.flexy--stretch
+  align-items: stretch
+
+.flexy--center
+  justify-content: center
+
+.flexy--row
+  flex-direction: row
+  flex-wrap: wrap
+
+.flexy--padding
+  padding: 0 0 2em
+
+.tiny
+  font-size: 50%
+
+/* Content */
+#wavebg canvas:not(#live-audio-canvas)
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  opacity: 0.5
+
+.content
+  position: relative
+  min-height: 100vh
+  padding: 15vh 0 0
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+.content--highlight
+  padding: 0
+  background: rgba(0, 0, 0, 0.8)
+
+.content--nopadding
+  padding: 0
+
+.content--boxes
+  min-height: 70vh
+
+.content__inner
+  position: relative
+  z-index: 10
+  max-width: 700px
+  margin: 0 auto
+  text-align: center
+//pointer-events: none
+
+.content__inner--fheight
+  height: 60vh
+
+.content__inner--half
+  flex: none
+  width: 50%
+  max-width: none
+  height: auto
+  padding: 15vh calc(25vw - 220px)
+
+.content__inner--half .content__title
+  font-size: 2.25em
+  margin-bottom: 0.5em
+  text-transform: uppercase
+
+.content__inner--half .content__subtitle
+  font-size: 1.75em
+
+.content__inner--half .link-more
+  color: rgba(0, 0, 0, 0.3)
+
+.content__inner--c1
+  background: #4d61c5
+
+.content__inner--c2
+  background: #f7f4ec
+
+.content__inner--c3
+  background: #cc8969
+
+.content__title
+  //font-size: 3em
+  //font-weight: 900
+  line-height: 1.25
+  position: relative
+  z-index: 10
+  margin: 0
+  padding: 0 5vmax 0 5vmax
+  text-transform: uppercase
+//pointer-events: none
+
+.content__title.br
+  border-bottom: 1px solid $grey
+  padding: 0 10px
+
+.content__title--color
+  color: #f4ba45
+
+.content__title--light
+  color: #f7f4ec
+
+.content__title--center
+  text-align: center
+
+.content__title .icon
+  font-size: 0.45em
+  display: inline-block
+  margin: 0 0.25em
+  color: #5b5d69
+
+.content__subtitle
+  font-size: 2.5em
+  font-weight: normal
+  margin: 0.5em 0 1em
+
+.content__subtitle--light
+  color: #f7f4ec
+
+.content--bg
+  background-position: 50% 50%
+  background-size: cover
+
+.content-bg-overlay
+  position: relative
+  z-index: 10
+  margin: 0 auto
+  text-align: center
+
+.content.content--bg.content-bg-overlay
+  padding: 0 !important
+
+.overlay-dark
+  background-color: rgba(0, 0, 0, 0.9)
+
+.overlay-light
+  background-color: rgba(0, 0, 0, 0.7)
+.content--bg-mic
+  background-image: url(../images/unsplash/mic.jpg)
+
+.content--bg-recorder
+  background-image: url(../images/unsplash/old-recorder.jpg)
+  background-size: contain !important
+
+
+.content--bg-code
+  background-image: url(../images/unsplash/code.jpg)
+
+.content--bg-code-web
+  background-image: url(../images/unsplash/code-web.jpg)
+
+.content--bg-code-js-1
+  background-image: url(../images/unsplash/code-js-1.jpg)
+
+.content--bg-code-js-2
+  background-image: url(../images/unsplash/code-js-2.jpg)
+
+
+
 

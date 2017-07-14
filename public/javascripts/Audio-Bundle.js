@@ -172,6 +172,15 @@ function WebVoiceMail (config, cb) {
   this.index = 0
   this.canvas = config.canvas
   this.recording = false
+  this.siriWave = new SiriWave({
+    container: document.getElementById('wavebg'),
+    // style: 'ios9',
+    speed: 0.05,
+    color: '#f4846d',
+    frequency: 4,
+    amplitude: 0.3,
+    autostart: true
+  })
   return this
 }
 
@@ -205,6 +214,7 @@ WebVoiceMail.prototype.stop = function () {
   try {
     // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
     this.recording = false
+    this.siriWave.stop()
     this.mediaStream.stop()
     this.input.disconnect(0)
     this.filter.disconnect(0)
@@ -265,7 +275,7 @@ WebVoiceMail.prototype.draw = function (timestamp) {
     drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)'
     if (!this.recording) {
       drawContext.fillRect((i * barWidth) * 1, offset * 0.5, 1.5, (height / 2) > 0 ? (height / 2) : 1)
-    }else{
+    } else {
       drawContext.fillRect((i * barWidth) * 1, offset, 1.5, 1)
     }
     t += value// (height / 2) > 0 ? (height / 2) : 1
