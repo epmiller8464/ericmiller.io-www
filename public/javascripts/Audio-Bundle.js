@@ -209,6 +209,7 @@ WebVoiceMail.prototype.play = function () {
   requestAnimationFrame(this.draw.bind(this))
 }
 
+
 WebVoiceMail.prototype.stop = function () {
 //   if (this.isLive) {
   try {
