@@ -1,38 +1,62 @@
 'use strict';
 
 var uuid = require('uuid');
-var fs = require('fs');
-var path = require('path');
-var moment = require('moment');
+
+var _require = require('./lib/VmWare'),
+    writeToDisk = _require.writeToDisk,
+    updateAndRemoveFile = _require.updateAndRemoveFile;
+
+var _require2 = require('./lib/storageService'),
+    Service = _require2.Service;
 // const exec = require('child_process').exec
 // const FFmpeg = require('fluent-ffmpeg')
+// const {level} = require('./level')('vm', {valueEncoding: 'json'})
 
-var _require = require('./level')('vm', { valueEncoding: 'json' }),
-    level = _require.level;
+
+var _require3 = require('./lib/model'),
+    VoiceMessage = _require3.VoiceMessage;
+
+require('./lib/db')(function () {});
 
 function server(app) {
 
   // var io = require('socket.io').listen(app)
   var opts = {
-    transports: ['polling', 'websocket', 'xhr-polling', 'jsonp-polling'],
+    transports: ['polling', 'xhr-polling', 'jsonp-polling'],
     log: true,
     origins: '*:*'
   }; // 'disconnect' EVENT will work only with 'websocket
   var io = require('socket.io')(app, opts);
   io.sockets.on('connection', function (socket) {
+
     socket.on('message', function (data) {
       var fileName = uuid.v4();
 
       socket.emit('ffmpeg-output', 0);
       // console.log(data)
       // console.log('my nigga we have the image %s', data.audio.image)
-      writeToDisk(data.audio, fileName + '.wav', function (error, key) {
+      writeToDisk(data.audio, fileName + '.wav', function (error, doc) {
 
         if (error) {
           socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message);
           return;
         }
-        socket.emit('merged', { fileName: fileName + '.wav', key: key });
+        var vm = doc;
+        socket.emit('merged', { fileName: fileName + '.wav', id: vm._id, key: vm.filename });
+      });
+    });
+
+    socket.on('save-upload', function (data) {
+
+      var filename = data.filename;
+      var id = data.id;
+      Service.AWS.upload(filename, { id: id }, function (err, result) {
+        console.log(err);
+        console.log(result);
+
+        updateAndRemoveFile(filename, id, result, function (err, vm) {
+          socket.emit('uploaded', vm);
+        });
       });
     });
   });
@@ -40,40 +64,6 @@ function server(app) {
   // isn't it redundant?
   // app.listen(8888);
   var set = new Set();
-
-  function writeToDisk(audio, fileName, cb) {
-    var dataURL = audio.dataURL;
-    var fileExtension = fileName.split('.').pop();
-    var fileRootNameWithBase = './uploads/' + fileName;
-    var filePath = fileRootNameWithBase;
-    var fileID = 2;
-
-    // @todo return the new filename to client
-    while (fs.existsSync(filePath)) {
-      filePath = fileRootNameWithBase + '(' + fileID + ').' + fileExtension;
-      fileID += 1;
-    }
-
-    dataURL = dataURL.split(',').pop();
-    // fileBuffer = new Buffer(dataURL, 'base64')
-    // fs.writeFileSync(filePath, fileBuffer)
-    var ws = fs.createWriteStream(filePath, 'base64').write(Buffer.from(dataURL, 'base64'));
-    // console.log('filePath', filePath)
-    var key = buildKeyName(audio.email);
-    // console.log(`key: ${key} path: ${filePath}`)
-    level.put(key, { image: audio.image, audio_path: filePath, read: false, waveForm: audio.waveForm }, function (result) {
-
-      cb(null, key);
-      // if (!result) {
-      //   cb(null, new Error('opps something bad happened'))
-      // } else {
-      // }
-    });
-  }
-
-  function buildKeyName(email) {
-    return email + '.' + moment().valueOf();
-  }
 
   // function merge (socket, fileName) {
   //

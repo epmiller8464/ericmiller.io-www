@@ -149,8 +149,8 @@ AudioComponent.prototype.onPlay = function () {
   self.emit('playing', self);
 };
 
-AudioComponent.prototype.onError = function () {
-  console.error(arguments);
+AudioComponent.prototype.onError = function (e) {
+  console.error(e);
 };
 
 AudioComponent.prototype.onPause = function () {

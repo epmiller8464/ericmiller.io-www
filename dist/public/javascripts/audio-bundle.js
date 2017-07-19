@@ -28,7 +28,7 @@ var currentTime = 0;
 var startRecording = document.getElementById('record-btn');
 var stopRecording = document.getElementById('stop-recording-btn');
 var playButton = document.getElementById('play-btn');
-var deleteRecordingButton = document.getElementById('delete-upload-btn');
+var saveRecordingButton = document.getElementById('upload-btn');
 var cameraPreview = document.getElementById('camera-preview');
 var progressBar = document.querySelector('#progress-bar');
 var percentage = document.querySelector('#percentage');
@@ -149,6 +149,7 @@ var HEIGHT = 130;
 var SMOOTHING = 0.85;
 // var FFT_SIZE = 2048 << 0x01
 var FFT_SIZE = 1024;
+
 // var FFT_SIZE = 2048 / 2
 
 function WebVoiceMail(config, cb) {
@@ -491,7 +492,7 @@ function initAudio() {
   startRecording.disabled = false;
   stopRecording.disabled = true;
   playButton.disabled = true;
-  deleteRecordingButton.disabled = true;
+  saveRecordingButton.disabled = true;
 
   if (sample) {
     sample.disconnect();
@@ -516,7 +517,7 @@ startRecording.onclick = function () {
   // initAudio()
   startRecording.disabled = true;
   playButton.disabled = true;
-  deleteRecordingButton.disabled = true;
+  saveRecordingButton.disabled = true;
   $('.status.on').text('Recording....').addClass('recording');
   liveSample.recording = true;
 
@@ -542,6 +543,7 @@ startRecording.onclick = function () {
 var duration = 45;
 var start = null;
 var imageCaptured = false;
+
 function showProgress(timestamp) {
   if (!start) {
     start = Date.now();
@@ -577,34 +579,43 @@ playButton.onclick = function () {
 };
 var recordingKey = null;
 var fileName = null;
-deleteRecordingButton.onclick = function () {
+saveRecordingButton.onclick = function () {
   // $('#start-recording').trigger('click')
   // sample.togglePlayback()
   // sample.startOffset = sample.buffer.duration / 2
   // sample.play()
   // initAudio()
-  $.ajax({
-    // method: 'POST',
-    method: 'DELETE',
-    url: '/voice-mail/' + recordingKey,
-    data: { key: recordingKey, fileName: fileName }
-  }).done(function (msg) {
-    window.location.href = window.location.href;
-  });
+  // $.ajax({
+  //   // method: 'POST',
+  //   method: 'DELETE',
+  //   url: '/voice-mail/' + recordingKey,
+  //   data: {key: recordingKey, fileName: fileName}
+  // })
+  // .done(function (msg) {
+  //   window.location.href = window.location.href
+  // })
+  socketio.emit('save-upload', { filename: fileName, id: recordingKey });
+
   // $.ajax({method:'POST',})
 };
+socketio.on('uploaded', function (payload) {
+
+  $('.status.on').text('Uploaded...').removeClass('recording');
+  console.log(payload);
+});
 
 socketio.on('merged', function (payload) {
   var _fileName = payload.fileName;
   var key = payload.key;
+  var id = payload.id;
   var href = location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href;
   href = href + 'uploads/' + _fileName;
   console.log('got file ' + href);
   sample = new VisualizerSample({ source: href, canvas: liveAudioCanvas }, function () {
     startRecording.disabled = true;
     playButton.disabled = false;
-    deleteRecordingButton.disabled = false;
-    recordingKey = key;
+    saveRecordingButton.disabled = false;
+    recordingKey = id;
     fileName = _fileName;
     console.log(key, fileName);
     // $('#delete-upload-btn').data('recording-key', key)
@@ -646,7 +657,8 @@ function endRecording() {
           dataURL: audioDataURL,
           image: image,
           email: 'epmiller8464@gmail.com',
-          waveForm: liveSample.sampleBuffer
+          waveForm: liveSample.sampleBuffer,
+          createDate: moment().format('LLL')
         }
       };
       socketio.emit('message', files);

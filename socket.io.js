@@ -1,11 +1,15 @@
 'use strict'
 const uuid = require('uuid')
-const fs = require('fs')
-const path = require('path')
-const moment = require('moment')
+
+const {writeToDisk, updateAndRemoveFile} = require('./lib/VmWare')
+const {Service} = require('./lib/storageService')
 // const exec = require('child_process').exec
 // const FFmpeg = require('fluent-ffmpeg')
-const {level} = require('./level')('vm', {valueEncoding: 'json'})
+// const {level} = require('./level')('vm', {valueEncoding: 'json'})
+const {VoiceMessage} = require('./lib/model')
+require('./lib/db')(() => {
+
+})
 
 function server (app) {
 
@@ -13,7 +17,6 @@ function server (app) {
   var opts = {
     transports: [
       'polling',
-      'websocket',
       'xhr-polling',
       'jsonp-polling'
     ],
@@ -22,19 +25,35 @@ function server (app) {
   }// 'disconnect' EVENT will work only with 'websocket
   let io = require('socket.io')(app, opts)
   io.sockets.on('connection', function (socket) {
+
     socket.on('message', function (data) {
       var fileName = uuid.v4()
 
       socket.emit('ffmpeg-output', 0)
       // console.log(data)
       // console.log('my nigga we have the image %s', data.audio.image)
-      writeToDisk(data.audio, fileName + '.wav', (error, key) => {
+      writeToDisk(data.audio, fileName + '.wav', (error, doc) => {
 
         if (error) {
           socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message)
           return
         }
-        socket.emit('merged', {fileName: fileName + '.wav', key: key})
+        let vm = doc
+        socket.emit('merged', {fileName: fileName + '.wav', id: vm._id, key: vm.filename})
+      })
+    })
+
+    socket.on('save-upload', function (data) {
+
+      let filename = data.filename
+      let id = data.id
+      Service.AWS.upload(filename, {id}, (err, result) => {
+        console.log(err)
+        console.log(result)
+
+        updateAndRemoveFile(filename, id, result, (err, vm) => {
+          socket.emit('uploaded', vm)
+        })
       })
     })
   })
@@ -42,40 +61,6 @@ function server (app) {
 // isn't it redundant?
 // app.listen(8888);
   const set = new Set()
-
-  function writeToDisk (audio, fileName, cb) {
-    let dataURL = audio.dataURL
-    let fileExtension = fileName.split('.').pop()
-    let fileRootNameWithBase = './uploads/' + fileName
-    let filePath = fileRootNameWithBase
-    let fileID = 2
-
-    // @todo return the new filename to client
-    while (fs.existsSync(filePath)) {
-      filePath = fileRootNameWithBase + '(' + fileID + ').' + fileExtension
-      fileID += 1
-    }
-
-    dataURL = dataURL.split(',').pop()
-    // fileBuffer = new Buffer(dataURL, 'base64')
-    // fs.writeFileSync(filePath, fileBuffer)
-    let ws = fs.createWriteStream(filePath, 'base64').write(Buffer.from(dataURL, 'base64'))
-    // console.log('filePath', filePath)
-    let key = buildKeyName(audio.email)
-    // console.log(`key: ${key} path: ${filePath}`)
-    level.put(key, {image: audio.image, audio_path: filePath, read: false, waveForm: audio.waveForm}, (result) => {
-
-      cb(null, key)
-      // if (!result) {
-      //   cb(null, new Error('opps something bad happened'))
-      // } else {
-      // }
-    })
-  }
-
-  function buildKeyName (email) {
-    return `${email}.${moment().valueOf()}`
-  }
 
 // function merge (socket, fileName) {
 //

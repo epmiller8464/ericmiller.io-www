@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../lib/model/index.js"],"names":["VoiceMessage","require","module","exports"],"mappings":"AAAA;;AACA,IAAMA,eAAeC,QAAQ,iBAAR,GAArB;;AAEAC,OAAOC,OAAP,GAAiB,EAACH,0BAAD,EAAjB","file":"index.js","sourcesContent":["'use strict'\nconst VoiceMessage = require('./voice-message')()\n\nmodule.exports = {VoiceMessage}"]}

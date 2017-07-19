@@ -68,7 +68,12 @@ app.engine('hbs', exphbs.engine)
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'hbs')
 app.set('trust proxy', 1)
-
+app.use(require('cors')({
+  origin: '*',
+  methods: 'GET,PUT,POST,OPTIONS,DELETE',
+  preflightContinue: true
+  // headers: ['Access-Control-Allow-Origin']
+}))
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'))
