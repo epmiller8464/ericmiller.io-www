@@ -6,12 +6,10 @@
 {{/section}}
 <section id="alert-row" class="row hide">
     <div class="col-md-12">
-        <div class="alert alert-info alert-dismissible text-center" role="alert" style="font-size:0.80em;">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                    aria-hidden="true">&times;</span></button>
-            <small>This site is built with WebRTC for the full experience it's recommended to use a desktop version of
+        <div class="alert alert-danger text-center fs-3x" role="alert" style="font-size:0.80em;">
+            <b>This site is built with WebRTC, for the full experience it's recommended to use a desktop version of
                 Chrome, Firefox, Opera or IE Edge!
-            </small>
+            </b>
         </div>
     </div>
 </section>
@@ -100,23 +98,6 @@
     </div>
 </section>
 <section class="container content">
-    <section class="voice-message-container row">
-        <div class="col-xs-12">
-            <div class="text-center">
-                <button id="unmute-btn" type="button" class="btn btn-link">
-                    <span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span> Unmute
-                </button>
-                <button id="replay-btn" type="button" class="btn btn-link">
-                    <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Replay
-                </button>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <p class="voice-message-text fs-2_5x">
-            </p>
-        </div>
-
-    </section>
     <div id="scroll-to-section" class="col-md-12 text-center scroll-container">
         <a id="go-to-record" data-scroll href="#record-section" class="fs-2x">
             <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
@@ -195,12 +176,14 @@
             var h = $(window).height()
             $('.container.content').height(h * 3)
         }
+
         function repositionCarrot () {
 //            var h = $(window).height()
 //            var z = h - (h * 0.05) - $('.voice-message-container').offset().top
 //            $('[data-scroll]').parent('div').offset({top: z})
 //            $('#record-section').offset({top: z + ( z * 0.5)})
         }
+
         resizeContainer()
         smoothScroll.init()
         repositionCarrot()
@@ -210,11 +193,13 @@
         var ci, pos2 = 50
 
         function progress (elementId) {}
+
         console.log()
         if (browser().mobile) {
             $('#alert-row').removeClass('hide')
 
         }
+
         function init () {
 
             showTypedVoiceMailMessage()
@@ -257,6 +242,7 @@
             // todo: clear loading dialog
 //             progress($(target).data('target-id'))
         }
+
         var audioComponents = []
 
         $(document).ready(function () {
@@ -312,20 +298,40 @@
             $('.audio-controls').removeClass('hide')
             initAudio()
         }
+
         function hideAudioControls () {
 //            $('.audio-controls').addClass('hide')
         }
 
         function showTypedVoiceMailMessage () {
-            $('.voice-message-text').typed({
-                strings: ['Hello, you have reached the voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible. <br/> Thanks!'],
-                typeSpeed: 0,
-                html: true,
-                showCursor: false,
-                startDelay: 0,
-                callback: function () {
-                    $('#go-to-record').removeClass('hide').children('.glyphicon').addClass('intensifies').fadeIn()
-                }
+            var _player = new Howl({
+                src: ['./media/eric-miller-vm.m4a'],
+                format: ['m4a'],
+                autoplay: true,
+                preload: true,
+                loop: false,
+                volume: 0.5,
+                html5: true,
+                rate: 0.83
+            })
+//            _player.onload(() => {})
+            _player.once('load', function () {
+
+                console.log(_player.duration())
+
+                $('.voice-message-text').typed({
+                    strings: ['You have reached the voice mail of Eric Miller. Please leave your name, number and a short message and i will get back to you as soon as possible. <br/> Thanks!'],
+                    typeSpeed: 0.99,
+                    startDelay: 500,
+                    html: true,
+                    showCursor: false,
+                    startDelay: 0,
+//                    onStart: (arrayPos, self) => {console.log('on start')},
+//                    preStringTyped: (arrayPos, self) => {console.log('on preStringTyped %s %s', arrayPos, self)},
+                    callback: function () {
+                        $('#go-to-record').removeClass('hide').children('.glyphicon').addClass('intensifies').fadeIn()
+                    }
+                })
             })
         }
 
