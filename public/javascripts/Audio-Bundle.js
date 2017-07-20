@@ -489,6 +489,10 @@ if (false /* for Microsoft Edge */) {
 }
 
 function initAudio () {
+
+  if (!window.navigator['getUserMedia'])
+    return
+
   startRecording.disabled = false
   stopRecording.disabled = true
   playButton.disabled = true
