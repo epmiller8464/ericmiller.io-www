@@ -308,18 +308,18 @@
             var _player = new Howl({
                 src: ['./media/eric-miller-vm.m4a'],
                 format: ['m4a'],
-                autoplay: true,
-                preload: true,
+                autoplay: false,
+                preload: false,
                 loop: false,
                 volume: !(played) ? 0.5 : 0.1,
                 html5: true,
                 rate: 0.83,
 //                mute: ((played) | played === 10)
             })
-
+            _player.load()
 //            _player.onload(() => {})
             _player.once('load', function () {
-
+                _player.play()
                 console.log(_player.duration())
 
                 $('.voice-message-text').typed({
