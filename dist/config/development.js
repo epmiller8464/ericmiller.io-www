@@ -4,6 +4,7 @@
 
 module.exports = {
   // MongoDB connection options
+  port: 3001,
   db: {
     mongoDbUri: 'mongodb://localhost/em-vm-db'
   },

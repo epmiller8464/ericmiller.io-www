@@ -1,6 +1,6 @@
 node_modules
 .idea
-*.wav
+uploads/*.wav
 *.webm
 *.sh
 ig
