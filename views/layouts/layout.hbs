@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Eric Miller</title>
     <meta name="description" content=""/>
-    <meta name="keywords" content="javascript software developer eric miller austin texas software engineer"/>
+    <meta name="keywords" content="javascript software developer Eric Miller austin texas software engineer"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css"/>
     <link rel="stylesheet" type="text/css" href="/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+    <link rel="stylesheet" type="text/css" href="/loaders.css/loaders.min.css"/>
     <script>document.documentElement.className = 'js'</script>
 
     {{{_sections.head}}}
@@ -17,28 +18,37 @@
     <!--heap.load("2184104394");-->
     <!--</script>-->
 </head>
-<body class="">
+<body class="x-loading">
 <div id="particles-js">
 </div>
 <div class="navbar-fixed-top">
     <div class="container-fluid">
+        <div class="pull-left">
+            <a class="logo" href="/">
+                <span class="fart">e</span><span>m&period;io</span>
+            </a>
+        </div>
         <div class="freelancer-status pull-right">
             <p><span class="available"></span>Hire me</p>
         </div>
     </div>
 </div>
-<section>
+<section id="body">
     {{{body}}}
 </section>
 {{{_sections.footer}}}
+
 </body>
-<script src="/javascripts/jquery.min.js"></script>
+
+<script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/moment/min/moment-with-locales.js"></script>
+<script src="/javascripts/imagesloaded.pkgd.min.js"></script>
 <!--<script src="/moment/min/moment.min.js"></script>-->
 <script src="/javascripts/typed.min.js"></script>
 <script src="/javascripts/particles.js"></script>
 <script src="/smooth-scroll/dist/js/smooth-scroll.min.js"></script>
 <script src="/browser-detect/dist/browser-detect.js"></script>
+
 {{{_sections.scripts}}}
 </html>

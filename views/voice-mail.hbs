@@ -15,34 +15,35 @@
 </section>
 <section id="touch" class="content content--bg content--bg-mic content--nopadding">
     <div class="content content--bg content-bg-overlay overlay-dark">
-        <div class="content__inner content__inner--fheight flexy flexy--center">
-            <h2 class="content__title br text-muted">Web Voice Mail</h2>
+        <div class="content__inner flexy flexy--center">
+            <h2 class="title br br-o">Web Voice Mail</h2>
             <p class="voice-message-text fs-2_5x">
             </p>
         </div>
         <div class="interaction interaction--corner interaction--light">
             <a id="go-to-record" data-scroll href="#record-section" class="link-more">
-                <span class="fa fa-microphone fs-2x"></span><br>Record A New Message
+                <span class="fa fa-microphone fs-2x"></span><br>Leave A Message
             </a>
         </div>
     </div>
 </section>
 <section id="record-section" class="content content--bg content--bg-recorder content--nopadding row">
     <div id="wavebg" class="content content--bg content-bg-overlay overlay-dark">
-        <div class="content__inner content__inner--fheight flexy flexy--center">
+        <div class="content__inner content__inner--fheight flexy--center recording-section">
             <!--<h2 class="content__title br text-muted">Web Voice Mail</h2>-->
             <div class="">
-                <button id="show-record-btn" type="button" class="btn btn-link fs-3x">
-                    <span class="fa fa-microphone" aria-hidden="true"></span><br/>
-                    <small>Record</small>
+                <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted">
+                    <span class="fa fa-microphone text-success" aria-hidden="true"></span><br/>
+                    <small>Start Recording</small>
                 </button>
             </div>
-            <div id="record-container" class="col-md-12">
+            <div id="record-container" class="col-md-12 hide">
         <span class="input-group-lg">
             <span class="input-lg">
                 <label>Enter a valid email</label>
-                <input class="form-control" type="email" autocomplete="off" name="email"
+                <input class="form-control" type="email" autocomplete="off" name="email" pattern="/.+\@.+\..+/"
                        placeholder="e.g. tom@gmail.com" style="background: transparent;"/>
+                <label for="email"></label>
             </span>
         </span>
                 <div class="audio-controls">
@@ -92,7 +93,7 @@
         </div>
         <div class="interaction interaction--corner interaction--light">
             <a id="go-to-record" data-scroll href="#record-section" class="link-more">
-                <span class="fa fa-microphone fs-2x"></span><br>Record A New Message
+                <span class="glyphicon glyphicon-menu-down fs-2x"></span><br>Previous Recordings
             </a>
         </div>
     </div>
@@ -278,7 +279,8 @@
                     $('.btn.next').removeClass('hide')
 //                    incrementStep()
                 } else {
-                    hideAudioControls()
+//                    alert('invalid asshole')
+                    $(this).addClass('hasError')
                 }
 
             })
@@ -312,6 +314,7 @@
                     volume: !(played) ? 0.5 : 0.1,
                     html5: true,
                     rate: 0.83,
+                    mute: true
 //                mute: ((played) | played === 10)
                 })
 //            _player.load()
@@ -372,6 +375,8 @@
                 volume: !(played) ? 0.5 : 0.1,
                 html5: true,
                 rate: 0.83,
+                mute: true
+
 //                mute: ((played) | played === 10)
             })
 //            _player.load()

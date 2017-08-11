@@ -1,7 +1,93 @@
+{{#section 'head'}}
+    <!--<style href="/stylesheets/demo.css"></style>-->
+    <script src="/segment-js/dist/segment.min.js"></script>
+    <script src="javascripts/d3-ease.v0.6.js"></script>
+    <script src="/d3-ease/build/d3-ease.min.js"></script>
+    <style>
+        /* Main styles */
+        /*@import url(http://fonts.googleapis.com/css?family=Open+Sans:800);*/
+
+        .text {
+            fill: none;
+            stroke-width: 6;
+            stroke-linejoin: round;
+            stroke-dasharray: 70 330;
+            stroke-dashoffset: 0;
+            -webkit-animation: stroke 6s infinite linear;
+            animation: stroke 6s infinite linear;
+        }
+
+        .text:nth-child(5n + 1) {
+            stroke: #F2385A;
+            -webkit-animation-delay: -1.2s;
+            animation-delay: -1.2s;
+        }
+
+        .text:nth-child(5n + 2) {
+            stroke: #F5A503;
+            -webkit-animation-delay: -2.4s;
+            animation-delay: -2.4s;
+        }
+
+        .text:nth-child(5n + 3) {
+            stroke: #E9F1DF;
+            -webkit-animation-delay: -3.6s;
+            animation-delay: -3.6s;
+        }
+
+        .text:nth-child(5n + 4) {
+            stroke: #56D9CD;
+            -webkit-animation-delay: -4.8s;
+            animation-delay: -4.8s;
+        }
+
+        .text:nth-child(5n + 5) {
+            stroke: #3AA1BF;
+            -webkit-animation-delay: -6s;
+            animation-delay: -6s;
+        }
+
+        @-webkit-keyframes stroke {
+            100% {
+                stroke-dashoffset: -400;
+            }
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: -400;
+            }
+        }
+
+        /* Other styles */
+        /*html, body {*/
+        /*height: 100%;*/
+        /*}*/
+
+        /*body {*/
+        /*background: #111;*/
+        /*background-size: .2em 100%;*/
+        /*font: 14.5em/1 Open Sans, Impact;*/
+        /*text-transform: uppercase;*/
+        /*margin: 0;*/
+        /*}*/
+        #s-text {
+            font-size: 14.5em;
+            text-transform: uppercase;
+        }
+
+        svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+{{/section}}
 <section class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="content">
+
                 <div class="greeting">
                 </div>
                 <div class="intro">
@@ -24,13 +110,13 @@
     <footer class="navbar navbar-fixed-bottom  footer text-center">
         <div class="row">
             <div class="col-md-12 text-center">
-                <a href="#" class="btn btn-link btn-lg text-warning">
+                <a title="Email Me" href="mailto:epmiller8464@gmail.com" class="btn btn-link btn-lg">
                     <span class="glyphicon glyphicon-envelope"></span><br/>Email
                 </a>
-                <a class="btn btn-link btn-lg text-warning" href="/voice-mail">
+                <a class="btn btn-link btn-lg" href="/voice-mail">
                     <span class="glyphicon glyphicon-earphone"></span><br/>Voice Mail
                 </a>
-                <a class="btn btn-link btn-lg text-warning" href="/voice-mail">
+                <a class="btn btn-link btn-lg" href="/voice-mail">
                     <span class="glyphicon glyphicon-sunglasses"></span><br/>Chat Bot
                 </a>
             </div>
@@ -41,76 +127,9 @@
 
 
 {{#section 'scripts'}}
-    <script>
-        $(document).ready(function () {
-            particlesJS.load('particles-js', 'particles.json', function () {
-            })
-            retype()
-            $('#read-more').click(function () {
-                $('#read-more').addClass('hide')
-                $('.tech').typed({
-                    strings: ['Currently I am writing applications node.js but I love python, go, and swift.'],
-                    typeSpeed: 0,
-                    html: true,
-                    showCursor: false,
-                    startDelay: 0,
-                    callback: function () {
-                        $('.github').typed({
-                            strings: ['Check me out on <a href="https://github.com/epmiller8464">Github</a>'],
-                            typeSpeed: 0,
-                            html: true,
-                            showCursor: false,
-                            startDelay: 0,
-                            callback: function () {
-                                $('#reload-me').removeClass('hide')
 
-                            }
-                        })
-                    }
-                })
-            })
-            $('#reload-me').click(function () {
-                $('#reload-me').addClass('hide')
-                retype()
-            })
-        })
+    <script src="/javascripts/app.bundle.js"></script>
 
-        function retype () {
-
-            $('.greeting').text('')
-            $('.intro').text('')
-            $('.skills').text('')
-            $('.tech').text('')
-            $('.github').text('')
-            $('.greeting').typed({
-                strings: ['Hello'],
-                typeSpeed: 50,
-                showCursor: false,
-                callback: function () {
-//              /,
-                    $('.intro').typed({
-                        strings: ['My name is Eric Miller I am software developer in Austin, TX.'],
-                        typeSpeed: 10,
-                        html: true,
-                        showCursor: false,
-                        startDelay: 10,
-                        callback: function () {
-                            $('.skills').typed({
-                                strings: ['I like tight time lines and developing elegant solutions to complex problems. I am a full-stack javascript developer.'],
-                                typeSpeed: 0,
-                                html: true,
-                                showCursor: false,
-                                startDelay: 20,
-                                callback: function () {
-                                    $('#read-more').removeClass('hide')
-                                }
-                            })
-                        }
-                    })
-
-                }
-            })
-        }
-
-    </script>
+    <script src="javascripts/mo.min.js"></script>
+    <!--<script src="javascripts/demo.js"></script>-->
 {{/section}}

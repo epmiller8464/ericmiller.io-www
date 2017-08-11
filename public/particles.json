@@ -8,13 +8,13 @@
       }
     },
     "color": {
-      "value": "#2EAA8F"
+      "value": "#7A7983"
     },
     "shape": {
       "type": "circle",
       "stroke": {
         "width": 0,
-        "color": "#e91e63"
+        "color": "#BFFA37"
       },
       "polygon": {
         "nb_sides": 5
@@ -48,8 +48,8 @@
     "line_linked": {
       "enable": true,
       "distance": 150,
-      "color": "#2EAA8F",
-      "opacity": 0.4,
+      "color": "#7A7983",
+      "opacity": 0.2,
       "width": 1
     },
     "move": {

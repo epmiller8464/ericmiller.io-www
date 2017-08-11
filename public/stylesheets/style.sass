@@ -1,32 +1,100 @@
 @import "./font-awesome.css"
 
-$orange: #ef5350
-$pink: #ff0080
-$lght-purple: #9c27b0
-$dark-purple: #673ab7
+@font-face
+  font-family: 'knarfart'
+  font-weight: normal
+  font-style: normal
+  src: url('../fonts/knarfart/knarfart-webfont.eot')
+  src: url('../fonts/knarfart/knarfart-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/knarfart/knarfart-webfont.woff2') format('woff2'), url('../fonts/knarfart/knarfart-webfont.woff') format('woff'), url('../fonts/knarfart/knarfart-webfont.ttf') format('truetype'), url('../fonts/knarfart/knarfart-webfont.svg#knarfart') format('svg')
+
+$opacity: 1
+
+$orange: rgba(239, 83, 80, 1)
+$pink: rgb(255, 0, 128)
+$drk-pink: rgba(255, 13, 81, 1)
+
+$drk-grey: rgba(72, 71, 81, 1)
+$grey: rgba(122, 121, 131, 1)
+
+$green: rgba(0, 255, 72, 1)
+
+$dark-bg: rgba(29, 27, 34, 1)
+$dark: rgba(35, 34, 42, 1)
+//$dark-bg2: rgba(30, 29, 35, 1)
+
+//$dark-bg: #1e1d23
+$b: #00DFFC
 $blue: #2196f3
+$grn-blue: #0DE5A8
+$grn-blue: #0AABBA
+
 $yellow: #ffeb3b
-$grey: #82888a
-$green: #00ff48
+$neon-yellow: #BFFA37
+
+@mixin alpha-orange($o: $opacity)
+  color: rgba(239, 83, 80, $o) !important
+
+@mixin alpha-pink($o: $opacity)
+  color: rgba(255, 0, 128, $o) !important
+
+@mixin alpha-drk-pink($o: $opacity)
+  color: rgba(255, 13, 81, $o) !important
+
+@mixin alpha-grey($o: $opacity)
+  color: rgba(122, 121, 131, $o) !important
+
+@mixin alpha-drk-grey($o: $opacity)
+  color: rgba(72, 71, 81, $o) !important
+
+@mixin alpha-green($o: $opacity)
+  color: rgba(0, 255, 72, $o) !important
+
+@mixin alpha-dark($o: $opacity)
+  color: rgba(35, 34, 42, $o) !important
+
+@mixin alpha-dark-bg($o: $opacity)
+  color: rgba(30, 29, 35, $o) !important
 
 body
   padding: 0px
   font-family: 'Roboto Mono', monospace
   font-size: 14px
   text-rendering: geometricPrecision
-  background-color: #000000
-  color: #ffffff
+  background-color: $dark-bg
+  color: $grey
   @media screen and (max-width: 768px)
     font-size: 10px
 
 a, .btn-link
-  color: $blue !important
+  +alpha-orange()
 
+a:hover, .btn-link:hover
+  color: $orange !important
 //.content
 //  position: relative
 //  z-index: 0
 //  padding: 50px 50px
 //color: #ff0080
+.logo
+  font-weight: 700
+  font-size: 2.25em
+  //+alpha-dark(0.9)
+  color: $orange
+  text-shadow: 1px 1px 1px $grey
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+.logo:hover
+  text-shadow: 1px 1px 1px $drk-grey
+  color: $orange !important
+  //text-shadow: none
+  //text-shadow: 1px 1px $orange
+  text-decoration: none
+
+.fart
+  font-family: 'knarfart'
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
 
 .container.content
   padding: 50px 50px
@@ -44,33 +112,46 @@ a, .btn-link
 //-o-filter: blur(1px)
 //-ms-filter: blur(1px)
 //filter: blur(1px)
-.greeting
+.greeting,
+.title
   font-size: 2em
-  //color: #2EAA8F
-  color: #fff
+  color: #fff !important
   text-align: center
 
-.intro
-  font-size: 1.5em
-//text-align: center
+.br
+  border-bottom: 1px solid
+  padding: 0 10px
+
+.br-o
+  border-bottom-color: rgba(239, 83, 80, 0.7) !important
+
+.voice-message-text
+  height: 50%
+  min-height: 300px !important
+//margin-top: 10px
+
+.title
+  padding: 0 10px
+
+.title.rbr
+  border-bottom: 1px solid rgba(239, 83, 80, 0.7)
 
 .skills,
 .tech,
-.github
+.github,
+.intro
   font-size: 1.25em
   margin: 10px 0
+  color: $grey
 
-.skills
-  color: $orange
-
-.tech
-  color: $lght-purple
-
-.github
-  color: $yellow
+.intro
+  font-size: 1.5em
 
 .footer
   margin: 20px auto
+
+.footer .btn-link
+  color: $drk-grey
 
 .freelancer-status
   position: relative
@@ -150,11 +231,6 @@ a, .btn-link
   clear: both
   padding-top: 50px
 
-.voice-message-text
-  height: 50%
-  color: #ffffff
-  margin-top: 10px
-
 .glyphicon-record
   color: $pink
 
@@ -200,7 +276,7 @@ label.status.recording
   color: $grey !important
 
 .text-primary
-  color: $blue !important
+  color: $grey !important
 
 a.text-primary:hover,
 a.text-primary:focus
@@ -288,7 +364,7 @@ a.text-danger:focus
 .content
   position: relative
   min-height: 100vh
-  padding: 15vh 0 0
+  padding: 10vh 0 0
   -webkit-touch-callout: none
   -webkit-user-select: none
   -moz-user-select: none
@@ -312,6 +388,9 @@ a.text-danger:focus
   margin: 0 auto
   text-align: center
 //pointer-events: none
+
+#touch .content__inner
+  padding-top: 10vh
 
 .content__inner--fheight
   height: 60vh
@@ -344,22 +423,16 @@ a.text-danger:focus
   background: #cc8969
 
 .content__title
-  //font-size: 3em
-  //font-weight: 900
   line-height: 1.25
   position: relative
   z-index: 10
   margin: 0
   padding: 0 5vmax 0 5vmax
-  text-transform: uppercase
-//pointer-events: none
-
-.content__title.br
-  border-bottom: 1px solid $grey
-  padding: 0 10px
+  //color: rgba(239, 83, 80, 0.7)
+  color: $drk-grey
 
 .content__title--color
-  color: #f4ba45
+  color: $orange
 
 .content__title--light
   color: #f7f4ec
@@ -395,17 +468,18 @@ a.text-danger:focus
   padding: 0 !important
 
 .overlay-dark
-  background-color: rgba(0, 0, 0, 0.9)
+  background-color: rgba(30, 29, 35, 0.97)
+//background-color: rgba(0, 0, 0, 0.9)
 
 .overlay-light
   background-color: rgba(0, 0, 0, 0.7)
+
 .content--bg-mic
   background-image: url(../images/unsplash/mic.jpg)
 
 .content--bg-recorder
   background-image: url(../images/unsplash/old-recorder.jpg)
   background-size: contain !important
-
 
 .content--bg-code
   background-image: url(../images/unsplash/code.jpg)
@@ -419,6 +493,62 @@ a.text-danger:focus
 .content--bg-code-js-2
   background-image: url(../images/unsplash/code-js-2.jpg)
 
+//.loader-panel
+//  display: none
+//
+//.loader-panel.loading
+//  height: 100vh
+//  width: 100%
+//  background-color: rgba(0, 0, 0, 0.9)
+//  background-image: url("../images/pattern.png")
+//  //background-size: cover
+//  position: absolute
+//  top: 0
+//  left: 0
+//  z-index: 2000
+//  display: block
+//
+//.loader
+//  z-index: 2050
+//  text-align: center
+//  top: 33vh
+//  left: 50vw
+//  position: absolute
 
+.js .loading::before,
+.js .loading::after
+  content: ''
+  position: fixed
+  z-index: 2000
 
+.loading::before
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(44, 45, 49, 0.7)
+  background-image: url("../images/pattern.png")
+//background: #2c2d31
 
+.loading::after
+  top: 33%
+  left: 50%
+  width: 40px
+  height: 40px
+  margin: -20px 0 0 -20px
+  border: 8px solid #383a41
+  border-bottom-color: #565963
+  border-radius: 50%
+  animation: animLoader 0.8s linear infinite forwards
+
+@-webkit-keyframes animLoader
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+.recording-section
+  margin-bottom: 25vh
+
+#record-section .recording-section
+  padding-top: 5vh

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../public/javascripts/index.js"],"names":["require"],"mappings":"AAAA;;AACAA,QAAQ,eAAR","file":"index.js","sourcesContent":["'use strict'\nrequire('../../lib/app')"]}

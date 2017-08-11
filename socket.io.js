@@ -1,7 +1,7 @@
 'use strict'
 const uuid = require('uuid')
 
-const {writeToDisk, updateAndRemoveFile} = require('./lib/VmWare')
+const {writeToDisk, updateAndRemoveFile} = require('./lib/vmware')
 const {Service} = require('./lib/storageService')
 // const exec = require('child_process').exec
 // const FFmpeg = require('fluent-ffmpeg')

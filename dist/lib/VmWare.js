@@ -72,4 +72,4 @@ function deleteFileOnDisk(fileName, cb) {
 }
 
 module.exports = { writeToDisk: writeToDisk, updateAndRemoveFile: updateAndRemoveFile };
-//# sourceMappingURL=VmWare.js.map
+//# sourceMappingURL=vmware.js.map

@@ -1,17 +1,45 @@
 @import url(./font-awesome.css);
+@font-face {
+  font-family: 'knarfart';
+  font-weight: normal;
+  font-style: normal;
+  src: url("../fonts/knarfart/knarfart-webfont.eot");
+  src: url("../fonts/knarfart/knarfart-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/knarfart/knarfart-webfont.woff2") format("woff2"), url("../fonts/knarfart/knarfart-webfont.woff") format("woff"), url("../fonts/knarfart/knarfart-webfont.ttf") format("truetype"), url("../fonts/knarfart/knarfart-webfont.svg#knarfart") format("svg"); }
+
 body {
   padding: 0px;
   font-family: 'Roboto Mono', monospace;
   font-size: 14px;
   text-rendering: geometricPrecision;
-  background-color: #000000;
-  color: #ffffff; }
+  background-color: #1d1b22;
+  color: #7a7983; }
   @media screen and (max-width: 768px) {
     body {
       font-size: 10px; } }
 
 a, .btn-link {
-  color: #2196f3 !important; }
+  color: #ef5350 !important; }
+
+a:hover, .btn-link:hover {
+  color: #ef5350 !important; }
+
+.logo {
+  font-weight: 700;
+  font-size: 2.25em;
+  color: #ef5350;
+  text-shadow: 1px 1px 1px #7a7983;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.logo:hover {
+  text-shadow: 1px 1px 1px #484751;
+  color: #ef5350 !important;
+  text-decoration: none; }
+
+.fart {
+  font-family: 'knarfart';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
 
 .container.content {
   padding: 50px 50px; }
@@ -25,31 +53,45 @@ a, .btn-link {
   height: 100%;
   width: 100%; }
 
-.greeting {
+.greeting,
+.title {
   font-size: 2em;
-  color: #fff;
+  color: #fff !important;
   text-align: center; }
+
+.br {
+  border-bottom: 1px solid;
+  padding: 0 10px; }
+
+.br-o {
+  border-bottom-color: rgba(239, 83, 80, 0.7) !important; }
+
+.voice-message-text {
+  height: 50%;
+  min-height: 300px !important; }
+
+.title {
+  padding: 0 10px; }
+
+.title.rbr {
+  border-bottom: 1px solid rgba(239, 83, 80, 0.7); }
+
+.skills,
+.tech,
+.github,
+.intro {
+  font-size: 1.25em;
+  margin: 10px 0;
+  color: #7a7983; }
 
 .intro {
   font-size: 1.5em; }
 
-.skills,
-.tech,
-.github {
-  font-size: 1.25em;
-  margin: 10px 0; }
-
-.skills {
-  color: #ef5350; }
-
-.tech {
-  color: #9c27b0; }
-
-.github {
-  color: #ffeb3b; }
-
 .footer {
   margin: 20px auto; }
+
+.footer .btn-link {
+  color: #484751; }
 
 .freelancer-status {
   position: relative;
@@ -115,17 +157,12 @@ a, .btn-link {
   color: #ff0080; }
 
 .voice-message-container .btn-link {
-  color: #82888a !important; }
+  color: #7a7983 !important; }
 
 .container.content section.row {
   height: 25%;
   clear: both;
   padding-top: 50px; }
-
-.voice-message-text {
-  height: 50%;
-  color: #ffffff;
-  margin-top: 10px; }
 
 .glyphicon-record {
   color: #ff0080; }
@@ -166,13 +203,13 @@ label.status.recording {
 
 .thumbnail.audio-control {
   background-color: transparent !important;
-  border: 1px solid #82888a; }
+  border: 1px solid #7a7983; }
 
 .text-muted {
-  color: #82888a !important; }
+  color: #7a7983 !important; }
 
 .text-primary {
-  color: #2196f3 !important; }
+  color: #7a7983 !important; }
 
 a.text-primary:hover,
 a.text-primary:focus {
@@ -260,7 +297,7 @@ a.text-danger:focus {
 .content {
   position: relative;
   min-height: 100vh;
-  padding: 15vh 0 0;
+  padding: 10vh 0 0;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -283,6 +320,9 @@ a.text-danger:focus {
   max-width: 700px;
   margin: 0 auto;
   text-align: center; }
+
+#touch .content__inner {
+  padding-top: 10vh; }
 
 .content__inner--fheight {
   height: 60vh; }
@@ -320,14 +360,10 @@ a.text-danger:focus {
   z-index: 10;
   margin: 0;
   padding: 0 5vmax 0 5vmax;
-  text-transform: uppercase; }
-
-.content__title.br {
-  border-bottom: 1px solid #82888a;
-  padding: 0 10px; }
+  color: #484751; }
 
 .content__title--color {
-  color: #f4ba45; }
+  color: #ef5350; }
 
 .content__title--light {
   color: #f7f4ec; }
@@ -363,7 +399,7 @@ a.text-danger:focus {
   padding: 0 !important; }
 
 .overlay-dark {
-  background-color: rgba(0, 0, 0, 0.9); }
+  background-color: rgba(30, 29, 35, 0.97); }
 
 .overlay-light {
   background-color: rgba(0, 0, 0, 0.7); }
@@ -386,5 +422,42 @@ a.text-danger:focus {
 
 .content--bg-code-js-2 {
   background-image: url(../images/unsplash/code-js-2.jpg); }
+
+.js .loading::before,
+.js .loading::after {
+  content: '';
+  position: fixed;
+  z-index: 2000; }
+
+.loading::before {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(44, 45, 49, 0.7);
+  background-image: url("../images/pattern.png"); }
+
+.loading::after {
+  top: 33%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 8px solid #383a41;
+  border-bottom-color: #565963;
+  border-radius: 50%;
+  animation: animLoader 0.8s linear infinite forwards; }
+
+@-webkit-keyframes animLoader {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+.recording-section {
+  margin-bottom: 25vh; }
+
+#record-section .recording-section {
+  padding-top: 5vh; }
 
 /*# sourceMappingURL=style.css.map */

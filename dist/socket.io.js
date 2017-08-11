@@ -2,7 +2,7 @@
 
 var uuid = require('uuid');
 
-var _require = require('./lib/VmWare'),
+var _require = require('./lib/vmware'),
     writeToDisk = _require.writeToDisk,
     updateAndRemoveFile = _require.updateAndRemoveFile;
 
