@@ -237,7 +237,7 @@ a.text-warning:focus {
   color: #ff464b !important; }
 
 .text-danger {
-  color: #ff0080 !important; }
+  color: #b71c1c !important; }
 
 a.text-danger:hover,
 a.text-danger:focus {
@@ -459,5 +459,9 @@ a.text-danger:focus {
 
 #record-section .recording-section {
   padding-top: 5vh; }
+
+#go-to-record {
+  z-index: 100 !important;
+  position: relative; }
 
 /*# sourceMappingURL=style.css.map */

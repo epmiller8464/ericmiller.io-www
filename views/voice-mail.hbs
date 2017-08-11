@@ -92,24 +92,13 @@
             </div>
         </div>
         <div class="interaction interaction--corner interaction--light">
-            <a id="go-to-record" data-scroll href="#record-section" class="link-more">
+            <a id="go-to-record" data-scroll href="#recorded-section" class="link-more">
                 <span class="glyphicon glyphicon-menu-down fs-2x"></span><br>Previous Recordings
             </a>
         </div>
     </div>
 </section>
 <section class="container content">
-    <div id="scroll-to-section" class="col-md-12 text-center scroll-container">
-        <a id="go-to-record" data-scroll href="#record-section" class="fs-2x">
-            <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-        </a>
-    </div>
-
-    <div class="col-md-12 text-center scroll-container">
-        <a href="#recorded-section" data-scroll id="" type="button" class="fs-2x">
-            <span class="glyphicon glyphicon-menu-down animated" aria-hidden="true"></span>
-        </a>
-    </div>
     <section id="recorded-section" class="row">
         <h2 class="text-center">Previous Recordings</h2>
         <hr/>
@@ -292,7 +281,8 @@
             })
 
             $('#show-record-btn').click(function () {
-//                $('#record-container').toggleClass('hide')
+                $('#show-record-btn').children('.fa').removeClass('text-success').addClass('text-danger')
+                $('#record-container').removeClass('hide')
             })
 
 //            $('body').click(function (e) {

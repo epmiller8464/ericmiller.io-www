@@ -500,6 +500,11 @@ function initAudio () {
 
   if (sample) { sample.disconnect() }
 
+  cameraPreview.onEnded = function () { alert('done') }
+}
+
+startRecording.onclick = function () {
+  // initAudio()
   navigator.getUserMedia({
     audio: true,
     video: false
@@ -507,38 +512,38 @@ function initAudio () {
     mediaStream = stream
     liveSample = new WebVoiceMail({type: 'live-audio', source: stream, canvas: liveAudioCanvas})
     liveSample.draw()
+
+    startRecording.disabled = true
+    playButton.disabled = true
+    saveRecordingButton.disabled = true
+    $('.status.on').text('Recording....').addClass('recording')
+    liveSample.recording = true
+
+    recordAudio = RecordRTC(liveSample.mediaStream, {
+      type: 'audio',
+      recorderType: StereoAudioRecorder,
+      onAudioProcessStarted: function () {
+        // recordVideo.startRecording()
+        cameraPreview.src = window.URL.createObjectURL(mediaStream)
+        cameraPreview.play()
+        cameraPreview.muted = true
+        cameraPreview.controls = false
+        showProgress()
+        // _clearInterval = setInterval(showProgress, 1000)
+      }
+    })
+    // }
+    recordAudio.setRecordingDuration(45000, liveSample.onEnded)
+    recordAudio.startRecording()
+    currentTime = recordAudio.recordingDuration
+    stopRecording.disabled = false
+
   }, function (error) {
-    alert(JSON.stringify(error))
-  })
-  cameraPreview.onEnded = function () { alert('done') }
-}
+    $('.status.on').text('Error:' + JSON.stringify(error)).addClass('text-danger')
 
-startRecording.onclick = function () {
-  // initAudio()
-  startRecording.disabled = true
-  playButton.disabled = true
-  saveRecordingButton.disabled = true
-  $('.status.on').text('Recording....').addClass('recording')
-  liveSample.recording = true
-
-  recordAudio = RecordRTC(liveSample.mediaStream, {
-    type: 'audio',
-    recorderType: StereoAudioRecorder,
-    onAudioProcessStarted: function () {
-      // recordVideo.startRecording()
-      cameraPreview.src = window.URL.createObjectURL(mediaStream)
-      cameraPreview.play()
-      cameraPreview.muted = true
-      cameraPreview.controls = false
-      showProgress()
-      // _clearInterval = setInterval(showProgress, 1000)
-    }
+    // alert(JSON.stringify(error))
   })
-  // }
-  recordAudio.setRecordingDuration(45000, liveSample.onEnded)
-  recordAudio.startRecording()
-  currentTime = recordAudio.recordingDuration
-  stopRecording.disabled = false
+
 }
 var duration = 45
 var start = null

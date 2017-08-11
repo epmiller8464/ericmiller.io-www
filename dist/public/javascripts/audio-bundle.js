@@ -501,16 +501,6 @@ function initAudio() {
     sample.disconnect();
   }
 
-  navigator.getUserMedia({
-    audio: true,
-    video: false
-  }, function (stream) {
-    mediaStream = stream;
-    liveSample = new WebVoiceMail({ type: 'live-audio', source: stream, canvas: liveAudioCanvas });
-    liveSample.draw();
-  }, function (error) {
-    alert(JSON.stringify(error));
-  });
   cameraPreview.onEnded = function () {
     alert('done');
   };
@@ -518,30 +508,43 @@ function initAudio() {
 
 startRecording.onclick = function () {
   // initAudio()
-  startRecording.disabled = true;
-  playButton.disabled = true;
-  saveRecordingButton.disabled = true;
-  $('.status.on').text('Recording....').addClass('recording');
-  liveSample.recording = true;
+  navigator.getUserMedia({
+    audio: true,
+    video: false
+  }, function (stream) {
+    mediaStream = stream;
+    liveSample = new WebVoiceMail({ type: 'live-audio', source: stream, canvas: liveAudioCanvas });
+    liveSample.draw();
 
-  recordAudio = RecordRTC(liveSample.mediaStream, {
-    type: 'audio',
-    recorderType: StereoAudioRecorder,
-    onAudioProcessStarted: function onAudioProcessStarted() {
-      // recordVideo.startRecording()
-      cameraPreview.src = window.URL.createObjectURL(mediaStream);
-      cameraPreview.play();
-      cameraPreview.muted = true;
-      cameraPreview.controls = false;
-      showProgress();
-      // _clearInterval = setInterval(showProgress, 1000)
-    }
+    startRecording.disabled = true;
+    playButton.disabled = true;
+    saveRecordingButton.disabled = true;
+    $('.status.on').text('Recording....').addClass('recording');
+    liveSample.recording = true;
+
+    recordAudio = RecordRTC(liveSample.mediaStream, {
+      type: 'audio',
+      recorderType: StereoAudioRecorder,
+      onAudioProcessStarted: function onAudioProcessStarted() {
+        // recordVideo.startRecording()
+        cameraPreview.src = window.URL.createObjectURL(mediaStream);
+        cameraPreview.play();
+        cameraPreview.muted = true;
+        cameraPreview.controls = false;
+        showProgress();
+        // _clearInterval = setInterval(showProgress, 1000)
+      }
+    });
+    // }
+    recordAudio.setRecordingDuration(45000, liveSample.onEnded);
+    recordAudio.startRecording();
+    currentTime = recordAudio.recordingDuration;
+    stopRecording.disabled = false;
+  }, function (error) {
+    $('.status.on').text('Error:' + JSON.stringify(error)).addClass('text-danger');
+
+    // alert(JSON.stringify(error))
   });
-  // }
-  recordAudio.setRecordingDuration(45000, liveSample.onEnded);
-  recordAudio.startRecording();
-  currentTime = recordAudio.recordingDuration;
-  stopRecording.disabled = false;
 };
 var duration = 45;
 var start = null;
