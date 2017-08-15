@@ -29,7 +29,7 @@
 </section>
 <section id="record-section" class="content content--bg content--bg-recorder content--nopadding row">
     <div id="wavebg" class="content content--bg content-bg-overlay overlay-dark">
-        <div class="content__inner content__inner--fheight flexy--center recording-section">
+        <div class="content__inner content__inner--fheight flexy flexy--center recording-section">
             <!--<h2 class="content__title br text-muted">Web Voice Mail</h2>-->
             <div class="">
                 <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted">
@@ -71,7 +71,7 @@
                         </button>
                         <button id="upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip"
                                 data-placement="right" title="Recording save automatically but you can delete yours">
-                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
+                             <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
                         </button>
 
                     </div>
@@ -92,7 +92,7 @@
             </div>
         </div>
         <div class="interaction interaction--corner interaction--light">
-            <a id="go-to-record" data-scroll href="#recorded-section" class="link-more">
+            <a id="go-to-record" data-scroll href="#recorded-section" class="link-more text-muted">
                 <span class="glyphicon glyphicon-menu-down fs-2x"></span><br>Previous Recordings
             </a>
         </div>
@@ -159,7 +159,14 @@
     <script src="/siriwavejs/siriwave.js"></script>
     <script src="/javascripts/Audio-Bundle.js"></script>
     <script src="/javascripts/AudioComponent.js"></script>
-
+    <script src="/javascripts/app.bundle.js"></script>
+    <script src="javascripts/mo.min.js"></script>
+    <script>
+        var _loading = new Loading({delay: 3000}, onReady)
+        $(document).ready(function () {
+            _loading.pageReady()
+        })
+    </script>
     <script>
         var _player
 

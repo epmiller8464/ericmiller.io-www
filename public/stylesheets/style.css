@@ -11,7 +11,7 @@ body {
   font-family: 'Roboto Mono', monospace;
   font-size: 14px;
   text-rendering: geometricPrecision;
-  background-color: #1d1b22;
+  background-color: #1e1d23;
   color: #7a7983; }
   @media screen and (max-width: 768px) {
     body {
@@ -21,18 +21,16 @@ a, .btn-link {
   color: #ef5350 !important; }
 
 a:hover, .btn-link:hover {
-  color: #ef5350 !important; }
+  color: #484751 !important; }
 
 .logo {
   font-weight: 700;
   font-size: 2.25em;
   color: #ef5350;
-  text-shadow: 1px 1px 1px #7a7983;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
 .logo:hover {
-  text-shadow: 1px 1px 1px #484751;
   color: #ef5350 !important;
   text-decoration: none; }
 
@@ -206,7 +204,11 @@ label.status.recording {
   border: 1px solid #7a7983; }
 
 .text-muted {
-  color: #7a7983 !important; }
+  color: #484751 !important; }
+
+a.text-muted:hover,
+.btn-link.text-muted:hover {
+  color: #ef5350 !important; }
 
 .text-primary {
   color: #7a7983 !important; }

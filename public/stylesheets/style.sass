@@ -18,9 +18,9 @@ $grey: rgba(122, 121, 131, 1)
 
 $green: rgba(0, 255, 72, 1)
 
-$dark-bg: rgba(29, 27, 34, 1)
+//$dark-bg: rgba(29, 27, 34, 1)
 $dark: rgba(35, 34, 42, 1)
-//$dark-bg2: rgba(30, 29, 35, 1)
+$dark-bg: rgba(30, 29, 35, 1)
 
 //$dark-bg: #1e1d23
 $b: #00DFFC
@@ -69,7 +69,7 @@ a, .btn-link
   +alpha-orange()
 
 a:hover, .btn-link:hover
-  color: $orange !important
+  color: $drk-grey !important
 //.content
 //  position: relative
 //  z-index: 0
@@ -80,12 +80,12 @@ a:hover, .btn-link:hover
   font-size: 2.25em
   //+alpha-dark(0.9)
   color: $orange
-  text-shadow: 1px 1px 1px $grey
+  //text-shadow: 1px 1px 1px $grey
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
 
 .logo:hover
-  text-shadow: 1px 1px 1px $drk-grey
+  //text-shadow: 1px 1px 1px $orange
   color: $orange !important
   //text-shadow: none
   //text-shadow: 1px 1px $orange
@@ -273,7 +273,11 @@ label.status.recording
   border: 1px solid $grey
 
 .text-muted
-  color: $grey !important
+  color: $drk-grey !important
+
+a.text-muted:hover,
+.btn-link.text-muted:hover
+  color: $orange !important
 
 .text-primary
   color: $grey !important

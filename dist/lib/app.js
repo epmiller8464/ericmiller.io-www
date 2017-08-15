@@ -19,13 +19,14 @@ var App = {
 var init = function init(options) {
   var body = document.body;
   particlesJS.load('particles-js', 'particles.json', particlesLoaded);
-  imagesLoaded(body, function () {});
-  // Show current grid.
-  // grids[currentGrid].classList.remove('grid--hidden')
-  // Init/Bind events.
-  // Remove loading class from body
-  initEvents();
-  body.classList.remove('loading');
+  imagesLoaded(body, function () {
+    // Show current grid.
+    // grids[currentGrid].classList.remove('grid--hidden')
+    // Init/Bind events.
+    // Remove loading class from body
+    initEvents();
+    // body.classList.remove('loading')
+  });
 };
 
 var Loading = function Loading(opts, loadedHandler) {
@@ -34,7 +35,7 @@ var Loading = function Loading(opts, loadedHandler) {
   self.delay = opts.delay;
   self.loadHandler = loadedHandler;
   self.pageReady = function () {
-    console.log('page ready called');
+    console.log('page ready called delay: %s', self.delay);
     setTimeout(function () {
       self.loadHandler();
     }, self.delay, self);
@@ -83,7 +84,9 @@ var muteVoiceMail = function muteVoiceMail() {};
 var unmuteVoiceMail = function unmuteVoiceMail() {};
 
 var onReady = function onReady() {
-  // $('body').removeClass('loading')
+  $('body').removeClass('loading');
+  // $('body').addClass('loading')
+
   retype();
 
   $('#reload-me').click(function () {
@@ -91,7 +94,7 @@ var onReady = function onReady() {
     retype();
   });
 };
-
+//
 var _loading = new Loading({ delay: 3000 }, onReady);
 $(document).ready(function () {
   _loading.pageReady();
@@ -109,7 +112,6 @@ function retype() {
     showCursor: false,
     html: true,
     callback: function callback() {
-      //              /,
       $('.intro').typed({
         strings: ['I\'m Eric Miller a software developer in Austin, TX.'],
         typeSpeed: 10,
@@ -155,6 +157,6 @@ function retype() {
 // myText.show()
 
 init({ delay: 3000, onReady: onReady });
-
+// module.exports = Loading
 exports.Loading = Loading;
 //# sourceMappingURL=app.js.map
