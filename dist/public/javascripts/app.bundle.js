@@ -93,20 +93,13 @@
   // import Letters from './letters'
   // import particlesJS from './particles'
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
   var CONSTANTS = {
     $el: 'body',
     class: 'loading',
     LOADING_TIMEOUT: 5000
   };
 
-  var App = {
-    load: function load() {}
-  };
-
-  var init = function init(options) {
+  var init = function init(options, cb) {
     var body = document.body;
     particlesJS.load('particles-js', 'particles.json', particlesLoaded);
     imagesLoaded(body, function () {
@@ -114,9 +107,9 @@
       // grids[currentGrid].classList.remove('grid--hidden')
       // Init/Bind events.
       // Remove loading class from body
-      initEvents
-      // body.classList.remove('loading')
-      ();
+      initEvents();
+      var _loading = new Loading(options, cb);
+      _loading.pageReady(_onReady);
     });
   };
 
@@ -125,9 +118,10 @@
     // self.events = new EventEmitter()
     self.delay = opts.delay;
     self.loadHandler = loadedHandler;
-    self.pageReady = function () {
+    self.pageReady = function (cb) {
       console.log('page ready called delay: %s', self.delay);
       setTimeout(function () {
+        cb();
         self.loadHandler();
       }, self.delay, self);
     };
@@ -174,22 +168,19 @@
   var muteVoiceMail = function muteVoiceMail() {};
   var unmuteVoiceMail = function unmuteVoiceMail() {};
 
-  var onReady = function onReady() {
-    $('body').removeClass('loading'
-    // $('body').addClass('loading')
-
-    );retype();
-
+  var _onReady = function _onReady() {
+    $('body').removeClass('loading');
+    retype();
     $('#reload-me').click(function () {
       $('#reload-me').addClass('hide');
       retype();
     });
   };
-  //
-  var _loading = new Loading({ delay: 3000 }, onReady);
-  $(document).ready(function () {
-    _loading.pageReady();
-  });
+
+  // var _loading = new Loading({delay: 3000}, onReady)
+  // $(document).ready(function () {
+  //   _loading.pageReady()
+  // })
 
   function retype() {
     $('.greeting').text('');
@@ -247,9 +238,12 @@
   // var myText = new Letters(el, options)
   // myText.show()
 
-  init({ delay: 3000, onReady: onReady }
-  // module.exports = Loading
-  );exports.Loading = Loading;
+  var App = {
+    init: init
+    // return Loading
+    // module.exports.Loading = Loading
+    // export { Loading }
+  };window.App = App;
 
   /***/
 }]);

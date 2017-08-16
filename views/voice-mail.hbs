@@ -71,7 +71,7 @@
                         </button>
                         <button id="upload-btn" type="button" class="btn btn-link btn-lg" data-toggle="tooltip"
                                 data-placement="right" title="Recording save automatically but you can delete yours">
-                             <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
                         </button>
 
                     </div>
@@ -162,10 +162,8 @@
     <script src="/javascripts/app.bundle.js"></script>
     <script src="javascripts/mo.min.js"></script>
     <script>
-        var _loading = new Loading({delay: 3000}, onReady)
-        $(document).ready(function () {
-            _loading.pageReady()
-        })
+
+
     </script>
     <script>
         var _player
@@ -243,7 +241,7 @@
 
         var audioComponents = []
 
-        $(document).ready(function () {
+        function onReady () {
 
             $('#top-scroll').affix({
                 offset: {
@@ -350,7 +348,7 @@
 
 //            });
 
-        })
+        }
 
         function showAudioControls () {
             $('.audio-controls').removeClass('hide')
@@ -406,6 +404,7 @@
             })
         }
 
+        App.init({delay: 1500}, onReady)
     </script>
 
 
