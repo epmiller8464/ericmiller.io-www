@@ -104,6 +104,15 @@
     class: 'loading',
     LOADING_TIMEOUT: 5000
   };
+  var TYPED_TEXT = {
+    GREETING: ['.greeting', '<span class="br">Hello</span>'],
+    INTRO: ['.intro', 'I am Eric Miller, a software developer, systems architect, and world traveler in Austin, TX.'],
+    TECH: ['.tech', 'I work across the full stack but my head is always in the cloud. I love Node.js, Python, and Go.'],
+    SKILLS: ['.skills', 'I deliver beautiful code for complex problems implemented in elegant solutions.'],
+    PASSION: ['.passion', 'I have a passion for real-time communication, scalable distributed systems, WebRTC and other p2p technologies.'],
+    WHO: ['.who', 'I’m a self starter who is constantly learning and pushing my skills to the bleeding edge.'],
+    GITHUB: ['.github', 'Check me out on <a href="https://github.com/epmiller8464">Github</a>']
+  };
 
   var Loaded = function Loaded(opts) {
     var loadedHandler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : noop;
@@ -128,10 +137,9 @@
   };
 
   var initEvents = function initEvents(opts) {
-    // ctrl.addEventListener('click', applyFx)¬
     $('#read-more').click(function () {
-      // $('#read-more').addClass('hide')
-      alert('this isnt doing anything now');
+      $('#read-more').addClass('hide');
+      continueTyping();
     });
 
     $('#reload-me').click(function () {
@@ -140,35 +148,47 @@
     });
   };
 
-  var startTyping = function startTyping(_ref) {
-    var el = _ref.el,
-        text = _ref.text;
+  var doneLoading = function doneLoading() {
+    $('body').removeClass('loading');
+    retype();
+  };
 
-    // $('.tech').typed({
-    $('.tech').typed({
-      strings: ['Currently I am writing applications node.js but I love python, go, and swift.'],
+  // [CONSTANTS.TECH, CONSTANTS.WHATIDO, CONSTANTS.PASSION, CONSTANTS.WHO]
+  var TEXT_INDEX = Object.keys(TYPED_TEXT);
+
+  var tail = function tail(i, k) {
+    var done = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : noop;
+
+    console.log(arguments);
+    var key = TEXT_INDEX[i];
+    if (!key || i > k) return done();
+
+    var textSet = TYPED_TEXT[key];
+    console.log(textSet);
+    var selector = textSet[0];
+    var text = textSet[1];
+    $(selector).typed({
+      strings: [text],
       typeSpeed: 0,
       html: true,
       showCursor: false,
       startDelay: 0,
       callback: function callback() {
-        $('.github').typed({
-          strings: ['Check me out on <a href="https://github.com/epmiller8464">Github</a>'],
-          typeSpeed: 0,
-          html: true,
-          showCursor: false,
-          startDelay: 0,
-          callback: function callback() {
-            $('#reload-me').removeClass('hide');
-          }
-        });
+        return tail(++i, k, done);
       }
     });
   };
 
-  var doneLoading = function doneLoading() {
-    $('body').removeClass('loading');
-    retype();
+  var startTyping = function startTyping() {
+    var done = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {
+      $('#read-more').removeClass('hide');
+    };
+
+    tail(0, 1, done);
+  };
+
+  var continueTyping = function continueTyping() {
+    tail(2, TEXT_INDEX.length);
   };
 
   function retype() {
@@ -177,33 +197,37 @@
     $('.skills').text('');
     $('.tech').text('');
     $('.github').text('');
-    $('.greeting').typed({
-      strings: ['<span class="br">Hello</span>'],
-      typeSpeed: 50,
-      showCursor: false,
-      html: true,
-      callback: function callback() {
-        $('.intro').typed({
-          strings: ['I\'m Eric Miller a software developer in Austin, TX.'],
-          typeSpeed: 10,
-          html: true,
-          showCursor: false,
-          startDelay: 10,
-          callback: function callback() {
-            $('.skills').typed({
-              strings: ['I like tight time lines and developing elegant solutions to complex problems. I am a full-stack javascript developer.'],
-              typeSpeed: 0,
-              html: true,
-              showCursor: false,
-              startDelay: 20,
-              callback: function callback() {
-                $('#read-more').removeClass('hide');
-              }
-            });
-          }
-        });
-      }
-    });
+    $('.who').text(''
+    // $('.greeting').typed({
+    //   strings: ['<span class="br">Hello</span>'],
+    //   typeSpeed: 50,
+    //   showCursor: false,
+    //   html: true,
+    //   callback: function () {
+    //     $('.intro').typed({
+    //       // strings: ['I\'m Eric Miller a software developer in Austin, TX.'],
+    //       strings: [CONSTANTS.ME],
+    //       typeSpeed: 10,
+    //       html: true,
+    //       showCursor: false,
+    //       startDelay: 10,
+    //       callback: function () {
+    //         $('.skills').typed({
+    //           strings: ['I like tight time lines and developing elegant solutions to complex problems. I am a full-stack javascript developer.'],
+    //           typeSpeed: 0,
+    //           html: true,
+    //           showCursor: false,
+    //           startDelay: 20,
+    //           callback: function () {
+    //             $('#read-more').removeClass('hide')
+    //           }
+    //         })
+    //       }
+    //     })
+    //   }
+    // })
+
+    );startTyping();
   }
 
   function VisualVoiceMail(opts) {
