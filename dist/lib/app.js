@@ -55,10 +55,10 @@ var initEvents = function initEvents(opts) {
   });
 };
 
-var doneLoading = function doneLoading() {
-  $('body').removeClass('loading');
-  retype();
-};
+// const doneLoading = () => {
+//   $('body').removeClass('loading')
+//   retype()
+// }
 
 // [CONSTANTS.TECH, CONSTANTS.WHATIDO, CONSTANTS.PASSION, CONSTANTS.WHO]
 var TEXT_INDEX = Object.keys(TYPED_TEXT);
@@ -125,7 +125,7 @@ function VisualVoiceMail(opts) {
   };
 
   self.recording = {
-    $container: $('.audio-controls')
+    $container: $('#record-container')
   };
 
   self.type = function type() {
@@ -181,18 +181,26 @@ function VisualVoiceMail(opts) {
     });
     return _player;
   };
+  self.enableRecording = function showAudioControls(enable) {
+    var self = this;
+    if (enable) {
+      $('#show-record-btn').prop('disabled', false);
+      $('#show-record-btn').children('.fa').removeClass('text-muted').addClass('text-success');
+    } else {
+      $('#show-record-btn').prop('disabled', true);
+      $('#show-record-btn').children('.fa').addClass('text-muted').removeClass('text-success');
+      self.hideAudioControls();
+    }
+  };
 
   self.showAudioControls = function showAudioControls() {
     var self = this;
-
     self.recording.$container.removeClass('hide');
   };
 
-  self.showAudioControls = function disableAudioControls() {
+  self.hideAudioControls = function disableAudioControls() {
     var self = this;
-
     self.recording.$container.addClass('hide');
-    //            $('.audio-controls').addClass('hide')
   };
 
   self.bindEvents = function bindEvents() {
@@ -206,18 +214,18 @@ function VisualVoiceMail(opts) {
       });
       $('[name=email]').keypress(function () {
         if (new RegExp(/.+@.+\..+/).test($(this).val())) {
-          $('.btn.next').removeClass('hide');
+          // $('.btn.next').removeClass('hide')
+          self.enableRecording(true);
         } else {
-          self.hideAudioControls();
+          self.enableRecording(false);
         }
       });
       $('[name=email]').focusout(function () {
         if (new RegExp(/.+@.+\..+/).test($(this).val())) {
-          $('.btn.next').removeClass('hide');
-          //                    incrementStep()
+          // $('.btn.next').removeClass('hide')
+          self.enableRecording(true);
         } else {
-          //                    alert('invalid asshole')
-          $(this).addClass('hasError');
+          self.enableRecording(false);
         }
       });
       $('.next').click(function () {
@@ -225,9 +233,15 @@ function VisualVoiceMail(opts) {
         // 2. enable client side socket.io code
         self.showAudioControls();
       });
+
+      // $('.btn.next').click(function () {
+      //   // $('#record-container').removeClass('hide')
+
+      //
+      // })
+
       $('#show-record-btn').click(function () {
-        $('#show-record-btn').children('.fa').removeClass('text-success').addClass('text-danger');
-        $('#record-container').removeClass('hide');
+        self.showAudioControls();
       });
     });
   };

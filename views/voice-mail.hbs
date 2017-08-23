@@ -31,21 +31,25 @@
     <div id="wavebg" class="content content--bg content-bg-overlay overlay-dark">
         <div class="content__inner content__inner--fheight flexy flexy--center recording-section">
             <!--<h2 class="content__title br text-muted">Web Voice Mail</h2>-->
-            <div class="">
-                <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted">
-                    <span class="fa fa-microphone text-success" aria-hidden="true"></span><br/>
-                    <small>Start Recording</small>
+            <div class="col-md-8">
+                <h2 class="text-muted">Start Recording</h2>
+                <span class="input-group-lg">
+            <span class="input-lg">
+
+                <input class="form-control" type="email" autocomplete="off" name="email" pattern="/.+\@.+\..+/"
+                       placeholder="Enter a valid email" style="background: transparent;"/>
+            </span>
+                            <button type="button" class="btn btn-link next pull-right hide">Next</button>
+
+        </span>
+            </div>
+            <div class="clearfix">
+                <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted" disabled>
+                    <span class="fa fa-microphone" aria-hidden="true"></span><br/>
+                    <!--<small>Start Recording</small>-->
                 </button>
             </div>
             <div id="record-container" class="col-md-12 hide">
-        <span class="input-group-lg">
-            <span class="input-lg">
-                <label>Enter a valid email</label>
-                <input class="form-control" type="email" autocomplete="off" name="email" pattern="/.+\@.+\..+/"
-                       placeholder="e.g. tom@gmail.com" style="background: transparent;"/>
-                <label for="email"></label>
-            </span>
-        </span>
                 <div class="audio-controls">
                     <div class="row">
                         <div class="col-md-12">
@@ -57,8 +61,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="text-center" role="group" aria-label="...">
                         <button id="record-btn" type="button" class="btn btn-link btn-lg">
                             <span class="fa fa-microphone" aria-hidden="true"></span> Record
@@ -73,7 +75,6 @@
                                 data-placement="right" title="Recording save automatically but you can delete yours">
                             <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
                         </button>
-
                     </div>
                 </div>
                 <span>
@@ -88,7 +89,6 @@
             </span>
                 <span class="input-group-lg step-2">
         </span>
-                <button type="button" class="btn btn-link next pull-right ">Next</button>
             </div>
         </div>
         <div class="interaction interaction--corner interaction--light">

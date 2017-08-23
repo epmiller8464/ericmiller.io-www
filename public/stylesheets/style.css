@@ -219,7 +219,7 @@ a.text-primary:focus {
   color: rgba(33, 150, 243, 0.8) !important; }
 
 .text-success {
-  color: #00ff48 !important; }
+  color: rgba(0, 255, 72, 0.9) !important; }
 
 a.text-success:hover,
 a.text-success:focus {
@@ -247,6 +247,7 @@ a.text-danger:focus {
   color: rgba(255, 0, 128, 0.7) !important; }
 
 #show-record-btn {
+  margin-top: 20px;
   line-height: 1; }
 
 #top-scroll {
@@ -456,6 +457,9 @@ a.text-danger:focus {
     transform: rotate(0deg); }
   100% {
     transform: rotate(360deg); } }
+
+#record-container {
+  margin-top: 20px; }
 
 .recording-section {
   margin-bottom: 25vh; }
