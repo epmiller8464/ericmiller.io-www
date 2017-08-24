@@ -3,7 +3,48 @@
     <!--<link rel="stylesheet" type="text/css" href="/stylesheets/obnoxious.css"/>-->
     <script src="/recordrtc/RecordRTC.min.js"></script>
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {{/section}}
+<section>
+    <div id="verify-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Please enter your email</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!--<h2 class="text-muted">Start Recording</h2>-->
+                                <form id="robot-form" method="POST" class="form-group">
+                                    <div class="input-group-lg">
+                                        <span class="input-lg">
+
+                    <input class="form-control" type="email" required autocomplete="off" name="email"
+                           pattern="/.+@.+\..+/"
+                           placeholder="Enter a valid email" style="background: transparent;"/>
+                                        </span>
+                                        <div class="g-recaptcha hide" required data-sitekey="{{site_key}}"
+                                             data-callback="recaptchaCallback"></div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-recaptcha" type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                    </button>
+                    <button id="submit-recaptcha" type="button" class="btn btn-primary" disabled>Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <section id="alert-row" class="row hide">
     <div class="col-md-12">
         <div class="alert alert-danger text-center fs-3x" role="alert" style="font-size:0.80em;">
@@ -31,22 +72,11 @@
     <div id="wavebg" class="content content--bg content-bg-overlay overlay-dark">
         <div class="content__inner content__inner--fheight flexy flexy--center recording-section">
             <!--<h2 class="content__title br text-muted">Web Voice Mail</h2>-->
-            <div class="col-md-8">
-                <h2 class="text-muted">Start Recording</h2>
-                <span class="input-group-lg">
-            <span class="input-lg">
 
-                <input class="form-control" type="email" autocomplete="off" name="email" pattern="/.+\@.+\..+/"
-                       placeholder="Enter a valid email" style="background: transparent;"/>
-            </span>
-                            <button type="button" class="btn btn-link next pull-right hide">Next</button>
-
-        </span>
-            </div>
             <div class="clearfix">
-                <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted" disabled>
-                    <span class="fa fa-microphone" aria-hidden="true"></span><br/>
-                    <!--<small>Start Recording</small>-->
+                <button id="show-record-btn" type="button" class="btn btn-link fs-3x text-muted">
+                    <span class="fa fa-microphone text-warning" aria-hidden="true"></span><br/>
+                    <small>Start Recording</small>
                 </button>
             </div>
             <div id="record-container" class="col-md-12 hide">
@@ -63,7 +93,7 @@
                     </div>
                     <div class="text-center" role="group" aria-label="...">
                         <button id="record-btn" type="button" class="btn btn-link btn-lg">
-                            <span class="fa fa-microphone" aria-hidden="true"></span> Record
+                            <span class="glyphicon glyphicon-record" aria-hidden="true"></span> Record
                         </button>
                         <button id="stop-recording-btn" type="button" class="btn btn-link btn-lg">
                             <span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop
@@ -75,6 +105,7 @@
                                 data-placement="right" title="Recording save automatically but you can delete yours">
                             <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save Recording
                         </button>
+
                     </div>
                 </div>
                 <span>
@@ -163,7 +194,19 @@
     <script src="/javascripts/app.bundle.js"></script>
     <script src="javascripts/mo.min.js"></script>
     <script>
-        App.voicemail({delay: 1500})
+        var vm = {}
+        App.voicemail({delay: 1500}, function (visualVoiceMail) {
+            vm = visualVoiceMail
+        })
+
+        function recaptchaCallback (token) {
+            vm.verified(token)
+
+        }
+
+        function invalidForm () {
+            alert(args)
+        }
     </script>
 
 

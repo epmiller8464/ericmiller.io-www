@@ -207,6 +207,7 @@
     self.audioComponents = [];
     self.isMobileDevice = browser().mobile;
     self.touched = false;
+    self.token = null;
 
     self.voicemailElements = {
       $mute: null,
@@ -281,7 +282,14 @@
         self.hideAudioControls();
       }
     };
-
+    self.showModal = function () {
+      grecaptcha.reset();
+      self.enableRecaptcha(false);
+      $('#submit-recaptcha').prop('disabled', true);
+      $('#robot-form').removeClass('has-error');
+      $('input[name=email]').val('');
+      $('#verify-modal').modal({ show: true, backdrop: 'static', keyboard: false });
+    };
     self.showAudioControls = function showAudioControls() {
       var self = this;
       self.recording.$container.removeClass('hide');
@@ -290,6 +298,18 @@
     self.hideAudioControls = function disableAudioControls() {
       var self = this;
       self.recording.$container.addClass('hide');
+    };
+    self.enableRecaptcha = function (enable) {
+      if (enable) {
+        $('.g-recaptcha').removeClass('hide');
+      } else {
+        $('.g-recaptcha').addClass('hide');
+      }
+    };
+
+    self.resetRecaptcha = function () {
+      $('#submit-recaptcha').prop('disabled', true);
+      grecaptcha.reset();
     };
 
     self.bindEvents = function bindEvents() {
@@ -300,22 +320,29 @@
           offset: {
             top: $(window).height()
           }
-        });
-        $('[name=email]').keypress(function () {
+        }
+
+        // $('#robot-form').form().submit()
+
+        );$('[name=email]').keydown(function () {
           if (new RegExp(/.+@.+\..+/).test($(this).val())) {
             // $('.btn.next').removeClass('hide')
-            self.enableRecording(true);
+            return self.enableRecaptcha(true);
           } else {
-            self.enableRecording(false);
+            // self.enableRecording(false)
+            return self.enableRecaptcha(false);
           }
+          self.enableRecaptcha(false);
         });
         $('[name=email]').focusout(function () {
           if (new RegExp(/.+@.+\..+/).test($(this).val())) {
             // $('.btn.next').removeClass('hide')
-            self.enableRecording(true);
+            return self.enableRecaptcha(true);
           } else {
-            self.enableRecording(false);
+            // self.enableRecording(false)
+            return self.enableRecaptcha(false);
           }
+          self.enableRecaptcha(false);
         });
         $('.next').click(function () {
           // 1. hide the previous step
@@ -330,6 +357,12 @@
         // })
 
         );$('#show-record-btn').click(function () {
+          // self.showAudioControls()
+          self.showModal();
+        });
+        $('#submit-recaptcha').click(function () {
+          // $('#submit-recaptcha')
+          $('#verify-modal').modal('toggle');
           self.showAudioControls();
         });
       });
@@ -403,7 +436,40 @@
       }
       self.audioComponents = self.loadRecordedMessage();
     };
+    self.verified = function (token) {
+      // console.log(response)
+      // $('#submit-recaptcha')
+      var self = this;
+      self.token = token;
+      var data = $('#robot-form').serializeArray();
+      var hasError = false;
+      for (var i = 0; i < data.length; i++) {
+        if (!data[i].value) {
+          $('#robot-form').addClass('has-error');
+          hasError = true;
+        } else {
+          if (data[i].name === 'g-recaptcha-response') {
+            hasError = data[i].value !== self.token;
+          }
+        }
+      }
 
+      if (hasError) {
+        return;
+      }
+
+      data = $('#robot-form').serialize();
+      $.ajax({
+        method: 'POST',
+        url: '/voice-mail/recaptcha',
+        data: data
+      }).done(function (r) {
+        $('#submit-recaptcha').prop('disabled', false);
+      }).fail(function (e) {
+        console.log('opps ', e);
+        self.resetRecaptcha();
+      });
+    };
     self.init(callback);
     return self;
   }
@@ -435,7 +501,7 @@
           visualVoiceMail = new VisualVoiceMail({}, function () {
             console.log('done loading');
             $('body').removeClass('loading');
-            cb();
+            return cb(visualVoiceMail);
           });
         }).onReady();
       });
