@@ -68,7 +68,9 @@ body
 a, .btn-link
   +alpha-orange()
 
-a:hover, .btn-link:hover
+a:hover,
+.btn-link:hover,
+.btn-link:disabled
   color: $drk-grey !important
 //.content
 //  position: relative
@@ -312,8 +314,16 @@ a.text-danger:hover,
 a.text-danger:focus
   color: rgba(255, 0, 128, 0.7) !important
 
+.modal-content
+  background-color: $dark-bg
+
+.modal-footer,
+.modal-header,
+.form-control
+  border-color: $drk-grey
+
 #show-record-btn
-  margin-top: 20px
+  //margin-top: 20px
   line-height: 1
 
 #top-scroll
@@ -552,14 +562,17 @@ a.text-danger:focus
     transform: rotate(360deg)
 
 #record-container
-  margin-top: 20px
+  //margin-top: 20px
 
 .recording-section
   margin-bottom: 25vh
 
 #record-section .recording-section
-  padding-top: 5vh
+  //padding-top: 5vh
 
 #go-to-record
   z-index: 100 !important
   position: relative
+
+
+
