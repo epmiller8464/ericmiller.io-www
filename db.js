@@ -1,9 +1,7 @@
-/*
-
- */
-
+'use strict'
 let levelup = require('levelup')
 let instance
+
 function db (name) {
 
   if (instance)
@@ -18,4 +16,5 @@ function db (name) {
   })
   return instance
 }
+
 module.exports = db

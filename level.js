@@ -1,5 +1,5 @@
 'use strict'
-module.exports = function (name, options) {
+module.exports = function (name, options = {}) {
   const db = require('./db')(name, options)
   let encoding = {valueEncoding: options.encoding || 'json'}
   const level = {

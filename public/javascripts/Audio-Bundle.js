@@ -173,15 +173,7 @@ function WebVoiceMail (config, cb) {
   this.index = 0
   this.canvas = config.canvas
   this.recording = false
-  this.siriWave = new SiriWave({
-    container: document.getElementById('wavebg'),
-    // style: 'ios9',
-    speed: 0.05,
-    color: '#f4846d',
-    frequency: 4,
-    amplitude: 0.3,
-    autostart: true
-  })
+  this.audioSignature = null
   return this
 }
 
@@ -503,7 +495,16 @@ function initAudio () {
   cameraPreview.onEnded = function () { alert('done') }
 }
 
+var audioSignature = null
+
+function audioContextSignature (token) {
+  audioSignature = token
+}
+
 startRecording.onclick = function () {
+  if (!audioSignature) {
+    $('.status.on').text('No validation token created....').addClass('text-warning')
+  }
   // initAudio()
   navigator.getUserMedia({
     audio: true,
@@ -511,12 +512,13 @@ startRecording.onclick = function () {
   }, function (stream) {
     mediaStream = stream
     liveSample = new WebVoiceMail({type: 'live-audio', source: stream, canvas: liveAudioCanvas})
+    liveSample.audioSignature = audioSignature
     liveSample.draw()
 
     startRecording.disabled = true
     playButton.disabled = true
     saveRecordingButton.disabled = true
-    $('.status.on').text('Recording....').addClass('recording')
+    $('.status.on').text('Recording....')
     liveSample.recording = true
 
     recordAudio = RecordRTC(liveSample.mediaStream, {
@@ -600,7 +602,7 @@ saveRecordingButton.onclick = function () {
   // .done(function (msg) {
   //   window.location.href = window.location.href
   // })
-  socketio.emit('save-upload', {filename: fileName, id: recordingKey})
+  socketio.emit('save-upload', {filename: fileName, id: recordingKey, token: liveSample.audioSignature})
 
   // $.ajax({method:'POST',})
 }
@@ -639,7 +641,9 @@ socketio.on('ffmpeg-output', function (result) {
 //   percentage.innerHTML = 'Ffmpeg Progress ' + result + '%'
 })
 socketio.on('ffmpeg-error', function (error) {
-  alert(error)
+  // alert(error)
+  $('.status.on').text('Opps something went wrong.').removeClass('recording').addClass('text-danger')
+
 })
 
 function endRecording () {
@@ -665,7 +669,8 @@ function endRecording () {
           image: image,
           email: 'epmiller8464@gmail.com',
           waveForm: liveSample.sampleBuffer,
-          createDate: moment().format('LLL')
+          createDate: moment().format('LLL'),
+          token: liveSample.audioSignature
         }
       }
       socketio.emit('message', files)

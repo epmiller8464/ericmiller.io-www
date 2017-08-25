@@ -208,7 +208,16 @@
     self.isMobileDevice = browser().mobile;
     self.touched = false;
     self.token = null;
-
+    self.audioContext = null;
+    self.siriWave = new SiriWave({
+      container: document.getElementById('wavebg'),
+      // style: 'ios9',
+      speed: 0.05,
+      color: '#f4846d',
+      frequency: 4,
+      amplitude: 0.3,
+      autostart: false
+    });
     self.voicemailElements = {
       $mute: null,
       $replay: null
@@ -293,6 +302,7 @@
     self.showAudioControls = function showAudioControls() {
       var self = this;
       self.recording.$container.removeClass('hide');
+      self.siriWave.start();
     };
 
     self.hideAudioControls = function disableAudioControls() {
@@ -436,7 +446,7 @@
       }
       self.audioComponents = self.loadRecordedMessage();
     };
-    self.verified = function (token) {
+    self.verified = function (token, cb) {
       // console.log(response)
       // $('#submit-recaptcha')
       var self = this;
@@ -462,9 +472,14 @@
       $.ajax({
         method: 'POST',
         url: '/voice-mail/recaptcha',
+        headers: {
+          // 'X_CSRF_TOKEN': extractCSRF()
+        },
         data: data
       }).done(function (r) {
         $('#submit-recaptcha').prop('disabled', false);
+        self.audioContext = r;
+        return cb(r);
       }).fail(function (e) {
         console.log('opps ', e);
         self.resetRecaptcha();

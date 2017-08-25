@@ -10,7 +10,17 @@ var _require2 = require('../lib/authorization'),
     createSignedUrl = _require2.createSignedUrl;
 
 var nets = require('nets');
-router.get('/', function (req, res, next) {
+
+var _require3 = require('../level')('tokens'),
+    level = _require3.level;
+
+var _require4 = require('../lib/token'),
+    createAudioSignature = _require4.createAudioSignature;
+
+var csurf = require('csurf')({ cookie: true });
+var MessagingResponse = require('twilio').twiml.MessagingResponse;
+
+router.get('/', csurf, function (req, res, next) {
   var links = [];
   VoiceMessage.find({ isTemp: false }, function (err, docs) {
     // let value = JSON.parse(data.value)
@@ -28,11 +38,16 @@ router.get('/', function (req, res, next) {
       var surl = createSignedUrl(vm.meta.Key);
       return { key: vm._id, image: vm.image, audio_path: surl, waveForm: waveForm.join(',') };
     });
-    res.render('voice-mail', { title: 'Express', images: links, site_key: process.env.RECAPTCHA_SITE_KEY });
+    res.render('voice-mail', {
+      title: 'Express',
+      images: links,
+      site_key: process.env.RECAPTCHA_SITE_KEY,
+      csrfToken: req.csrfToken()
+    });
   });
 });
 
-router.post('/recaptcha', function (req, res, next) {
+router.post('/recaptcha', csurf, function (req, res, next) {
 
   var body = { response: req.body['g-recaptcha-response'], remoteip: req.ip };
   var email = req.body.email;
@@ -42,9 +57,20 @@ router.post('/recaptcha', function (req, res, next) {
   }
 
   validateSubmitter(body.response, body.remoteip, function (err, result) {
-    if (err) return res.status(400).json(result);
+    if (err || !result.success) return res.status(400).json(result);
+    var token = createAudioSignature({ email: email, ip: req.ip, challenge_ts: result.challenge_ts });
 
-    return res.status(200).json(result);
+    if (token.error) {
+      return res.status(400).json({ error: 'Could not validate submitter' });
+    }
+
+    level.put(token.jwtid, token, function (e, success) {
+      if (e) {
+        return next(e);
+      }
+
+      return res.status(200).json(token);
+    });
   });
 });
 
@@ -58,10 +84,26 @@ router.delete('/:id', function (req, res, next) {
   var fileName = '';
 });
 
+router.post('/webhook/incoming/sms', function (req, res, next) {
+  var twiml = new MessagingResponse();
+
+  twiml.message('When your near your computer go https://ericmiller.io/voice-mail and leave me a message.');
+
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
+  res.end(twiml.toString());
+});
+
+router.post('/webhook/incoming/sms/error', function (req, res, next) {
+  var twiml = new MessagingResponse();
+
+  twiml.message('The Robots are coming! Head for the hills!');
+
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
+  res.end(twiml.toString());
+});
+
 function validateSubmitter(recaptcha, ip, cb) {
   var url = 'https://www.google.com/recaptcha/api/siteverify?secret= ' + process.env.RECAPTCHA_SECRET + '&response=' + recaptcha + '&remoteip=' + ip;
-  // let url = `https://www.google.com/recaptcha/api/siteverify`
-
   var request = {
     url: url,
     method: 'POST',

@@ -20,6 +20,7 @@
                             <div class="col-md-6">
                                 <!--<h2 class="text-muted">Start Recording</h2>-->
                                 <form id="robot-form" method="POST" class="form-group">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                     <div class="input-group-lg">
                                         <span class="input-lg">
 
@@ -200,7 +201,7 @@
         })
 
         function recaptchaCallback (token) {
-            vm.verified(token)
+            vm.verified(token, audioContextSignature)
 
         }
 

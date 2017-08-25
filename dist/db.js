@@ -1,11 +1,8 @@
 'use strict';
 
-/*
-
- */
-
 var levelup = require('levelup');
 var instance = void 0;
+
 function db(name) {
 
   if (instance) return instance;
@@ -18,5 +15,6 @@ function db(name) {
   });
   return instance;
 }
+
 module.exports = db;
 //# sourceMappingURL=db.js.map

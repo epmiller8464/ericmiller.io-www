@@ -1,6 +1,8 @@
 'use strict';
 
-module.exports = function (name, options) {
+module.exports = function (name) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   var db = require('./db')(name, options);
   var encoding = { valueEncoding: options.encoding || 'json' };
   var level = {

@@ -27,6 +27,8 @@ function server (app) {
   io.sockets.on('connection', function (socket) {
 
     socket.on('message', function (data) {
+      // add token logic
+      // data.token
       var fileName = uuid.v4()
 
       socket.emit('ffmpeg-output', 0)
@@ -57,46 +59,6 @@ function server (app) {
       })
     })
   })
-
-// isn't it redundant?
-// app.listen(8888);
-  const set = new Set()
-
-// function merge (socket, fileName) {
-//
-//   var audioFile = path.join(__dirname, 'uploads', fileName + '.wav'),
-//     videoFile = path.join(__dirname, 'uploads', fileName + '.webm'),
-//     mergedFile = path.join(__dirname, 'uploads', fileName + '-merged.webm')
-//
-//   new FFmpeg({
-//     source: videoFile
-//   })
-//   .addInput(audioFile)
-//   .addInput(audioFile)
-//   .on('error', function (err) {
-//     socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + err.message)
-//     console.log(err)
-//   })
-//   .on('progress', function (progress) {
-//     socket.emit('ffmpeg-output', Math.round(progress.percent))
-//   })
-//   .on('exit', function () {
-//     console.log('some exit')
-//   })
-//   .on('end', function () {
-//     // if (!set.has(fileName)) {
-//     //   socket.emit('merged', fileName + '-merged.webm')
-//     //   console.log('Merging finished !')
-//     //   set.add(fileName)
-//     // }
-//
-//     // removing audio/video files
-//     fs.unlink(audioFile)
-//     fs.unlink(videoFile)
-//   })
-//   .saveToFile(mergedFile)
-//   // .writeToStream(fs.createWriteStream(mergedFile))
-// }
 }
 
 module.exports = server

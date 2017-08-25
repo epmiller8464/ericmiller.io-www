@@ -8,7 +8,7 @@ var url = require('url');
 /* GET home page. */
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Welcome to my site', phone_number: process.env.TWILIO_NUMBER });
 });
 
 router.use('/uploads', function (req, response, next) {

@@ -1,13 +1,14 @@
 @import url(./font-awesome.css);
 @font-face {
-  font-family: "knarfart";
+  font-family: 'knarfart';
   font-weight: normal;
   font-style: normal;
   src: url("../fonts/knarfart/knarfart-webfont.eot");
   src: url("../fonts/knarfart/knarfart-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/knarfart/knarfart-webfont.woff2") format("woff2"), url("../fonts/knarfart/knarfart-webfont.woff") format("woff"), url("../fonts/knarfart/knarfart-webfont.ttf") format("truetype"), url("../fonts/knarfart/knarfart-webfont.svg#knarfart") format("svg"); }
+
 body {
   padding: 0px;
-  font-family: "Roboto Mono", monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 14px;
   text-rendering: geometricPrecision;
   background-color: #1e1d23;
@@ -36,7 +37,7 @@ a:hover,
   text-decoration: none; }
 
 .fart {
-  font-family: "knarfart";
+  font-family: 'knarfart';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
@@ -105,24 +106,25 @@ a:hover,
   height: 18px;
   -webkit-animation: pulsate 2s ease-out;
   -webkit-animation-iteration-count: infinite;
-  opacity: 0;
+  opacity: .0;
   border: 3px solid #e7797a;
   -webkit-border-radius: 30px; }
 
 .gps_ring-available {
-  opacity: 0;
+  opacity: .0;
   border: 1px solid rgba(0, 200, 83, 0.75);
   -webkit-border-radius: 10px; }
 
 @-webkit-keyframes pulsate {
   0% {
     -webkit-transform: scale(0.1, 0.1);
-    opacity: 0; }
+    opacity: .0; }
   50% {
-    opacity: 1; }
+    opacity: 1.0; }
   100% {
     -webkit-transform: scale(1.2, 1.2);
-    opacity: 0; } }
+    opacity: .0; } }
+
 .freelancer-status p span.available {
   z-index: 99;
   display: inline-block;
@@ -433,7 +435,7 @@ a.text-danger:focus {
 
 .js .loading::before,
 .js .loading::after {
-  content: "";
+  content: '';
   position: fixed;
   z-index: 2000; }
 
@@ -461,6 +463,7 @@ a.text-danger:focus {
     transform: rotate(0deg); }
   100% {
     transform: rotate(360deg); } }
+
 .recording-section {
   margin-bottom: 25vh; }
 

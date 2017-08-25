@@ -8,7 +8,10 @@ var sassMiddleware = require('node-sass-middleware')
 let hbs = require('express-handlebars')
 const fs = require('fs')
 const compression = require('compression')
+var sslRedirect = require('./lib/ssl-redirect')
 var app = express()
+app.use(sslRedirect(['test', 'production']))
+app.disable('x-powered-by')
 app.use(compression())
 
 // view engine setup
@@ -92,6 +95,7 @@ app.use(express.static(path.join(__dirname, 'node_modules')))
 app.use(express.static(path.join(__dirname, 'uploads')))
 
 app.use('/', require('./routes/index'))
+
 app.use('/voice-mail', require('./routes/voice-mail'))
 
 // catch 404 and forward to error handler
