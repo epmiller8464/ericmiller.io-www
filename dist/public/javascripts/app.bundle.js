@@ -471,7 +471,7 @@
       data = $('#robot-form').serialize();
       $.ajax({
         method: 'POST',
-        url: '/voice-mail/recaptcha',
+        url: '/voicemail/recaptcha',
         headers: {
           // 'X_CSRF_TOKEN': extractCSRF()
         },

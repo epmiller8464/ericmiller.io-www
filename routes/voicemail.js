@@ -7,13 +7,13 @@ const nets = require('nets')
 const {level} = require('../level')('tokens')
 const {createAudioSignature} = require('../lib/token')
 var csurf = require('csurf')({cookie: true})
-const MessagingResponse = require('twilio').twiml.MessagingResponse
+const {MessagingResponse, VoiceResponse} = require('twilio').twiml
 
 router.get('/', csurf, function (req, res, next) {
   let links = []
   VoiceMessage.find({isTemp: false}, (err, docs) => {
     // let value = JSON.parse(data.value)
-    if (err) res.render('voice-mail', {title: 'Express', images: []})
+    if (err) res.render('voicemail', {title: 'Express', images: []})
     links = docs.map((vm) => {return vm.toObject()}).map((vm) => {
       let waveForm = []
       for (var key in vm.waveForm) {
@@ -24,7 +24,7 @@ router.get('/', csurf, function (req, res, next) {
       let surl = createSignedUrl(vm.meta.Key)
       return {key: vm._id, image: vm.image, audio_path: surl, waveForm: waveForm.join(',')}
     })
-    res.render('voice-mail', {
+    res.render('voicemail', {
       title: 'Express',
       images: links,
       site_key: process.env.RECAPTCHA_SITE_KEY,
@@ -73,10 +73,30 @@ router.delete('/:id', (req, res, next) => {
 
 })
 
+router.post('/webhook/incoming/voice', (req, res, next) => {
+  const twiml = new VoiceResponse()
+  // /webhook/incoming/voice
+  twiml.say({voice: 'alice', language: 'pt-BR', loop: 1}, 'Oi, bom dia.')
+  twiml.pause({length: 1})
+  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'When your near your computer visit my site at')
+  // twiml.pause({length: 1})
+  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'www.ericmiller.io/voicemail')
+  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'and leave me a voice message.')
+  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'I wrote this with tweelio\'s voice api.')
+
+  console.log(twiml.toString())
+  // response.Say("Chapeau!", voice: "woman", language: "fr");
+
+  res.writeHead(200, {'Content-Type': 'text/xml'})
+  // res.writeHead(200, {'Content-Type': 'audio/wav'})
+
+  res.end(twiml.toString())
+})
+
 router.post('/webhook/incoming/sms', (req, res, next) => {
   const twiml = new MessagingResponse()
 
-  twiml.message('When your near your computer go https://ericmiller.io/voice-mail and leave me a message.')
+  twiml.message('When your near your computer go https://www.ericmiller.io/voicemail and leave me a message.')
 
   res.writeHead(200, {'Content-Type': 'text/xml'})
   res.end(twiml.toString())

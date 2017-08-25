@@ -596,7 +596,7 @@ saveRecordingButton.onclick = function () {
   // $.ajax({
   //   // method: 'POST',
   //   method: 'DELETE',
-  //   url: '/voice-mail/' + recordingKey,
+  //   url: '/voicemail/' + recordingKey,
   //   data: {key: recordingKey, fileName: fileName}
   // })
   // .done(function (msg) {

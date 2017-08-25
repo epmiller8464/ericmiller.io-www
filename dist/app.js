@@ -96,7 +96,7 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', require('./routes/index'));
 
-app.use('/voice-mail', require('./routes/voice-mail'));
+app.use('/voicemail', require('./routes/voicemail'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

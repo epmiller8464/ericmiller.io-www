@@ -21,6 +21,9 @@ module.exports = function (name, options = {}) {
           return cb(err)
         }
         return cb(null, value)
+
+
+
       })
     },
     del (key, cb) {

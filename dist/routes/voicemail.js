@@ -94,10 +94,9 @@ router.post('/webhook/incoming/voice', function (req, res, next) {
   twiml.pause({ length: 1 });
   twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'When your near your computer visit my site at');
   // twiml.pause({length: 1})
-  twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'www.ericmiller.io/voicemail and');
-  twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'leave me a voice message.');
+  twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'www.ericmiller.io/voicemail');
+  twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'and leave me a voice message.');
   twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, 'I wrote this with tweelio\'s voice api.');
-  twiml.say({ voice: 'alice', language: 'en-US', loop: 1 }, '');
 
   console.log(twiml.toString());
   // response.Say("Chapeau!", voice: "woman", language: "fr");
@@ -111,7 +110,7 @@ router.post('/webhook/incoming/voice', function (req, res, next) {
 router.post('/webhook/incoming/sms', function (req, res, next) {
   var twiml = new MessagingResponse();
 
-  twiml.message('When your near your computer go https://ericmiller.io/voicemail and leave me a message.');
+  twiml.message('When your near your computer go https://www.ericmiller.io/voicemail and leave me a message.');
 
   res.writeHead(200, { 'Content-Type': 'text/xml' });
   res.end(twiml.toString());
@@ -140,4 +139,4 @@ function validateSubmitter(recaptcha, ip, cb) {
 }
 
 module.exports = router;
-//# sourceMappingURL=voice-mail.js.map
+//# sourceMappingURL=voicemail.js.map

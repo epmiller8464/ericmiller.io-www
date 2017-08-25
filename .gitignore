@@ -7,3 +7,4 @@ ig
 vm
 *.db
 *.env
+/tokens

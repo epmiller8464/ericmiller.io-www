@@ -92,7 +92,7 @@ AudioComponent.prototype.deleteClick = function () {
   console.log('deleting record: %s', recordingKey)
   $.ajax({
     method: 'DELETE',
-    url: '/voice-mail/' + recordingKey,
+    url: '/voicemail/' + recordingKey,
     data: {key: recordingKey}
   })
   .done(function (response) {
