@@ -10,7 +10,7 @@ const fs = require('fs')
 const compression = require('compression')
 var sslRedirect = require('./lib/ssl-redirect')
 var app = express()
-app.use(sslRedirect(['test', 'production']))
+// app.use(sslRedirect(['test', 'production']))
 app.disable('x-powered-by')
 app.use(compression())
 
