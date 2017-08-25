@@ -76,13 +76,13 @@ router.delete('/:id', (req, res, next) => {
 router.post('/webhook/incoming/voice', (req, res, next) => {
   const twiml = new VoiceResponse()
   // /webhook/incoming/voice
-  twiml.say({voice: 'alice', language: 'pt-BR', loop: 1}, 'Oi, bom dia.')
-  twiml.pause({length: 1})
-  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'When your near your computer visit my site at')
+  twiml.say({voice: 'alice', language: 'pt-BR', loop: 1}, 'Bom dia.')
   // twiml.pause({length: 1})
-  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'www.ericmiller.io/voicemail')
-  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'and leave me a voice message.')
-  twiml.say({voice: 'alice', language: 'en-US', loop: 1}, 'I wrote this with tweelio\'s voice api.')
+  twiml.say({
+    voice: 'alice',
+    language: 'en-US',
+    loop: 1
+  }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
 
   console.log(twiml.toString())
   // response.Say("Chapeau!", voice: "woman", language: "fr");

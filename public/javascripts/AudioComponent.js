@@ -26,7 +26,7 @@ var AudioComponent = function (options) {
 AudioComponent.prototype = {
   init: function (options) {
     var self = this
-    console.log('initialization')
+    // console.log('initialization')
     if (!options.howl.src || !_.isArray(options.howl.src) || !(_.isArray(options.howl.src) && options.howl.src.length)) {
       throw new Error('no src files found')
     }

@@ -13,11 +13,12 @@ var CONSTANTS = {
 };
 var TYPED_TEXT = {
   GREETING: ['.greeting', '<span class="br">Hello</span>'],
-  INTRO: ['.intro', 'I am Eric Miller, a software developer, systems architect, and world traveler in Austin, TX.'],
-  TECH: ['.tech', 'I work across the full stack but my head is always in the cloud. I love Node.js, Python, and Go.'],
-  SKILLS: ['.skills', 'I deliver beautiful code for complex problems implemented in elegant solutions.'],
-  PASSION: ['.passion', 'I have a passion for real-time communication, scalable distributed systems, WebRTC and other p2p technologies.'],
-  WHO: ['.who', 'I’m a self starter who is constantly learning and pushing my skills to the bleeding edge.'],
+  INTRO: ['.intro', 'I am Eric Miller, a software developer, systems architect, and travel enthusiast living in Austin, TX.'],
+  TECH: ['.tech', 'I work across the full stack with my head in the cloud. I love Node.js, Python, and Go.<br/>My interests involve real-time communication, boston terriers, scalable distributed systems, cryptocurrencies, webrtc and other p2p technologies.'],
+  // I deliver beautiful code for problems any size or complexity, implemented in elegant solution.
+  // SKILLS: ['.skills', 'I deliver beautiful code for problems any size or complexity, implemented in elegant solution.'],
+  // PASSION: ['.passion', 'My interests involve real-time communication, boston terriers, scalable distributed systems, cryptocurrencies, webrtc and other p2p technologies.'],
+  WHO: ['.who', 'I am a passionate and driven individual who\'s curiosity for learning keeps my skills on the bleeding edge.'],
   GITHUB: ['.github', 'Check me out on <a href="https://github.com/epmiller8464">Github</a>']
 };
 
@@ -66,16 +67,17 @@ var TEXT_INDEX = Object.keys(TYPED_TEXT);
 var tail = function tail(i, k) {
   var done = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : noop;
 
-  console.log(arguments);
+  // console.log(arguments)
   var key = TEXT_INDEX[i];
   if (!key || i > k) return done();
 
   var textSet = TYPED_TEXT[key];
-  console.log(textSet);
+  // console.log(textSet)
   var selector = textSet[0];
   var text = textSet[1];
   $(selector).typed({
     strings: [text],
+    // smartBackspace: false,
     typeSpeed: 0,
     html: true,
     showCursor: false,
@@ -96,6 +98,18 @@ var startTyping = function startTyping() {
 
 var continueTyping = function continueTyping() {
   tail(2, TEXT_INDEX.length);
+
+  // $('.tech').typed({
+  //   strings: [TYPED_TEXT.TECH[1], TYPED_TEXT.SKILLS[1], TYPED_TEXT.PASSION[1], TYPED_TEXT.WHO[1]],
+  //   smartBackspace: true,
+  //   typeSpeed: 0,
+  //   html: true,
+  //   showCursor: false,
+  //   startDelay: 0,
+  //   callback: function () {
+  //     // return tail(++i, k, done)
+  //   }
+  // })
 };
 
 function retype() {
