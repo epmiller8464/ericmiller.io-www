@@ -15,11 +15,8 @@ var TYPED_TEXT = {
   GREETING: ['.greeting', '<span class="br">Hello</span>'],
   INTRO: ['.intro', 'I am Eric Miller, a software developer, systems architect, and travel enthusiast living in Austin, TX.'],
   TECH: ['.tech', 'I work across the full stack with my head in the cloud. I love Node.js, Python, and Go.<br/>My interests involve real-time communication, boston terriers, scalable distributed systems, cryptocurrencies, webrtc and other p2p technologies.'],
-  // I deliver beautiful code for problems any size or complexity, implemented in elegant solution.
-  // SKILLS: ['.skills', 'I deliver beautiful code for problems any size or complexity, implemented in elegant solution.'],
-  // PASSION: ['.passion', 'My interests involve real-time communication, boston terriers, scalable distributed systems, cryptocurrencies, webrtc and other p2p technologies.'],
   WHO: ['.who', 'I am a passionate and driven individual who\'s curiosity for learning keeps my skills on the bleeding edge.'],
-  GITHUB: ['.github', 'Check me out on <a href="https://github.com/epmiller8464">Github</a>']
+  GITHUB: ['.github', 'Check me out on <a href="javascript:window.open(\'https://github.com/epmiller8464\')">Github</a>']
 };
 
 var Loaded = function Loaded(opts) {

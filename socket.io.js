@@ -3,6 +3,7 @@ const uuid = require('uuid')
 
 const {writeToDisk, updateAndRemoveFile} = require('./lib/vmware')
 const {Service} = require('./lib/storageService')
+const jwt = require('jsonwebtoken')
 // const exec = require('child_process').exec
 // const FFmpeg = require('fluent-ffmpeg')
 // const {level} = require('./level')('vm', {valueEncoding: 'json'})
@@ -29,19 +30,34 @@ function server (app) {
     socket.on('message', function (data) {
       // add token logic
       // data.token
-      var fileName = uuid.v4()
+      if (!data.audio.token) {
+        socket.emit('ffmpeg-error', 'Cannot save unvalidated file must contain a valid and signed JWT.')
+        return
+      }
 
-      socket.emit('ffmpeg-output', 0)
-      // console.log(data)
-      // console.log('my nigga we have the image %s', data.audio.image)
-      writeToDisk(data.audio, fileName + '.wav', (error, doc) => {
+      let sign = data.audio.token
+      console.log(sign)
+      let validationResults = jwt.verify(sign.token, process.env.JWT_SIGNATURE, {jwtid: sign.jwtid}, (err, payload) => {
 
-        if (error) {
-          socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message)
+        if (err) {
+          socket.emit('ffmpeg-error', 'Could not validate file signature.')
           return
         }
-        let vm = doc
-        socket.emit('merged', {fileName: fileName + '.wav', id: vm._id, key: vm.filename})
+
+        var fileName = uuid.v4()
+
+        socket.emit('ffmpeg-output', 0)
+        // console.log(data)
+        // console.log('my nigga we have the image %s', data.audio.image)
+        writeToDisk(data.audio, fileName + '.wav', (error, doc) => {
+
+          if (error) {
+            socket.emit('ffmpeg-error', 'ffmpeg : An error occurred: ' + error.message)
+            return
+          }
+          let vm = doc
+          socket.emit('merged', {fileName: fileName + '.wav', id: vm._id, key: vm.filename})
+        })
       })
     })
 

@@ -207,7 +207,7 @@ WebVoiceMail.prototype.stop = function () {
   try {
     // this.source[this.source.stop ? 'stop' : 'noteOff'](0)
     this.recording = false
-    this.siriWave.stop()
+    // this.siriWave.stop()
     this.mediaStream.stop()
     this.input.disconnect(0)
     this.filter.disconnect(0)
