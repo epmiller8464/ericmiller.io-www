@@ -4,7 +4,8 @@ var express = require('express');
 var router = express.Router();
 
 var _require = require('../lib/model'),
-    VoiceMessage = _require.VoiceMessage;
+    VoiceMessage = _require.VoiceMessage,
+    CallLog = _require.CallLog;
 
 var _require2 = require('../lib/authorization'),
     createSignedUrl = _require2.createSignedUrl;
@@ -17,12 +18,14 @@ var _require3 = require('../level')('tokens'),
 var _require4 = require('../lib/token'),
     createAudioSignature = _require4.createAudioSignature;
 
+var moment = require('moment');
 var csurf = require('csurf')({ cookie: true });
 
 var _require$twiml = require('twilio').twiml,
     MessagingResponse = _require$twiml.MessagingResponse,
     VoiceResponse = _require$twiml.VoiceResponse;
 
+var ch = require('../lib/callHandler')();
 router.get('/', csurf, function (req, res, next) {
   var links = [];
   VoiceMessage.find({ isTemp: false }, function (err, docs) {
@@ -86,6 +89,32 @@ router.post('/save-upload', function (req, res, next) {
 router.delete('/:id', function (req, res, next) {
   var fileName = '';
 });
+// http://dev.ericmiller.io/voicemail/webhook/status/voice
+router.post('/webhook/call/status', function (req, res, next) {
+  var call = req.body;
+  console.log(req.body);
+  if (call.Direction !== 'inbound') {
+    res.writeHead(200);
+    return res.end();
+  }
+
+  // response.Say("Chapeau!", voice: "woman", language: "fr");
+  var cl = new CallLog({
+    phone_number: call.From,
+    from_country: call.FromCountry,
+    timestamp: moment(call.Timestamp).valueOf(),
+    call_sid: call.CallSid,
+    call_meta: call
+  });
+
+  cl.save(function (err, doc) {
+
+    if (doc) ch.emit('new-call', doc.toObject());
+
+    res.writeHead(200);
+    res.end();
+  });
+});
 
 router.post('/webhook/incoming/voice', function (req, res, next) {
   var twiml = new VoiceResponse();
@@ -96,8 +125,17 @@ router.post('/webhook/incoming/voice', function (req, res, next) {
     voice: 'alice',
     language: 'en-US',
     loop: 1
-  }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow');
+    // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
+  }, 'When your near your computer visit my site at www.ericmiller.io/voicemail or leave me a message.');
+  twiml.say({
+    voice: 'alice',
+    language: 'en-US',
+    loop: 1
+    // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
+  }, 'Beep');
+  twiml.record({ transcribe: true });
 
+  twiml.hangup();
   console.log(twiml.toString());
   // response.Say("Chapeau!", voice: "woman", language: "fr");
 

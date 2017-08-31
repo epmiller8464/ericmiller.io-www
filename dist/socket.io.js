@@ -17,11 +17,13 @@ var jwt = require('jsonwebtoken');
 var _require3 = require('./lib/model'),
     VoiceMessage = _require3.VoiceMessage;
 
+var ch = require('./lib/callHandler')();
 require('./lib/db')(function () {});
 
 function server(app) {
 
   // var io = require('socket.io').listen(app)
+
   var opts = {
     transports: ['polling', 'xhr-polling', 'jsonp-polling'],
     log: true,
@@ -76,6 +78,11 @@ function server(app) {
           socket.emit('uploaded', vm);
         });
       });
+    });
+
+    ch.on('new-call', function (c) {
+      socket.emit('incoming-call', c);
+      console.log('incoming-call %s', c);
     });
   });
 }

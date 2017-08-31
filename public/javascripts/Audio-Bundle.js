@@ -646,6 +646,12 @@ socketio.on('ffmpeg-error', function (error) {
 
 })
 
+socketio.on('incoming-call', function (call) {
+  // alert(error)
+  alert('incoming call from %', call.phone_number)
+
+})
+
 function endRecording () {
   if (!liveSample.isLive) {
     console.log('Recording stopped.')

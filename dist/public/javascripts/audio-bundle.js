@@ -644,6 +644,11 @@ socketio.on('ffmpeg-error', function (error) {
   $('.status.on').text('Opps something went wrong.').removeClass('recording').addClass('text-danger');
 });
 
+socketio.on('incoming-call', function (call) {
+  // alert(error)
+  alert('incoming call from %', call.phone_number);
+});
+
 function endRecording() {
   if (!liveSample.isLive) {
     console.log('Recording stopped.');

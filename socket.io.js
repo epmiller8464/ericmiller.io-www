@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken')
 // const FFmpeg = require('fluent-ffmpeg')
 // const {level} = require('./level')('vm', {valueEncoding: 'json'})
 const {VoiceMessage} = require('./lib/model')
+const ch = require('./lib/callHandler')()
 require('./lib/db')(() => {
 
 })
@@ -15,6 +16,7 @@ require('./lib/db')(() => {
 function server (app) {
 
   // var io = require('socket.io').listen(app)
+
   var opts = {
     transports: [
       'polling',
@@ -73,6 +75,11 @@ function server (app) {
           socket.emit('uploaded', vm)
         })
       })
+    })
+
+    ch.on('new-call', (c) => {
+      socket.emit('incoming-call', c)
+      console.log('incoming-call %s', c)
     })
   })
 }
