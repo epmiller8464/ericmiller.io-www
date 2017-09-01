@@ -1,6 +1,7 @@
 'use strict';
 
 var client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+var _ = require('lodash');
 
 // const {MessagingResponse, VoiceResponse} = require('twilio').Re
 
@@ -85,12 +86,27 @@ function pushNotify() {}
 
 function updateCallLog() {}
 
+function sendSmsNotifications() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Be a good person!';
+  var to = arguments[1];
+
+  return client.api.messages.create({
+    body: message,
+    to: to,
+    from: process.env.TWILIO_NUMBER
+  }).then(function (data) {
+    console.log('Persons notified');
+  }).catch(function (err) {
+    console.error('Could not notify these fools');
+    console.error(err);
+  });
+}
+
 module.exports = {
   onboardNewCallData: onboardNewCallData,
-  fetchCall: fetchCall,
   fetchCalls: fetchCalls,
   fetchTranscribedRecordings: fetchTranscribedRecordings,
-  notifyMe: notifyMe,
+  sendSmsNotifications: sendSmsNotifications,
   notifyServer: notifyServer,
   pushNotify: pushNotify,
   updateCallLog: updateCallLog

@@ -10,6 +10,7 @@ const moment = require('moment')
 var csurf = require('csurf')({cookie: true})
 const {MessagingResponse, VoiceResponse} = require('twilio').twiml
 const ch = require('../lib/callevent')()
+const {sendSmsNotifications} = require('../lib/voice-service')
 router.get('/', csurf, function (req, res, next) {
   let links = []
   VoiceMessage.find({isTemp: false}, (err, docs) => {
@@ -92,7 +93,11 @@ router.post('/webhook/call/status', (req, res, next) => {
 
     if (doc) {
       //todo: send sms
-      ch.emit('new-call', doc.toObject())
+      // ch.emit('new-call', doc.toObject())
+      process.nextTick((_call) => {
+        sendSmsNotifications('Eric will get back to you ASAP, thanks for stopping by.', _call.From)
+        sendSmsNotifications('You have a new voip mail', process.env.ME)
+      }, call)
     }
 
     res.writeHead(200)

@@ -26,6 +26,10 @@ var _require$twiml = require('twilio').twiml,
     VoiceResponse = _require$twiml.VoiceResponse;
 
 var ch = require('../lib/callevent')();
+
+var _require5 = require('../lib/voice-service'),
+    sendSmsNotifications = _require5.sendSmsNotifications;
+
 router.get('/', csurf, function (req, res, next) {
   var links = [];
   VoiceMessage.find({ isTemp: false }, function (err, docs) {
@@ -110,7 +114,11 @@ router.post('/webhook/call/status', function (req, res, next) {
 
     if (doc) {
       //todo: send sms
-      ch.emit('new-call', doc.toObject());
+      // ch.emit('new-call', doc.toObject())
+      process.nextTick(function (_call) {
+        sendSmsNotifications('Eric will get back to you ASAP, thanks for stopping by.', _call.From);
+        sendSmsNotifications('You have a new voip mail', process.env.ME);
+      }, call);
     }
 
     res.writeHead(200);
