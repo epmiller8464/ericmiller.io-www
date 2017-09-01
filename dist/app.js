@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var hbs = require('express-handlebars');
 var fs = require('fs');
+// const {onboardNewCallData} = require('./lib/voice-service')
 var compression = require('compression');
 var sslRedirect = require('./lib/ssl-redirect');
 var app = express();
@@ -97,8 +98,8 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 app.use('/', require('./routes/index'));
 
 app.use('/voicemail', require('./routes/voicemail'));
-var ch = require('./lib/callHandler')();
-
+var ch = require('./lib/callevent')();
+// ch.on('new-call', onboardNewCallData)
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

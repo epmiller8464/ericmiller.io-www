@@ -50,7 +50,7 @@ function BufferLoader(context, urlList, callback) {
 BufferLoader.prototype.loadBuffer = function (url, index) {
   // Load buffer asynchronously
   var request = new XMLHttpRequest();
-  console.log(url);
+  //console.log(url)
   request.open('GET', url, true);
   request.responseType = 'arraybuffer';
 
@@ -177,6 +177,7 @@ function WebVoiceMail(config, cb) {
   this.canvas = config.canvas;
   this.recording = false;
   this.audioSignature = null;
+  this._cancelAnimation;
   return this;
 }
 
@@ -190,7 +191,7 @@ WebVoiceMail.prototype.play = function () {
   // this.stop()
 
   this.startTime = context.currentTime;
-  console.log('started at', this.startOffset);
+  //console.log('started at', this.startOffset)
   this.source = context.createBufferSource();
   // Connect graph
   this.source.connect(this.analyser);
@@ -202,7 +203,7 @@ WebVoiceMail.prototype.play = function () {
   this.isLive = true;
 
   this.source.onEnded = this.onEnded;
-  requestAnimationFrame(this.draw.bind(this));
+  this._cancelAnimation = requestAnimationFrame(this.draw.bind(this));
 };
 
 WebVoiceMail.prototype.stop = function () {
@@ -218,7 +219,8 @@ WebVoiceMail.prototype.stop = function () {
     // cameraPreview.stop()
     this.captureCanvasImage();
     this.startOffset = 0; // += context.currentTime - this.startTime
-    console.log('stopped at', context.currentTime);
+    //console.log('stopped at', context.currentTime)
+    cancelAnimationFrame(this._cancelAnimation);
   } catch (e) {}
 
   this.startOffset = 0;
@@ -235,7 +237,7 @@ WebVoiceMail.prototype.onEnded = function () {
   // alert()
   // this.captureCanvasImage()
 
-  clearInterval(_clearInterval);
+  // clearInterval(_clearInterval)
   endRecording();
 };
 var time = 0;
@@ -299,7 +301,7 @@ WebVoiceMail.prototype.draw = function (timestamp) {
 
   // this.sampleBuffer.push()
   if (this.isLive) {
-    requestAnimationFrame(this.draw.bind(this));
+    this._cancelAnimation = requestAnimationFrame(this.draw.bind(this));
   }
 };
 
@@ -310,9 +312,9 @@ WebVoiceMail.prototype.getFrequencyValue = function (freq) {
 };
 
 VisualizerSample.prototype.monitorTime = function () {
-  console.log('context time: %s, buffer duration', context.currentTime, this.buffer.duration);
+  //console.log('context time: %s, buffer duration', context.currentTime, this.buffer.duration)
 
-  requestAnimationFrame(this.time.bind(this));
+  // requestAnimationFrame(this.time.bind(this))
 };
 
 WebVoiceMail.prototype.sample = function (time) {
@@ -388,7 +390,7 @@ VisualizerSample.prototype.play = function () {
   this.stop();
 
   this.startTime = context.currentTime;
-  console.log('started at', this.startOffset);
+  // ////console.log('started at', this.startOffset)
   this.source = context.createBufferSource();
   // Connect graph
   this.source.onEnded = this.onEnded;
@@ -397,7 +399,7 @@ VisualizerSample.prototype.play = function () {
   this.source.loop = false;
   // Start playback, but make sure we stay in bound of the buffer.
   this.source[this.source.start ? 'start' : 'noteOn'](0, this.startOffset % this.buffer.duration);
-  console.log('duration: ', this.buffer.duration);
+  // ////console.log('duration: ', this.buffer.duration)
   // Start visualizer.
   this.isPlaying = true;
   this.draw();
@@ -405,9 +407,9 @@ VisualizerSample.prototype.play = function () {
 };
 
 VisualizerSample.prototype.time = function () {
-  console.log('context time: %s, buffer duration', context.currentTime, this.buffer.duration);
+  // //console.log('context time: %s, buffer duration', context.currentTime, this.buffer.duration)
 
-  requestAnimationFrame(this.time.bind(this));
+  // requestAnimationFrame(this.time.bind(this))
 };
 
 VisualizerSample.prototype.stop = function () {
@@ -415,7 +417,7 @@ VisualizerSample.prototype.stop = function () {
   try {
     this.source[this.source.stop ? 'stop' : 'noteOff'](0);
     this.startOffset += context.currentTime - this.startTime;
-    console.log('paused at', this.startOffset);
+    //console.log('paused at', this.startOffset)
   } catch (e) {}
   //   }
   this.startOffset = 0;
@@ -429,7 +431,7 @@ VisualizerSample.prototype.disconnect = function () {
 };
 
 VisualizerSample.prototype.onEnded = function () {
-  console.log('stopping...');
+  //console.log('stopping...')
   this.stop();
   // $('#rerecord').prop('disabled', false)
   alert('done');
@@ -467,7 +469,7 @@ VisualizerSample.prototype.draw = function () {
   }
 
   // if (this.isPlaying) {
-  requestAnimationFrame(this.draw.bind(this));
+  // requestAnimationFrame(this.draw.bind(this))
   // }
 };
 VisualizerSample.prototype.getFrequencyValue = function (freq) {
@@ -557,14 +559,14 @@ function showProgress(timestamp) {
     start = Date.now();
     liveSample.sample(0);
   }
-  // console.log()
+  // //console.log()
   var diff = Date.now() - start;
   var current = Math.floor(diff) / 500 >> 0;
 
   liveSample.sample(current);
   if (current !== time) {
     time = current;
-    // console.log(time, timestamp)
+    // //console.log(time, timestamp)
     $('.time-remaining').text(duration - time + ' seconds');
   }
 
@@ -575,11 +577,14 @@ function showProgress(timestamp) {
   // duration--
   // time += timestamp
 
-  requestAnimationFrame(showProgress);
+  _clearInterval = requestAnimationFrame(showProgress);
 }
 
 stopRecording.onclick = function () {
   endRecording();
+  // clearInterval(_clearInterval)
+  cancelAnimationFrame(_clearInterval);
+  // endRecording()
 };
 
 playButton.onclick = function () {
@@ -602,6 +607,8 @@ saveRecordingButton.onclick = function () {
   // .done(function (msg) {
   //   window.location.href = window.location.href
   // })
+  $('.status.on').text('Saving and moving to AWS storage...').removeClass('recording');
+
   socketio.emit('save-upload', { filename: fileName, id: recordingKey, token: liveSample.audioSignature });
 
   // $.ajax({method:'POST',})
@@ -609,7 +616,7 @@ saveRecordingButton.onclick = function () {
 socketio.on('uploaded', function (payload) {
 
   $('.status.on').text('Uploaded...').removeClass('recording');
-  console.log(payload);
+  //console.log(payload)
 });
 
 socketio.on('merged', function (payload) {
@@ -618,14 +625,14 @@ socketio.on('merged', function (payload) {
   var id = payload.id;
   var href = location.href.split('/').pop().length ? location.href.replace(location.href.split('/').pop(), '') : location.href;
   href = href + 'uploads/' + _fileName;
-  console.log('got file ' + href);
+  //console.log('got file ' + href)
   sample = new VisualizerSample({ source: href, canvas: liveAudioCanvas }, function () {
     startRecording.disabled = true;
     playButton.disabled = false;
     saveRecordingButton.disabled = false;
     recordingKey = id;
     fileName = _fileName;
-    console.log(key, fileName);
+    //console.log(key, fileName)
     // $('#delete-upload-btn').data('recording-key', key)
   });
 });
@@ -644,6 +651,11 @@ socketio.on('ffmpeg-error', function (error) {
   $('.status.on').text('Opps something went wrong.').removeClass('recording').addClass('text-danger');
 });
 
+socketio.on('auth-error', function (error) {
+  // alert(error)
+  $('.status.on').text('Unauthorized!').removeClass('recording').addClass('text-danger');
+});
+
 socketio.on('incoming-call', function (call) {
   // alert(error)
   alert('incoming call from %', call.phone_number);
@@ -651,7 +663,7 @@ socketio.on('incoming-call', function (call) {
 
 function endRecording() {
   if (!liveSample.isLive) {
-    console.log('Recording stopped.');
+    //console.log('Recording stopped.')
     return;
   }
   // liveSample.captureCanvasImage()
@@ -670,7 +682,7 @@ function endRecording() {
           type: recordAudio.getBlob().type || 'audio/wav',
           dataURL: audioDataURL,
           image: image,
-          email: 'epmiller8464@gmail.com',
+          // email: 'epmiller8464@gmail.com',
           waveForm: liveSample.sampleBuffer,
           createDate: moment().format('LLL'),
           token: liveSample.audioSignature

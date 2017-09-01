@@ -25,7 +25,7 @@ var _require$twiml = require('twilio').twiml,
     MessagingResponse = _require$twiml.MessagingResponse,
     VoiceResponse = _require$twiml.VoiceResponse;
 
-var ch = require('../lib/callHandler')();
+var ch = require('../lib/callevent')();
 router.get('/', csurf, function (req, res, next) {
   var links = [];
   VoiceMessage.find({ isTemp: false }, function (err, docs) {
@@ -42,8 +42,15 @@ router.get('/', csurf, function (req, res, next) {
         if (v) return v;
       }).reverse();
       var surl = createSignedUrl(vm.meta.Key);
-      return { key: vm._id, image: vm.image, audio_path: surl, waveForm: waveForm.join(',') };
+      return {
+        key: vm._id,
+        image: vm.image,
+        audio_path: surl,
+        waveForm: waveForm.join(','),
+        date: moment(vm.created_on).format('LLL')
+      };
     });
+    links = links.reverse();
     res.render('voicemail', {
       title: 'Express',
       images: links,
@@ -64,31 +71,23 @@ router.post('/recaptcha', csurf, function (req, res, next) {
 
   validateSubmitter(body.response, body.remoteip, function (err, result) {
     if (err || !result.success) return res.status(400).json(result);
-    var token = createAudioSignature({ email: email, ip: req.ip, challenge_ts: result.challenge_ts });
+    createAudioSignature({ email: email, ip: req.ip, challenge_ts: result.challenge_ts }, function (err, token) {
 
-    if (token.error) {
-      return res.status(400).json({ error: 'Could not validate submitter' });
-    }
-
-    level.put(token.jwtid, token, function (e, success) {
-      if (e) {
-        return next(e);
+      if (err) {
+        return res.status(400).json({ error: 'Could not validate submitter' });
       }
 
-      return res.status(200).json(token);
+      level.put(token.jwtid, token, function (e, success) {
+        if (e) {
+          return next(e);
+        }
+
+        return res.status(200).json(token);
+      });
     });
   });
 });
 
-router.post('/save-upload', function (req, res, next) {
-
-  // validateSubmitter(req)
-  res.json();
-});
-
-router.delete('/:id', function (req, res, next) {
-  var fileName = '';
-});
 // http://dev.ericmiller.io/voicemail/webhook/status/voice
 router.post('/webhook/call/status', function (req, res, next) {
   var call = req.body;
@@ -109,7 +108,10 @@ router.post('/webhook/call/status', function (req, res, next) {
 
   cl.save(function (err, doc) {
 
-    if (doc) ch.emit('new-call', doc.toObject());
+    if (doc) {
+      //todo: send sms
+      ch.emit('new-call', doc.toObject());
+    }
 
     res.writeHead(200);
     res.end();
@@ -126,13 +128,8 @@ router.post('/webhook/incoming/voice', function (req, res, next) {
     language: 'en-US',
     loop: 1
     // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
-  }, 'When your near your computer visit my site at www.ericmiller.io/voicemail or leave me a message.');
-  twiml.say({
-    voice: 'alice',
-    language: 'en-US',
-    loop: 1
-    // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
-  }, 'Beep');
+  }, 'You have reached Eric Millers voip number leave me a message, once i have read it you will receive a text and I will get back to you ASAP if you are human or visit my site at www.ericmiller.io/voicemail.');
+
   twiml.record({ transcribe: true });
 
   twiml.hangup();

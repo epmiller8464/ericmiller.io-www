@@ -327,7 +327,7 @@ a.text-danger:focus {
 .content__inner {
   position: relative;
   z-index: 10;
-  max-width: 700px;
+  max-width: 992px;
   margin: 0 auto;
   text-align: center; }
 

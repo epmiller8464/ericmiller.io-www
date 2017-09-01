@@ -17,7 +17,7 @@ var jwt = require('jsonwebtoken');
 var _require3 = require('./lib/model'),
     VoiceMessage = _require3.VoiceMessage;
 
-var ch = require('./lib/callHandler')();
+var ch = require('./lib/callevent')();
 require('./lib/db')(function () {});
 
 function server(app) {
@@ -42,18 +42,19 @@ function server(app) {
 
       var sign = data.audio.token;
       console.log(sign);
-      var validationResults = jwt.verify(sign.token, process.env.JWT_SIGNATURE, { jwtid: sign.jwtid }, function (err, payload) {
+      jwt.verify(sign.token, process.env.JWT_SIGNATURE, { jwtid: sign.jwtid }, function (err, payload) {
 
         if (err) {
-          socket.emit('ffmpeg-error', 'Could not validate file signature.');
+          socket.emit('ffmpeg-error', 'Could not validate file signature. ' + err.message);
           return;
         }
 
-        var fileName = uuid.v4();
+        var fileName = payload.jti;
 
         socket.emit('ffmpeg-output', 0);
         // console.log(data)
         // console.log('my nigga we have the image %s', data.audio.image)
+        data.audio.email = payload.email;
         writeToDisk(data.audio, fileName + '.wav', function (error, doc) {
 
           if (error) {
@@ -78,11 +79,6 @@ function server(app) {
           socket.emit('uploaded', vm);
         });
       });
-    });
-
-    ch.on('new-call', function (c) {
-      socket.emit('incoming-call', c);
-      console.log('incoming-call %s', c);
     });
   });
 }

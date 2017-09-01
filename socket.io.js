@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 // const FFmpeg = require('fluent-ffmpeg')
 // const {level} = require('./level')('vm', {valueEncoding: 'json'})
 const {VoiceMessage} = require('./lib/model')
-const ch = require('./lib/callHandler')()
+const ch = require('./lib/callevent')()
 require('./lib/db')(() => {
 
 })
@@ -39,18 +39,19 @@ function server (app) {
 
       let sign = data.audio.token
       console.log(sign)
-      let validationResults = jwt.verify(sign.token, process.env.JWT_SIGNATURE, {jwtid: sign.jwtid}, (err, payload) => {
+      jwt.verify(sign.token, process.env.JWT_SIGNATURE, {jwtid: sign.jwtid}, (err, payload) => {
 
         if (err) {
-          socket.emit('ffmpeg-error', 'Could not validate file signature.')
+          socket.emit('ffmpeg-error', `Could not validate file signature. ${err.message}`)
           return
         }
 
-        var fileName = uuid.v4()
+        var fileName = payload.jti
 
         socket.emit('ffmpeg-output', 0)
         // console.log(data)
         // console.log('my nigga we have the image %s', data.audio.image)
+        data.audio.email = payload.email
         writeToDisk(data.audio, fileName + '.wav', (error, doc) => {
 
           if (error) {
@@ -75,11 +76,6 @@ function server (app) {
           socket.emit('uploaded', vm)
         })
       })
-    })
-
-    ch.on('new-call', (c) => {
-      socket.emit('incoming-call', c)
-      console.log('incoming-call %s', c)
     })
   })
 }

@@ -9,7 +9,7 @@ const {createAudioSignature} = require('../lib/token')
 const moment = require('moment')
 var csurf = require('csurf')({cookie: true})
 const {MessagingResponse, VoiceResponse} = require('twilio').twiml
-const ch = require('../lib/callHandler')()
+const ch = require('../lib/callevent')()
 router.get('/', csurf, function (req, res, next) {
   let links = []
   VoiceMessage.find({isTemp: false}, (err, docs) => {
@@ -23,8 +23,15 @@ router.get('/', csurf, function (req, res, next) {
       }
       waveForm = waveForm.filter((i, v) => {if (v) return v }).reverse()
       let surl = createSignedUrl(vm.meta.Key)
-      return {key: vm._id, image: vm.image, audio_path: surl, waveForm: waveForm.join(',')}
+      return {
+        key: vm._id,
+        image: vm.image,
+        audio_path: surl,
+        waveForm: waveForm.join(','),
+        date: moment(vm.created_on).format('LLL')
+      }
     })
+    links = links.reverse()
     res.render('voicemail', {
       title: 'Express',
       images: links,
@@ -46,33 +53,23 @@ router.post('/recaptcha', csurf, (req, res, next) => {
   validateSubmitter(body.response, body.remoteip, (err, result) => {
     if (err || !result.success)
       return res.status(400).json(result)
-    let token = createAudioSignature({email: email, ip: req.ip, challenge_ts: result.challenge_ts})
+    createAudioSignature({email: email, ip: req.ip, challenge_ts: result.challenge_ts}, (err, token) => {
 
-    if (token.error) {
-      return res.status(400).json({error: 'Could not validate submitter'})
-    }
-
-    level.put(token.jwtid, token, (e, success) => {
-      if (e) {
-        return next(e)
+      if (err) {
+        return res.status(400).json({error: 'Could not validate submitter'})
       }
 
-      return res.status(200).json(token)
+      level.put(token.jwtid, token, (e, success) => {
+        if (e) {
+          return next(e)
+        }
+
+        return res.status(200).json(token)
+      })
     })
   })
 })
 
-router.post('/save-upload', (req, res, next) => {
-
-  // validateSubmitter(req)
-  res.json()
-
-})
-
-router.delete('/:id', (req, res, next) => {
-  let fileName = ''
-
-})
 // http://dev.ericmiller.io/voicemail/webhook/status/voice
 router.post('/webhook/call/status', (req, res, next) => {
   let call = req.body
@@ -93,8 +90,10 @@ router.post('/webhook/call/status', (req, res, next) => {
 
   cl.save((err, doc) => {
 
-    if (doc)
+    if (doc) {
+      //todo: send sms
       ch.emit('new-call', doc.toObject())
+    }
 
     res.writeHead(200)
     res.end()
@@ -111,13 +110,8 @@ router.post('/webhook/incoming/voice', (req, res, next) => {
     language: 'en-US',
     loop: 1
     // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
-  }, 'When your near your computer visit my site at www.ericmiller.io/voicemail or leave me a message.')
-  twiml.say({
-    voice: 'alice',
-    language: 'en-US',
-    loop: 1
-    // }, 'When your near your computer visit my site at www.ericmiller.io/voicemail and leave me a message. This was built with tweelio\'s voice api. Chow')
-  }, 'Beep')
+  }, 'You have reached Eric Millers voip number leave me a message, once i have read it you will receive a text and I will get back to you ASAP if you are human or visit my site at www.ericmiller.io/voicemail.')
+
   twiml.record({transcribe: true})
 
   twiml.hangup()
