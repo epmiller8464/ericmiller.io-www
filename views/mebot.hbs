@@ -1,7 +1,7 @@
 {{#section 'head'}}
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
 {{/section}}
-<section id="chat-container" class="container content">
+<section id="chat-container" class="container content" style="overflow: none;">
     <div class="row">
         <div class="col-md-10 col-md-offset-2">
             <div>
@@ -46,7 +46,9 @@
                 console.log(message)
                 if (message.text) {
                     var msg = formatMessage(message.text, message.from, message.timestamp)
-                    $('#chat-control').prepend(msg)
+                    $('#chat-control').append(msg)
+                    $('#chat-control').scrollTop($('#chat-control')[0].scrollHeight)
+
                 }
             })
 
@@ -58,8 +60,9 @@
                     var text = $('#text-area').val().trim()
                     socket.emit('bot:message', {text: text})
                     var msg = formatMessage(text, 'You', Date.now())
-                    $('#chat-control').prepend(msg)
+                    $('#chat-control').append(msg)
                     $('#text-area').val('')
+                    $('#chat-control').scrollTop($('#chat-control')[0].scrollHeight)
                 }
             })
         })
