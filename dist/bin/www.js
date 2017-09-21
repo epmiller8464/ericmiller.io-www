@@ -22,9 +22,9 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
+var notifier = require('../lib/notifier')();
 var server = http.createServer(app);
-require('../socket.io')(server);
+require('../socket.io')(server, notifier);
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -1,0 +1,76 @@
+{{#section 'head'}}
+    <script src="/socket.io-client/dist/socket.io.slim.js"></script>
+{{/section}}
+<section class="container content">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="chat-container">
+
+                <ul id="chat-control" class="list-group">
+
+                </ul>
+            </div>
+            <div class="input text-center">
+                <input id="text-area" type="text" title="message" name="message" class="form-control pull-left"
+                       style="width:80%;background: transparent;"
+                       placeholder="Send a message">
+                <button id="btn-send" class="btn btn-link" type="button">Send</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{{#section 'scripts'}}
+    <script>
+        var rid = window.location.search.replace('?', '').split('=')[1]
+        var socket = io()
+        //        socket.on('connection', function (socket) {
+        //
+        //        })
+        //        io()
+        //        io()
+        //        })
+
+        $(document).ready(function () {
+            socket = io('/' + rid)
+
+            socket.on('connect', function () {
+//                socket.emit('bot:new-room', rid)
+
+                $('body').removeClass('loading')
+                console.log('connected')
+            })
+
+            socket.on('bot:message', function (message) {
+                console.log(message)
+                if (message.text) {
+                    var msg = formatMessage(message.text, message.from, message.timestamp)
+                    $('#chat-control').prepend(msg)
+                }
+            })
+
+            var xTriggered = 0
+            $('#text-area').keypress(function (event) {
+                if (event.which == 13) {
+                    event.preventDefault()
+                    xTriggered++
+                    var text = $('#text-area').val().trim()
+                    socket.emit('bot:message', {text: text})
+                    var msg = formatMessage(text, 'You', Date.now())
+                    $('#chat-control').prepend(msg)
+                    $('#text-area').val('')
+                }
+            })
+        })
+
+        function formatMessage (text, user, timestamp) {
+            return '<li class="list-group-item">' +
+                    '<time class="list-group-item-heading">' + moment(timestamp).format('MM-DD-YYYY LT') + ' </time>' +
+                    '<h4 class="list-group-item-heading">' + user + '</h4>' +
+                    '<p class="list-group-item-text">' + text + '</p>' +
+                    '</li>'
+        }
+    </script>
+{{/section}}
+

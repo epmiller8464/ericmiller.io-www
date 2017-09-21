@@ -32,9 +32,12 @@ var _require5 = require('../lib/voice-service'),
 
 router.get('/', csurf, function (req, res, next) {
   var links = [];
+  var context = { title: 'Web Mail', images: [], phone_number: process.env.TWILIO_NUMBER };
   VoiceMessage.find({ isTemp: false }, function (err, docs) {
     // let value = JSON.parse(data.value)
-    if (err) res.render('voicemail', { title: 'Express', images: [] });
+    if (err) {
+      return res.render('voicemail', context);
+    }
     links = docs.map(function (vm) {
       return vm.toObject();
     }).map(function (vm) {
@@ -55,12 +58,12 @@ router.get('/', csurf, function (req, res, next) {
       };
     });
     links = links.reverse();
-    res.render('voicemail', {
-      title: 'Express',
-      images: links,
-      site_key: process.env.RECAPTCHA_SITE_KEY,
-      csrfToken: req.csrfToken()
-    });
+    context.images = links;
+    context.site_key = process.env.RECAPTCHA_SITE_KEY;
+    context.csrfToken = req.csrfToken();
+    context.elasticNav = true;
+
+    res.render('voicemail', context);
   });
 });
 
@@ -113,7 +116,7 @@ router.post('/webhook/call/status', function (req, res, next) {
   cl.save(function (err, doc) {
 
     if (doc) {
-      //todo: send sms
+      // todo: send sms
       // ch.emit('new-call', doc.toObject())
       process.nextTick(function (_call) {
         sendSmsNotifications('Eric will get back to you ASAP, thanks for stopping by.', _call.From);

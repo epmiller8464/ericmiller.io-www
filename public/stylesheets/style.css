@@ -471,4 +471,12 @@ a.text-danger:focus {
   z-index: 100 !important;
   position: relative; }
 
+#chat-control {
+  height: 75vh;
+  overflow: scroll; }
+
+#chat-control.list-group .list-group-item {
+  border: none;
+  background-color: transparent; }
+
 /*# sourceMappingURL=style.css.map */

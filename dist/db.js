@@ -2,9 +2,12 @@
 
 var levelup = require('levelup');
 var instance = void 0;
+var instances = void 0;
 
 function db(name) {
 
+  instances = instances || {};
+  instance = instances[name];
   if (instance) return instance;
 
   instance = levelup('./' + name);
@@ -13,6 +16,7 @@ function db(name) {
   }).on('closing', function () {
     console.log('closing db');
   });
+  instances[name] = instance;
   return instance;
 }
 

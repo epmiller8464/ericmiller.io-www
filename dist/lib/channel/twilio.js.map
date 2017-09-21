@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../lib/channel/twilio.js"],"names":["module","exports","twilio"],"mappings":"AAAA;;AAEAA,OAAOC,OAAP,GAAiB,EAACC,cAAD,EAAjB","file":"twilio.js","sourcesContent":["'use strict'\n\nmodule.exports = {twilio}"]}

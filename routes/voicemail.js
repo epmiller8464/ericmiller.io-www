@@ -13,9 +13,12 @@ const ch = require('../lib/callevent')()
 const {sendSmsNotifications} = require('../lib/voice-service')
 router.get('/', csurf, function (req, res, next) {
   let links = []
+  let context = {title: 'Web Mail', images: [], phone_number: process.env.TWILIO_NUMBER}
   VoiceMessage.find({isTemp: false}, (err, docs) => {
     // let value = JSON.parse(data.value)
-    if (err) res.render('voicemail', {title: 'Express', images: []})
+    if (err) {
+      return res.render('voicemail', context)
+    }
     links = docs.map((vm) => {return vm.toObject()}).map((vm) => {
       let waveForm = []
       for (var key in vm.waveForm) {
@@ -33,12 +36,12 @@ router.get('/', csurf, function (req, res, next) {
       }
     })
     links = links.reverse()
-    res.render('voicemail', {
-      title: 'Express',
-      images: links,
-      site_key: process.env.RECAPTCHA_SITE_KEY,
-      csrfToken: req.csrfToken()
-    })
+    context.images = links
+    context.site_key = process.env.RECAPTCHA_SITE_KEY
+    context.csrfToken = req.csrfToken()
+    context.elasticNav = true
+
+    res.render('voicemail', context)
   })
 })
 
@@ -92,7 +95,7 @@ router.post('/webhook/call/status', (req, res, next) => {
   cl.save((err, doc) => {
 
     if (doc) {
-      //todo: send sms
+      // todo: send sms
       // ch.emit('new-call', doc.toObject())
       process.nextTick((_call) => {
         sendSmsNotifications('Eric will get back to you ASAP, thanks for stopping by.', _call.From)

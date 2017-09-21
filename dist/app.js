@@ -9,7 +9,8 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var hbs = require('express-handlebars');
 var fs = require('fs');
-// const {onboardNewCallData} = require('./lib/voice-service')
+var uuid = require('uuid');
+var session = require('express-session');
 var compression = require('compression');
 var sslRedirect = require('./lib/ssl-redirect');
 var app = express();
@@ -72,6 +73,17 @@ app.engine('hbs', exphbs.engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.set('trust proxy', 1);
+app.use(session({
+  genid: function genid(req) {
+    return uuid.v4(); // use UUIDs for session IDs
+  },
+  secret: 'io-room-server-secret',
+  resave: false,
+  saveUninitialized: true,
+  // cookie: { secure: true }
+  cookie: true
+}));
+
 app.use(require('cors')({
   origin: '*',
   methods: 'GET,PUT,POST,OPTIONS,DELETE',
@@ -98,6 +110,7 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 app.use('/', require('./routes/index'));
 
 app.use('/voicemail', require('./routes/voicemail'));
+app.use('/mebot', require('./routes/mebot'));
 var ch = require('./lib/callevent')();
 // ch.on('new-call', onboardNewCallData)
 // catch 404 and forward to error handler
@@ -117,6 +130,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+require('./lib/db')(function () {});
 
 module.exports = app;
 //# sourceMappingURL=app.js.map

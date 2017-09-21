@@ -21,9 +21,6 @@ module.exports = function (name, options = {}) {
           return cb(err)
         }
         return cb(null, value)
-
-
-
       })
     },
     del (key, cb) {
@@ -36,7 +33,7 @@ module.exports = function (name, options = {}) {
         return cb(null, true)
       })
     },
-    createReadStream({keys, values}){
+    createReadStream ({keys, values}) {
       return db.createReadStream({keys, values})
     }
   }

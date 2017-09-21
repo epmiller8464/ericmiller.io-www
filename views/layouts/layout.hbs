@@ -12,10 +12,17 @@
     <!--<link rel="stylesheet" type="text/css" href="/loaders.css/loaders.min.css"/>-->
     <script>document.documentElement.className = 'js'</script>
     {{{_sections.head}}}
-    <!--<script type="text/javascript">-->
-    <!--window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=t.forceSSL||"https:"===document.location.protocol,a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=(r?"https:":"http:")+"//cdn.heapanalytics.com/js/heap-"+e+".js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","removeEventProperty","setEventProperties","track","unsetEventProperty"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};-->
-    <!--heap.load("2184104394");-->
-    <!--</script>-->
+    <script type="text/javascript">
+        window.heap = window.heap || [], heap.load = function (e, t) {
+            window.heap.appid = e, window.heap.config = t = t || {}
+            var r = t.forceSSL || 'https:' === document.location.protocol, a = document.createElement('script')
+            a.type = 'text/javascript', a.async = !0, a.src = (r ? 'https:' : 'http:') + '//cdn.heapanalytics.com/js/heap-' + e + '.js'
+            var n = document.getElementsByTagName('script')[0]
+            n.parentNode.insertBefore(a, n)
+            for (var o = function (e) {return function () {heap.push([e].concat(Array.prototype.slice.call(arguments, 0)))}}, p = ['addEventProperties', 'addUserProperties', 'clearEventProperties', 'identify', 'removeEventProperty', 'setEventProperties', 'track', 'unsetEventProperty'], c = 0; c < p.length; c++) heap[p[c]] = o(p[c])
+        }
+        heap.load('2184104394')
+    </script>
 </head>
 <body class="loading">
 <div id="particles-js">
@@ -35,7 +42,30 @@
 <section id="body">
     {{{body}}}
 </section>
-{{{_sections.footer}}}
+{{#if elasticNav}}
+    <footer class="navbar navbar-bottom  footer text-center">
+{{else}}
+    <footer class="navbar navbar-fixed-bottom  footer text-center">
+{{/if}}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <a title="Email Me" href="mailto:epmiller8464@gmail.com" class="btn btn-link btn-lg">
+                <span class="glyphicon glyphicon-envelope"></span><br/>Email
+            </a>
+            <a class="btn btn-link btn-lg" href="/voicemail">
+                <span class="fa fa-microphone"></span><br/>Web Mail
+            </a>
+
+            <a href="tel:+1{{phone_number}}" id="sms-link" class="btn btn-link">
+                <span class="glyphicon glyphicon-phone"></span><br/>{{phone_number}}
+            </a>
+            <a href="/mebot" class="btn btn-link">
+                <span class="fs-1x25">🤖</span><br/>Chat with MeBot
+            </a>
+        </div>
+    </div>
+
+</footer>
 
 </body>
 
@@ -43,7 +73,7 @@
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/moment/min/moment-with-locales.js"></script>
 <script src="/javascripts/imagesloaded.pkgd.min.js"></script>
-<!--<script src="/moment/min/moment.min.js"></script    >-->
+<script src="/moment/min/moment.min.js"></script>
 <script src="/javascripts/typed.min.js"></script>
 <script src="/javascripts/particles.js"></script>
 <script src="/smooth-scroll/dist/js/smooth-scroll.min.js"></script>
