@@ -13,7 +13,7 @@ router.get('/', function (req, res, next) {
     return res.redirect(`/mebot?rid=${rid}`)
   }
   notifier.emit('bot:create-room', rid)
-  res.render('mebot', {title: 'I am MeBot', phone_number: process.env.TWILIO_NUMBER})
+  res.render('mebot', {title: 'I am MeBot', phone_number: process.env.TWILIO_NUMBER, elasticNav: true})
 })
 
 module.exports = router

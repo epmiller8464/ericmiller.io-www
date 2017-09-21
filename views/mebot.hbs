@@ -1,20 +1,20 @@
 {{#section 'head'}}
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
 {{/section}}
-<section class="container content">
+<section id="chat-container" class="container content">
     <div class="row">
-        <div class="col-md-12">
-            <div id="chat-container">
+        <div class="col-md-10 col-md-offset-2">
+            <div>
 
                 <ul id="chat-control" class="list-group">
 
                 </ul>
             </div>
-            <div class="input text-center">
-                <input id="text-area" type="text" title="message" name="message" class="form-control pull-left"
+            <div class="">
+                <input id="text-area" type="text" title="message" name="message" class="form-control"
                        style="width:80%;background: transparent;"
                        placeholder="Send a message">
-                <button id="btn-send" class="btn btn-link" type="button">Send</button>
+                <small>Press enter to send.</small>
             </div>
         </div>
     </div>
