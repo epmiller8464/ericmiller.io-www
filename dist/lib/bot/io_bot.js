@@ -110,6 +110,16 @@ function IoBot(configuration) {
       // pino.info('new connection in room: %s ', room.channel)
       // bot.socket = socket
       socket.join(bot.config.channel);
+
+      io_bot.trigger('say:greeting', [bot, {
+        text: '',
+        user: socket.id || 'Anonymous',
+        id: socket.id,
+        from: 'MEBOT',
+        channel: 'text',
+        timestamp: Date.now()
+      }]);
+
       socket.on('bot:message', function (data) {
 
         var message = {

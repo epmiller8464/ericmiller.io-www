@@ -79,6 +79,15 @@ module.exports = function (io) {
   //   }
   //   controller.trigger('message_recevied', [bot, message])
   // })
+  controller.on('say:greeting', function (bot, message) {
+
+    bot.startConversation(message, function (err, convo) {
+      if (!err) {
+        convo.say('Hi, my name is Mebot, I was built to answer some questions you might have about Eric.<br/>' + 'I can send you his resume. if you say things like "resume".<br/>' + 'I can tell you about "Eric". if you say things like "info, bio, who is eric, or tell me about eric".<br/>' + 'I can tell you about "Me". if you say things like "who are you","who","identify yourself".<br/>' + 'I can learn your name. if you say "call me (insert your name).".<br/>' + 'I can tell you who i am have a chatting with. if you say "who am i" or "what is my name".<br/>' + 'I can tell you how old I am. if you say "uptime".<br/>' + 'Be patient, I am still learning so be nice.');
+      }
+    });
+  });
+
   controller.hears(['hello', 'hi'], 'message_received', function (bot, message) {
 
     controller.storage.users.get(message.user, function (err, user) {
@@ -309,7 +318,7 @@ module.exports = function (io) {
     var hostname = os.hostname();
     var uptime = formatUptime(process.uptime());
 
-    bot.reply(message, ':robot_face: I am ConsoleBot. I have been running for ' + uptime + ' on ' + hostname + '.');
+    bot.reply(message, ':robot_face: I am MeBot. I have been alive for ' + uptime + ' born on ' + hostname + '.');
   });
 
   function formatUptime(uptime) {
