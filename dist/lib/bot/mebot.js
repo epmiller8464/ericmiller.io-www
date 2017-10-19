@@ -60,7 +60,7 @@ This bot demonstrates many of the core features of Botkit:
 
 // var Botkit = require('botkit')
 var os = require('os');
-var IOBOT = require('./lib/bot/io_bot');
+var IOBOT = require('./io_bot');
 
 module.exports = function (io) {
 
@@ -137,13 +137,13 @@ module.exports = function (io) {
       }
     });
   });
-  controller.hears(['bio', 'who is eric', 'tell me about'], 'message_received', function (bot, message) {
+  controller.hears(['info', 'bio', 'who is eric', 'tell me about'], 'message_received', function (bot, message) {
 
     bot.reply(message, 'Just a man who likes to build software, eat, and you.');
   });
   controller.hears(['resume', 'work info'], 'message_received', function (bot, message) {
 
-    bot.reply(message, 'Sorry still updating my resume.');
+    bot.reply(message, '<div><a onclick="javascript:window.open(\'' + process.env.RESUME_LINK + '\')">Here you go!</a>&nbsp;<span>Please don\'t share this all willy nilly.</span></div>');
   });
   controller.hears(['work', 'available', 'job', 'opportunity'], 'message_received', function (bot, message) {
 
@@ -332,4 +332,4 @@ module.exports = function (io) {
 
   return controller;
 };
-//# sourceMappingURL=console-bot.js.map
+//# sourceMappingURL=mebot.js.map

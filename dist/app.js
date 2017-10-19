@@ -7,6 +7,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
+
 var hbs = require('express-handlebars');
 var fs = require('fs');
 var uuid = require('uuid');

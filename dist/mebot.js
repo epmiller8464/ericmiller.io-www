@@ -332,4 +332,4 @@ module.exports = function (io) {
 
   return controller;
 };
-//# sourceMappingURL=console-bot.js.map
+//# sourceMappingURL=mebot.js.map

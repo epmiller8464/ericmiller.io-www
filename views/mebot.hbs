@@ -45,7 +45,7 @@
             socket.on('bot:message', function (message) {
                 console.log(message)
                 if (message.text) {
-                    var msg = formatMessage(message.text, message.from, message.timestamp)
+                    var msg = formatMessage(message.text, message.from || 'MeBot', message.timestamp)
                     $('#chat-control').append(msg)
                     $('#chat-control').scrollTop($('#chat-control')[0].scrollHeight)
 

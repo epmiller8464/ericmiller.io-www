@@ -41,7 +41,7 @@ function server(app, notifier) {
     origins: '*:*'
   }; // 'disconnect' EVENT will work only with 'websocket
   io = require('socket.io')(app, opts);
-  controller = require('./console-bot')({ io: io });
+  controller = require('./lib/bot/mebot')({ io: io });
 
   io.sockets.on('connection', function (socket) {
     // var bot = controller.spawn({socket})
